@@ -1,0 +1,10 @@
+# Bun configuration for Barotropic
+
+[install]
+# Keep dependency resolution and installs on Bun's native lockfile format.
+lockfile = "bun"
+frozenLockfile = true
+
+[run]
+# Execute package scripts with Bun's runtime instead of Node.js.
+bun = true
