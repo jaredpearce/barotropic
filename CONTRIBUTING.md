@@ -4,8 +4,7 @@ Thank you for your interest in contributing to Barotropic! This document provide
 
 ## Requirements
 
-- **Node.js**: 24.0.0 or higher
-- **pnpm**: 9.0.0 or higher
+- **Bun**: 1.0.0 or higher ([install Bun](https://bun.sh/docs/installation))
 
 ## Code Standards
 
@@ -36,25 +35,25 @@ Thank you for your interest in contributing to Barotropic! This document provide
 
 1. Create a feature branch: `git checkout -b feature/your-feature`
 2. Make your changes
-3. Run type checking: `pnpm type-check`
-4. Run linting: `pnpm lint`
-5. Format code: `pnpm format`
+3. Run type checking: `bun type-check`
+4. Run linting: `bun lint`
+5. Format code: `bun format`
 6. Create a pull request
 
 ## Installation
 
 ```bash
-pnpm install
+bun install
 ```
 
-Note: We use pnpm for this project. It's faster and more efficient than npm or yarn.
+Note: We use Bun for this project. It's faster and more efficient than npm, pnpm, or yarn.
 
 ## Code Formatting
 
 Code is automatically formatted with Oxcformatter. Before committing:
 
 ```bash
-pnpm format
+bun format
 ```
 
 ## Linting
@@ -62,13 +61,13 @@ pnpm format
 Lint your code with Oxlint:
 
 ```bash
-pnpm lint
+bun lint
 ```
 
 Fix linting issues automatically where possible:
 
 ```bash
-pnpm lint -- --fix
+bun lint -- --fix
 ```
 
 ## Type Checking
@@ -76,7 +75,7 @@ pnpm lint -- --fix
 Ensure all types are correct:
 
 ```bash
-pnpm type-check
+bun type-check
 ```
 
 ## Commit Messages
@@ -95,9 +94,9 @@ Follow conventional commits:
 ## Pull Request Process
 
 1. Update README.md if needed
-2. Ensure all code is formatted: `pnpm format:check`
-3. Ensure linting passes: `pnpm lint`
-4. Ensure types check: `pnpm type-check`
+2. Ensure all code is formatted: `bun format:check`
+3. Ensure linting passes: `bun lint`
+4. Ensure types check: `bun type-check`
 5. Ensure tests pass (when tests are added)
 6. Add relevant labels
 7. Request review from maintainers

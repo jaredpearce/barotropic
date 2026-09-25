@@ -6,12 +6,12 @@ Barotropic is a weather forecasting platform designed around a simple premise: W
 
 ## Tech Stack
 
-- **Runtime**: [Node.js 24+](https://nodejs.org/)
+- **Runtime**: [Bun](https://bun.sh/)
 - **Framework**: [Next.js 14](https://nextjs.org/) with App Router
 - **Language**: [TypeScript 5.6+](https://www.typescriptlang.org/)
 - **UI Library**: [React 19](https://react.dev/)
 - **Styling**: [Tailwind CSS](https://tailwindcss.com/)
-- **Package Manager**: [pnpm](https://pnpm.io/)
+- **Package Manager**: [Bun](https://bun.sh/)
 - **Linting**: [Oxlint](https://oxc-project.github.io/docs/guide/linter.html)
 - **Formatting**: [Oxcformatter](https://oxc-project.github.io/docs/guide/formatter.html)
 - **Deployment**: [Vercel](https://vercel.com/)
@@ -64,8 +64,7 @@ Barotropic is built around the core concept of **evidence-based weather forecast
 
 ## Prerequisites
 
-- **Node.js**: 24.0.0 or higher
-- **pnpm**: 9.0.0 or higher
+- **Bun**: 1.0.0 or higher ([install Bun](https://bun.sh/docs/installation))
 
 ## Getting Started
 
@@ -75,7 +74,7 @@ Barotropic is built around the core concept of **evidence-based weather forecast
 2. Install dependencies:
 
 ```bash
-pnpm install
+bun install
 ```
 
 ### Development
@@ -83,7 +82,7 @@ pnpm install
 Run the development server:
 
 ```bash
-pnpm dev
+bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) to see the application.
@@ -92,15 +91,15 @@ Open [http://localhost:3000](http://localhost:3000) to see the application.
 
 ```bash
 # Development
-pnpm dev              # Start development server
-pnpm build            # Build for production
-pnpm start            # Start production server
+bun dev              # Start development server
+bun run build        # Build for production
+bun start            # Start production server
 
 # Code Quality
-pnpm lint             # Run Oxlint
-pnpm format           # Format code with Oxcformatter
-pnpm format:check     # Check formatting without making changes
-pnpm type-check       # Check TypeScript types
+bun lint             # Run Oxlint
+bun format           # Format code with Oxcformatter
+bun format:check     # Check formatting without making changes
+bun type-check       # Check TypeScript types
 ```
 
 ## Key Features
@@ -112,10 +111,9 @@ pnpm type-check       # Check TypeScript types
 - ✅ **Structured Narratives** - Communicate forecasts clearly
 - ✅ **React 19** - Latest React features and improvements
 - ✅ **TypeScript 5.6+** - Full type safety with latest features
-- ✅ **Node.js 24** - Modern runtime with latest capabilities
+- ✅ **Bun** - Lightning-fast all-in-one JavaScript runtime
 - ✅ **Next.js App Router** - Modern routing and server components
 - ✅ **Tailwind CSS** - Utility-first styling
-- ✅ **pnpm** - Fast, disk-space efficient package management
 - ✅ **Oxlint** - Fast, zero-config linting (Rust-based)
 - ✅ **Oxcformatter** - High-performance code formatting (Rust-based)
 - ✅ **Path Aliases** - Clean imports with `@/` prefix
@@ -153,7 +151,7 @@ Wizard for creating forecasts:
 Oxlint is a Rust-based linter that's significantly faster than ESLint:
 
 ```bash
-pnpm lint
+bun lint
 ```
 
 ### Formatting with Oxcformatter
@@ -162,10 +160,10 @@ Oxcformatter provides high-performance code formatting:
 
 ```bash
 # Format all files
-pnpm format
+bun format
 
 # Check formatting without making changes
-pnpm format:check
+bun format:check
 ```
 
 ### Type Checking
@@ -173,7 +171,7 @@ pnpm format:check
 Ensure full type safety:
 
 ```bash
-pnpm type-check
+bun type-check
 ```
 
 ## Environment Variables
@@ -190,11 +188,11 @@ This project is optimized for deployment on [Vercel](https://vercel.com/):
 
 1. Push your code to GitHub
 2. Import your repository in Vercel
-3. Vercel automatically detects pnpm and configures the build
+3. Vercel automatically detects Bun and configures the build
 4. Environment variables are automatically configured
 5. Deploy with a single click
 
-Alternatively, you can deploy anywhere that supports Node.js 24+.
+Alternatively, you can deploy anywhere that supports Bun or Node.js.
 
 ## Architecture Decisions
 
@@ -229,13 +227,13 @@ The App Router provides:
 - Built-in API routes for backend functionality
 - Better error handling with error boundaries
 
-### pnpm
+### Bun
 
-pnpm offers:
-- **Speed**: Faster installation and resolution
-- **Efficiency**: Monorepo-friendly with workspace support
-- **Security**: Stricter dependency management
-- **Compatibility**: Drop-in npm/yarn replacement
+Bun is a modern, all-in-one JavaScript runtime offering:
+- **Speed**: 3-4x faster package installation than npm/pnpm
+- **Simplicity**: Built-in package manager, test runner, and bundler
+- **Compatibility**: Drop-in replacement for Node.js with better performance
+- **Ecosystem**: Full npm package compatibility with native TypeScript support
 
 ### Oxlint & Oxcformatter
 
