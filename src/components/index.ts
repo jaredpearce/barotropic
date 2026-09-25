@@ -1,2 +1,6 @@
-// Component exports for easy imports
-// Add components here as you create them
+/**
+ * Reusable component exports
+ * Add components here as you create them
+ */
+
+export { default as Button } from "./Button";

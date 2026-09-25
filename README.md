@@ -20,14 +20,47 @@ Barotropic is a weather forecasting platform designed around a simple premise: W
 
 ```
 src/
-├── app/                 # Next.js App Router pages and layouts
-│   ├── layout.tsx      # Root layout
-│   └── page.tsx        # Home page
-├── components/          # Reusable React components
-├── lib/                # Utility functions and helpers
-├── styles/             # Global styles
-└── types/              # TypeScript type definitions
+├── app/                         # Next.js App Router
+│   ├── dashboard/              # Dashboard pages
+│   ├── forecasts/              # Forecast management
+│   │   └── new/                # New forecast creation wizard
+│   ├── layout.tsx              # Root layout
+│   └── page.tsx                # Landing page
+├── components/                 # Reusable React components
+│   ├── Button.tsx              # Button component
+│   └── index.ts                # Component exports
+├── lib/                        # Utility functions
+│   ├── forecast-utils.ts       # Forecast domain utilities
+│   ├── hooks.ts                # Custom React hooks
+│   └── index.ts                # Lib exports
+├── styles/                     # Global styles
+│   └── globals.css             # Tailwind directives
+└── types/                      # TypeScript type definitions
+    ├── api.ts                  # API response types
+    ├── domain.ts               # Core domain types
+    └── index.ts                # Type exports
 ```
+
+## Domain Architecture
+
+Barotropic is built around the core concept of **evidence-based weather forecasting**:
+
+### Core Types
+
+- **ForecastAnalysis**: The central forecast object combining evidence, patterns, hypothesis
+- **Evidence**: Observations, satellite data, model output supporting the forecast
+- **AtmosphericPattern**: Identified weather patterns (highs, lows, fronts, etc.)
+- **ForecastScenario**: Alternative scenarios with probabilities
+- **ForecastNarrative**: Structured communication of the forecast
+
+### User Workflow
+
+1. **Location & Time** - Define forecast scope
+2. **Evidence Panel** - Document observations and data
+3. **Pattern Analysis** - Recognize atmospheric patterns
+4. **Hypothesis Formation** - State weather forecast hypothesis
+5. **Scenario Comparison** - Compare possible outcomes
+6. **Forecast Communication** - Articulate the forecast
 
 ## Prerequisites
 
@@ -72,6 +105,11 @@ pnpm type-check       # Check TypeScript types
 
 ## Key Features
 
+- ✅ **Evidence-Based Forecasting** - Document observations and data
+- ✅ **Pattern Analysis** - Recognize atmospheric patterns
+- ✅ **Hypothesis Formation** - State and refine forecast hypotheses
+- ✅ **Scenario Comparison** - Compare alternative forecast outcomes
+- ✅ **Structured Narratives** - Communicate forecasts clearly
 - ✅ **React 19** - Latest React features and improvements
 - ✅ **TypeScript 5.6+** - Full type safety with latest features
 - ✅ **Node.js 24** - Modern runtime with latest capabilities
@@ -81,7 +119,32 @@ pnpm type-check       # Check TypeScript types
 - ✅ **Oxlint** - Fast, zero-config linting (Rust-based)
 - ✅ **Oxcformatter** - High-performance code formatting (Rust-based)
 - ✅ **Path Aliases** - Clean imports with `@/` prefix
-- ✅ **Environment Variables** - Secure configuration
+
+## Application Pages
+
+### Dashboard (`/dashboard`)
+
+Central hub showing:
+- Active forecasts
+- Recent analyses
+- Accuracy metrics
+- Quick actions
+
+### Forecasts (`/forecasts`)
+
+Manage all forecasts:
+- List view of forecasts
+- Filter and search
+- Create new forecast
+
+### New Forecast (`/forecasts/new`)
+
+Wizard for creating forecasts:
+
+1. **Location & Time** - Set forecast scope
+2. **Evidence Panel** - Gather supporting data
+3. **Hypothesis** - Form forecast hypothesis
+4. **Review & Publish** - Review and publish
 
 ## Code Quality
 
@@ -135,37 +198,40 @@ Alternatively, you can deploy anywhere that supports Node.js 24+.
 
 ## Architecture Decisions
 
-### React 19
+### Evidence-Based Forecasting
 
-React 19 includes:
+Barotropic is built on the principle that weather forecasting is a process of:
+1. Examining evidence (observations, data)
+2. Recognizing atmospheric patterns
+3. Forming hypotheses
+4. Communicating forecasts
 
-- New compiler and optimizations
-- Enhanced form handling
-- Improved server component support
-- Better TypeScript integration
+Not simply consuming generated forecasts.
 
-### Node.js 24
+### Domain-Driven Design
 
-Node.js 24 provides:
+The codebase uses domain-driven design principles with:
+- Clear domain types in `src/types/domain.ts`
+- Domain utilities in `src/lib/forecast-utils.ts`
+- Structured workflows in page components
 
-- Latest V8 JavaScript engine
-- Improved performance and memory efficiency
-- Latest ES features support
-- Enhanced built-in APIs
+### React 19 & TypeScript 5.6+
 
-### TypeScript 5.6+
+- Full type safety across the application
+- Latest React features and optimizations
+- Strict mode enabled by default
 
-Latest TypeScript enables:
+### Next.js App Router
 
-- Better type inference
-- Improved performance
-- New language features
-- Enhanced IDE support
+The App Router provides:
+- Improved performance with Server Components
+- Simplified routing with file-based structure
+- Built-in API routes for backend functionality
+- Better error handling with error boundaries
 
 ### pnpm
 
 pnpm offers:
-
 - **Speed**: Faster installation and resolution
 - **Efficiency**: Monorepo-friendly with workspace support
 - **Security**: Stricter dependency management
@@ -174,25 +240,14 @@ pnpm offers:
 ### Oxlint & Oxcformatter
 
 Rust-based tools provide:
-
 - **Performance**: 10-100x faster than ESLint/Prettier
 - **Zero-config**: Works out of the box with sensible defaults
 - **Modern**: Built for performance and developer experience
 - **Next.js optimized**: Built-in rules for Next.js best practices
 
-### Next.js App Router
-
-The App Router provides:
-
-- Improved performance with Server Components
-- Simplified routing with file-based structure
-- Built-in API routes for backend functionality
-- Better error handling with error boundaries
-
 ### Tailwind CSS
 
 Tailwind provides:
-
 - Rapid UI development
 - Consistent design system
 - Weather-themed color palette
