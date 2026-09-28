@@ -1,0 +1,656 @@
+/* ==========================================================================
+   WEATHER ICON SYSTEM — Composable CSS-based icons with graceful degradation
+   
+   Architecture:
+   - Base containers: .weather-icon (sizing, positioning)
+   - Base weather states: .weather-icon--{state}
+   - Composite conditions: .weather-icon--{base}--{modifier}
+   - Animations: respects prefers-reduced-motion
+   - Performance: uses CSS only, minimal repaints, low bandwidth
+   - Fallback: unicode characters for non-supported browsers
+   
+   ========================================================================== */
+
+.weather-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+  font-size: inherit;
+  line-height: 1;
+}
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .weather-icon * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ==========================================================================
+   1. CLEAR / SUNNY STATE
+   ========================================================================== */
+
+.weather-icon--clear {
+  color: var(--icon-clear);
+}
+
+@supports (box-shadow: 0 0 0) and (border-radius: 50%) {
+  .weather-icon--clear::before {
+    content: '';
+    position: absolute;
+    width: 0.4em;
+    height: 0.4em;
+    background: currentColor;
+    border-radius: 50%;
+    box-shadow: 0 0 0.1em currentColor;
+  }
+
+  .weather-icon--clear::after {
+    content: '';
+    position: absolute;
+    width: 0.08em;
+    height: 0.3em;
+    background: currentColor;
+    border-radius: 0.04em;
+    box-shadow: 
+      0.32em 0 0 currentColor,
+      -0.32em 0 0 currentColor,
+      0 0.32em 0 currentColor,
+      0 -0.32em 0 currentColor,
+      0.22em 0.22em 0 currentColor,
+      -0.22em 0.22em 0 currentColor,
+      0.22em -0.22em 0 currentColor,
+      -0.22em -0.22em 0 currentColor;
+  }
+
+  @supports (animation: spin-ray 12s linear infinite) {
+    @keyframes spin-ray {
+      100% { transform: rotate(360deg); }
+    }
+
+    .weather-icon--clear::after {
+      animation: spin-ray 12s linear infinite;
+      transform-origin: center;
+    }
+  }
+}
+
+/* Fallback for non-supporting browsers */
+@supports not (box-shadow: 0 0 0) {
+  .weather-icon--clear {
+    font-size: 1em;
+  }
+
+  .weather-icon--clear::before {
+    content: '☀';
+  }
+}
+
+/* ==========================================================================
+   2. CLOUDY STATE
+   ========================================================================== */
+
+.weather-icon--cloudy {
+  color: var(--icon-cloudy);
+}
+
+@supports (border-radius: 20px) and (box-shadow: 0 0 0) {
+  .weather-icon--cloudy::before {
+    content: '';
+    position: absolute;
+    width: 0.6em;
+    height: 0.24em;
+    background: currentColor;
+    border-radius: 0.2em;
+  }
+
+  .weather-icon--cloudy::after {
+    content: '';
+    position: absolute;
+    width: 0.26em;
+    height: 0.26em;
+    background: currentColor;
+    border-radius: 50%;
+    top: -0.2em;
+    left: 0.1em;
+    box-shadow: 0.34em -0.28em 0 -0.08em currentColor;
+  }
+
+  @supports (animation: float 4s ease-in-out infinite) {
+    @keyframes float-cloud {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-0.06em); }
+    }
+
+    .weather-icon--cloudy::before {
+      animation: float-cloud 4s ease-in-out infinite;
+    }
+  }
+}
+
+@supports not (border-radius: 20px) {
+  .weather-icon--cloudy::before {
+    content: '☁';
+  }
+}
+
+/* ==========================================================================
+   3. RAINY STATE (base: cloudy + precipitation)
+   ========================================================================== */
+
+.weather-icon--rainy {
+  color: var(--icon-rainy);
+}
+
+@supports (border-radius: 20px) and (box-shadow: 0 0 0) {
+  .weather-icon--rainy::before {
+    content: '';
+    position: absolute;
+    width: 0.6em;
+    height: 0.24em;
+    background: currentColor;
+    border-radius: 0.2em;
+    top: -0.08em;
+  }
+
+  .weather-icon--rainy::after {
+    content: '';
+    position: absolute;
+    width: 0.26em;
+    height: 0.26em;
+    background: currentColor;
+    border-radius: 50%;
+    top: -0.28em;
+    left: 0.1em;
+    box-shadow: 0.34em -0.28em 0 -0.08em currentColor;
+  }
+
+  /* Rain drops using box-shadow offsets */
+  .weather-icon__rain {
+    position: absolute;
+    top: 0.16em;
+    left: 0.15em;
+    width: 0.04em;
+    height: 0.12em;
+    background: currentColor;
+    border-radius: 50%;
+    box-shadow: 
+      0.18em 0 0 -0.02em currentColor,
+      0.36em 0 0 -0.02em currentColor;
+  }
+
+  @supports (animation: fall 0.8s linear infinite) {
+    @keyframes fall-rain {
+      0% { transform: translateY(-0.2em); opacity: 0; }
+      30% { opacity: 1; }
+      100% { transform: translateY(0.2em); opacity: 0; }
+    }
+
+    .weather-icon__rain {
+      animation: fall-rain 0.8s linear infinite;
+    }
+  }
+}
+
+@supports not (border-radius: 20px) {
+  .weather-icon--rainy::before {
+    content: '🌧';
+  }
+}
+
+/* ==========================================================================
+   4. THUNDERSTORM STATE (rainy + lightning modifier)
+   ========================================================================== */
+
+.weather-icon--thunderstorm {
+  color: var(--icon-thunderstorm);
+}
+
+@supports (border-radius: 20px) and (box-shadow: 0 0 0) {
+  .weather-icon--thunderstorm::before {
+    content: '';
+    position: absolute;
+    width: 0.6em;
+    height: 0.24em;
+    background: currentColor;
+    border-radius: 0.2em;
+    top: -0.08em;
+    opacity: 0.85;
+  }
+
+  .weather-icon--thunderstorm::after {
+    content: '';
+    position: absolute;
+    width: 0.26em;
+    height: 0.26em;
+    background: currentColor;
+    border-radius: 50%;
+    top: -0.28em;
+    left: 0.1em;
+    box-shadow: 0.34em -0.28em 0 -0.08em currentColor;
+    opacity: 0.85;
+  }
+
+  /* Lightning bolt using clip-path / borders */
+  .weather-icon__lightning {
+    position: absolute;
+    top: -0.04em;
+    left: 0.2em;
+    width: 0.12em;
+    height: 0.32em;
+    background: linear-gradient(
+      135deg,
+      transparent 40%,
+      currentColor 40%,
+      currentColor 60%,
+      transparent 60%
+    );
+    clip-path: polygon(
+      40% 0%,
+      60% 0%,
+      50% 40%,
+      70% 40%,
+      20% 100%,
+      40% 60%,
+      20% 60%
+    );
+  }
+
+  .weather-icon__rain {
+    position: absolute;
+    top: 0.12em;
+    left: 0.1em;
+    width: 0.04em;
+    height: 0.12em;
+    background: currentColor;
+    border-radius: 50%;
+    box-shadow: 
+      0.2em 0.04em 0 -0.02em currentColor,
+      0.4em 0.02em 0 -0.02em currentColor;
+  }
+
+  @supports (animation: fall 0.8s linear infinite) {
+    @keyframes fall-rain-storm {
+      0% { transform: translateY(-0.2em); opacity: 0; }
+      25% { opacity: 1; }
+      100% { transform: translateY(0.2em); opacity: 0; }
+    }
+
+    @keyframes flash-lightning {
+      0%, 10%, 15%, 100% { opacity: 0.3; }
+      5%, 12% { opacity: 1; }
+    }
+
+    .weather-icon__rain {
+      animation: fall-rain-storm 0.6s linear infinite;
+    }
+
+    .weather-icon__lightning {
+      animation: flash-lightning 2s ease-in-out infinite;
+    }
+  }
+}
+
+@supports not (border-radius: 20px) {
+  .weather-icon--thunderstorm::before {
+    content: '⛈';
+  }
+}
+
+/* ==========================================================================
+   5. SNOWY STATE (cloudy + snow modifier)
+   ========================================================================== */
+
+.weather-icon--snowy {
+  color: var(--icon-snowy);
+}
+
+@supports (border-radius: 20px) and (box-shadow: 0 0 0) {
+  .weather-icon--snowy::before {
+    content: '';
+    position: absolute;
+    width: 0.6em;
+    height: 0.24em;
+    background: currentColor;
+    border-radius: 0.2em;
+    top: -0.08em;
+  }
+
+  .weather-icon--snowy::after {
+    content: '';
+    position: absolute;
+    width: 0.26em;
+    height: 0.26em;
+    background: currentColor;
+    border-radius: 50%;
+    top: -0.28em;
+    left: 0.1em;
+    box-shadow: 0.34em -0.28em 0 -0.08em currentColor;
+  }
+
+  /* Snowflakes using rotated crosses */
+  .weather-icon__snow {
+    position: absolute;
+    top: 0.12em;
+    left: 0.16em;
+    width: 0.06em;
+    height: 0.06em;
+    background: 
+      linear-gradient(0deg, currentColor 40%, transparent 40%, transparent 60%, currentColor 60%),
+      linear-gradient(90deg, currentColor 40%, transparent 40%, transparent 60%, currentColor 60%);
+    background-size: 100% 100%;
+    box-shadow: 
+      0.24em 0 0 -0.01em currentColor,
+      0.36em 0 0 -0.01em currentColor;
+  }
+
+  @supports (animation: fall 0.8s linear infinite) {
+    @keyframes fall-snow {
+      0% { transform: translateY(-0.2em) rotateZ(0deg); opacity: 0; }
+      50% { opacity: 1; }
+      100% { transform: translateY(0.2em) rotateZ(360deg); opacity: 0; }
+    }
+
+    .weather-icon__snow {
+      animation: fall-snow 1.2s linear infinite;
+    }
+  }
+}
+
+@supports not (border-radius: 20px) {
+  .weather-icon--snowy::before {
+    content: '❄';
+  }
+}
+
+/* ==========================================================================
+   6. FOGGY STATE
+   ========================================================================== */
+
+.weather-icon--foggy {
+  color: var(--icon-foggy);
+}
+
+@supports (border-radius: 20px) {
+  .weather-icon--foggy::before {
+    content: '';
+    position: absolute;
+    width: 0.7em;
+    height: 0.14em;
+    background: currentColor;
+    border-radius: 0.07em;
+    top: 0.15em;
+    opacity: 0.6;
+  }
+
+  .weather-icon--foggy::after {
+    content: '';
+    position: absolute;
+    width: 0.7em;
+    height: 0.14em;
+    background: currentColor;
+    border-radius: 0.07em;
+    top: 0.35em;
+    opacity: 0.4;
+  }
+
+  /* Additional fog layer */
+  .weather-icon__fog {
+    position: absolute;
+    width: 0.7em;
+    height: 0.14em;
+    background: currentColor;
+    border-radius: 0.07em;
+    top: -0.05em;
+    opacity: 0.5;
+  }
+
+  @supports (animation: pulse 3s ease-in-out infinite) {
+    @keyframes pulse-fog {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 0.7; }
+    }
+
+    .weather-icon--foggy::before,
+    .weather-icon--foggy::after,
+    .weather-icon__fog {
+      animation: pulse-fog 3s ease-in-out infinite;
+    }
+  }
+}
+
+@supports not (border-radius: 20px) {
+  .weather-icon--foggy::before {
+    content: '🌫';
+  }
+}
+
+/* ==========================================================================
+   7. WINDY STATE (modifier that can be combined with other states)
+   ========================================================================== */
+
+.weather-icon--windy {
+  color: var(--icon-windy);
+}
+
+@supports (border-radius: 20px) {
+  .weather-icon__wind {
+    position: absolute;
+    top: -0.32em;
+    left: -0.1em;
+    width: 0.6em;
+    height: 0.06em;
+    background: currentColor;
+    border-radius: 0.03em;
+    opacity: 0.7;
+  }
+
+  .weather-icon__wind::before {
+    content: '';
+    position: absolute;
+    width: 0.3em;
+    height: 0.06em;
+    background: currentColor;
+    border-radius: 0.03em;
+    top: 0.12em;
+    left: 0;
+  }
+
+  @supports (animation: drift 2s ease-in-out infinite) {
+    @keyframes drift-wind {
+      0%, 100% { transform: translateX(0); }
+      50% { transform: translateX(0.1em); }
+    }
+
+    .weather-icon__wind {
+      animation: drift-wind 2s ease-in-out infinite;
+    }
+
+    .weather-icon__wind::before {
+      animation: drift-wind 2.5s ease-in-out infinite;
+    }
+  }
+}
+
+@supports not (border-radius: 20px) {
+  .weather-icon--windy::before {
+    content: '💨';
+  }
+}
+
+/* ==========================================================================
+   Composite/Combined Weather States
+   
+   These stack modifiers on base states to create complex weather conditions.
+   Examples:
+   - partly-cloudy-sunny: .weather-icon--clear--partly
+   - rain-and-wind: .weather-icon--rainy--windy
+   ========================================================================== */
+
+/* Partly cloudy (clear sky with clouds) */
+.weather-icon--clear--partly {
+  color: var(--icon-cloudy);
+}
+
+@supports (border-radius: 50%) {
+  .weather-icon--clear--partly::before {
+    width: 0.5em;
+    height: 0.5em;
+    background: var(--icon-clear);
+    border-radius: 50%;
+    bottom: -0.1em;
+    right: -0.05em;
+    box-shadow: 0 0 0.08em currentColor;
+  }
+
+  .weather-icon--clear--partly::after {
+    content: '';
+    position: absolute;
+    width: 0.55em;
+    height: 0.22em;
+    background: currentColor;
+    border-radius: 0.2em;
+    left: -0.05em;
+    top: 0.05em;
+  }
+
+  .weather-icon__cloud-top {
+    position: absolute;
+    width: 0.26em;
+    height: 0.26em;
+    background: currentColor;
+    border-radius: 50%;
+    top: -0.18em;
+    left: 0.1em;
+    box-shadow: 0.34em -0.28em 0 -0.08em currentColor;
+  }
+}
+
+/* Heavy rain (more intense precipitation) */
+.weather-icon--rainy--heavy {
+  color: var(--icon-rainy);
+}
+
+@supports (border-radius: 20px) {
+  .weather-icon--rainy--heavy::before {
+    width: 0.6em;
+    height: 0.24em;
+    background: currentColor;
+    border-radius: 0.2em;
+    top: -0.08em;
+  }
+
+  .weather-icon--rainy--heavy::after {
+    width: 0.26em;
+    height: 0.26em;
+    background: currentColor;
+    border-radius: 50%;
+    top: -0.28em;
+    left: 0.1em;
+    box-shadow: 0.34em -0.28em 0 -0.08em currentColor;
+  }
+
+  .weather-icon__rain {
+    position: absolute;
+    top: 0.1em;
+    left: 0.05em;
+    width: 0.06em;
+    height: 0.16em;
+    background: currentColor;
+    border-radius: 50%;
+    box-shadow: 
+      0.18em -0.02em 0 -0.02em currentColor,
+      0.36em 0.02em 0 -0.02em currentColor,
+      0.09em 0.08em 0 -0.02em currentColor,
+      0.27em 0.1em 0 -0.02em currentColor;
+  }
+
+  @supports (animation: fall 0.6s linear infinite) {
+    @keyframes fall-rain-heavy {
+      0% { transform: translateY(-0.25em); opacity: 0; }
+      20% { opacity: 1; }
+      100% { transform: translateY(0.25em); opacity: 0; }
+    }
+
+    .weather-icon__rain {
+      animation: fall-rain-heavy 0.6s linear infinite;
+    }
+  }
+}
+
+/* Sleet (mixed rain and snow) */
+.weather-icon--sleet {
+  color: color-mix(in srgb, var(--icon-rainy) 50%, var(--icon-snowy) 50%);
+}
+
+@supports (border-radius: 20px) {
+  .weather-icon--sleet::before {
+    width: 0.6em;
+    height: 0.24em;
+    background: currentColor;
+    border-radius: 0.2em;
+    top: -0.08em;
+  }
+
+  .weather-icon--sleet::after {
+    width: 0.26em;
+    height: 0.26em;
+    background: currentColor;
+    border-radius: 50%;
+    top: -0.28em;
+    left: 0.1em;
+    box-shadow: 0.34em -0.28em 0 -0.08em currentColor;
+  }
+
+  .weather-icon__sleet {
+    position: absolute;
+    width: 0.5em;
+    height: 0.12em;
+    top: 0.1em;
+    left: 0.1em;
+  }
+
+  .weather-icon__sleet--drop {
+    position: absolute;
+    width: 0.04em;
+    height: 0.1em;
+    background: var(--icon-rainy);
+    border-radius: 50%;
+    box-shadow: 0.2em 0 0 -0.02em var(--icon-rainy);
+  }
+
+  .weather-icon__sleet--ice {
+    position: absolute;
+    width: 0.04em;
+    height: 0.04em;
+    background: var(--icon-snowy);
+    top: 0.06em;
+    left: 0.12em;
+    box-shadow: 0.18em 0 0 -0.01em var(--icon-snowy);
+    clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 50% 82%, 18% 100%, 0% 38%);
+  }
+
+  @supports (animation: fall 0.8s linear infinite) {
+    @keyframes fall-sleet {
+      0% { transform: translateY(-0.2em) rotateZ(0deg); opacity: 0; }
+      40% { opacity: 1; }
+      100% { transform: translateY(0.2em) rotateZ(180deg); opacity: 0; }
+    }
+
+    .weather-icon__sleet {
+      animation: fall-sleet 0.9s linear infinite;
+    }
+  }
+}
+
+@supports not (border-radius: 20px) {
+  .weather-icon--sleet::before {
+    content: '🌨';
+  }
+}
