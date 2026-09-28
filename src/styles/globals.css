@@ -65,6 +65,15 @@
   --color-accent: var(--color_light_cerulean);
   --color-accent-subtle: color-mix(in srgb, var(--color-accent) 10%, transparent);
   --color-border: color-mix(in srgb, var(--color-text-secondary) 25%, transparent);
+
+  /* Weather icon semantic colors — light theme */
+  --icon-clear: var(--color_light_gold);
+  --icon-cloudy: color-mix(in srgb, var(--color_light_text-primary) 65%, transparent);
+  --icon-rainy: var(--color_light_cerulean);
+  --icon-thunderstorm: var(--color_light_crimson);
+  --icon-snowy: color-mix(in srgb, var(--color_light_text-primary) 40%, transparent);
+  --icon-foggy: color-mix(in srgb, var(--color_light_text-secondary) 55%, transparent);
+  --icon-windy: color-mix(in srgb, var(--color_light_cerulean) 70%, transparent);
 }
 
 /* Opt into the dark primitive set with <html data-theme="dark">. */
@@ -76,6 +85,15 @@
   --color-accent: var(--color_dark_cerulean);
   --color-accent-subtle: color-mix(in srgb, var(--color-accent) 15%, transparent);
   --color-border: color-mix(in srgb, var(--color-text-secondary) 30%, transparent);
+
+  /* Weather icon semantic colors — dark theme */
+  --icon-clear: var(--color_dark_gold);
+  --icon-cloudy: var(--color_dark_text-secondary);
+  --icon-rainy: var(--color_dark_cerulean);
+  --icon-thunderstorm: var(--color_dark_crimson);
+  --icon-snowy: var(--color_dark_text-primary);
+  --icon-foggy: color-mix(in srgb, var(--color_dark_text-secondary) 70%, transparent);
+  --icon-windy: var(--color_dark_cerulean);
 }
 
 @layer base {
@@ -103,3 +121,5 @@
     text-wrap: balance;
   }
 }
+
+@import './weather-icons.css';
