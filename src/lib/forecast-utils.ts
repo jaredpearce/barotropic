@@ -2,7 +2,7 @@
  * Utility functions for weather forecasting domain
  */
 
-import type { ForecastAnalysis, Evidence, AtmosphericPattern } from "./domain";
+import type { ForecastAnalysis, Evidence, AtmosphericPattern } from "../types/domain";
 
 /**
  * Calculate overall forecast confidence based on evidence and patterns

@@ -2,7 +2,7 @@
  * React hooks for forecast functionality
  */
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import type { ForecastAnalysis } from "@/types/domain";
 
 /**
@@ -69,6 +69,10 @@ export function useAsync<T>(
       setStatus("error");
     }
   }, [asyncFunction]);
+
+  useEffect(() => {
+    if (immediate) void execute();
+  }, [execute, immediate]);
 
   return { execute, status, data, error };
 }
