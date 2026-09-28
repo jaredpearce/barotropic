@@ -2,16 +2,104 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom global styles */
-html {
-  scroll-behavior: smooth;
+/* Barotropic design tokens
+ * Generated from the barotropic design-tokens.io workspace.
+ * Semantic aliases below make application styling independent of the active theme.
+ */
+:root {
+  /* Primitive tokens — light theme */
+  --color_dark_bg-primary: #0b0f19;
+  --color_dark_bg-surface: #1e293b;
+  --color_dark_cerulean: #38bdf8;
+  --color_dark_crimson: #fb7185;
+  --color_dark_emerald: #34d399;
+  --color_dark_gold: #fcd34d;
+  --color_dark_ochre: #f59e0b;
+  --color_dark_text-primary: #f1f5f9;
+  --color_dark_text-secondary: #94a3b8;
+  --color_light_bg-primary: #f8fafc;
+  --color_light_bg-surface: #ffffff;
+  --color_light_cerulean: #005f9e;
+  --color_light_crimson: #b8001f;
+  --color_light_emerald: #00664b;
+  --color_light_gold: #8a6200;
+  --color_light_ochre: #a05200;
+  --color_light_text-primary: #0f172a;
+  --color_light_text-secondary: #475569;
+
+  --font_family: Tahoma, Geneva, sans-serif;
+  --font_size_base: 16px;
+  --font_size_step-1: 1rem;
+  --font_size_step-2: 1.25rem;
+  --font_size_step-3: 1.56rem;
+  --font_size_step-4: 1.95rem;
+  --font_size_step-5: 2.44rem;
+  --font_size_step-6: 3.05rem;
+  --font_weight_bold: bold;
+  --font_weight_light: thin;
+  --font_weight_regular: normal;
+  --font_weight_semi-bold: 600;
+  --space_scale-1: 4px;
+  --space_scale-2: 8px;
+  --space_scale-3: 16px;
+  --space_scale-4: 24px;
+  --space_scale-5: 32px;
+
+  /* Semantic tokens */
+  --margin_bottom_lg: var(--space_scale-4);
+  --margin_bottom_md: var(--space_scale-3);
+  --margin_bottom_sm: var(--space_scale-2);
+  --margin_bottom_xl: var(--space_scale-5);
+  --margin_bottom_xs: var(--space_scale-1);
+  --margin_right_lg: var(--space_scale-4);
+  --margin_right_md: var(--space_scale-3);
+  --margin_right_sm: var(--space_scale-2);
+  --margin_right_xl: var(--space_scale-5);
+  --margin_right_xs: var(--space_scale-1);
+
+  /* Application aliases */
+  --color-bg-primary: var(--color_light_bg-primary);
+  --color-bg-surface: var(--color_light_bg-surface);
+  --color-text-primary: var(--color_light_text-primary);
+  --color-text-secondary: var(--color_light_text-secondary);
+  --color-accent: var(--color_light_cerulean);
+  --color-accent-subtle: color-mix(in srgb, var(--color-accent) 10%, transparent);
+  --color-border: color-mix(in srgb, var(--color-text-secondary) 25%, transparent);
 }
 
-body {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* Opt into the dark primitive set with <html data-theme="dark">. */
+[data-theme="dark"] {
+  --color-bg-primary: var(--color_dark_bg-primary);
+  --color-bg-surface: var(--color_dark_bg-surface);
+  --color-text-primary: var(--color_dark_text-primary);
+  --color-text-secondary: var(--color_dark_text-secondary);
+  --color-accent: var(--color_dark_cerulean);
+  --color-accent-subtle: color-mix(in srgb, var(--color-accent) 15%, transparent);
+  --color-border: color-mix(in srgb, var(--color-text-secondary) 30%, transparent);
 }
 
-code {
-  font-family: Menlo, Monaco, "Courier New", monospace;
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    font-size: var(--font_size_base);
+  }
+
+  body {
+    background-color: var(--color-bg-primary);
+    color: var(--color-text-primary);
+    font-family: var(--font_family);
+    font-weight: var(--font_weight_regular);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  code {
+    font-family: Menlo, Monaco, "Courier New", monospace;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
 }
