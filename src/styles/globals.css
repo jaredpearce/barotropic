@@ -1,3 +1,10 @@
+/* Local imports
+ * - design tokens
+ * - CSS icons
+ */
+@import './tokens.css';
+@import './weather-icons.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -28,9 +35,3 @@
   }
 }
 
-/* Local imports
- * - design tokens
- * - CSS icons
- */
-@import './tokens.css';
-@import './weather-icons.css';
