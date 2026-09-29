@@ -1,0 +1,226 @@
+/* Design tokens for Barotropic */
+
+:root {
+  /* Primary colors */
+  --color-background: rgb(5, 6, 13); /* slate-950 */
+  --color-surface-primary: rgb(15, 23, 42); /* slate-900 */
+  --color-surface-secondary: rgb(30, 41, 59); /* slate-800/90 */
+  --color-border: rgb(30, 41, 59); /* slate-800 */
+  --color-border-secondary: rgb(51, 65, 85); /* slate-700 */
+  --color-text-primary: rgb(255, 255, 255); /* white */
+  --color-text-secondary: rgb(148, 163, 184); /* slate-400 */
+  --color-text-tertiary: rgb(100, 116, 139); /* slate-500 */
+  --color-text-muted: rgb(71, 85, 105); /* slate-600 */
+
+  /* Accent colors */
+  --color-accent-emerald: rgb(52, 211, 153); /* emerald-400 */
+  --color-accent-amber: rgb(251, 146, 60); /* amber-500 */
+  --color-accent-amber-light: rgb(251, 191, 36); /* amber-400 */
+  --color-accent-rose: rgb(244, 63, 94); /* rose-500 */
+
+  /* Map area */
+  --color-map-background: rgb(13, 26, 44); /* #0d1a2c */
+
+  /* Spacing */
+  --spacing-xs: 0.5rem; /* 8px */
+  --spacing-sm: 0.75rem; /* 12px */
+  --spacing-md: 1rem; /* 16px */
+  --spacing-lg: 1.5rem; /* 24px */
+  --spacing-xl: 2rem; /* 32px */
+
+  /* Typography */
+  --text-size-xs: 0.75rem; /* 12px */
+  --text-size-sm: 0.875rem; /* 14px */
+  --text-size-base: 1rem; /* 16px */
+  --text-size-lg: 1.125rem; /* 18px */
+
+  /* Letter spacing for tracking */
+  --tracking-wide: 0.18em;
+  --tracking-normal: 0.14em;
+  --tracking-tight: 0.12em;
+
+  /* Layout */
+  --sidebar-width: 300px;
+  --header-height: auto;
+
+  /* Borders */
+  --border-width: 1px;
+  --border-radius: 0.375rem; /* rounded */
+}
+
+@layer components {
+  .app-shell {
+    @apply grid h-screen w-screen grid-rows-[auto_1fr] overflow-hidden;
+    background-color: var(--color-background);
+    color: var(--color-text-primary);
+  }
+
+  .app-header {
+    @apply flex items-center justify-between overflow-hidden;
+    border-bottom: var(--border-width) solid var(--color-border);
+    background-color: var(--color-surface-primary);
+    padding: var(--spacing-md) var(--spacing-lg);
+  }
+
+  .app-header-title {
+    @apply text-sm font-semibold;
+    letter-spacing: var(--tracking-wide);
+  }
+
+  .app-header-status {
+    @apply flex items-center gap-2;
+    font-size: var(--text-size-xs);
+    letter-spacing: var(--tracking-normal);
+    color: var(--color-text-secondary);
+  }
+
+  .app-header-status-indicator {
+    @apply h-2 w-2 rounded-full;
+    background-color: var(--color-accent-emerald);
+  }
+
+  .app-header-actions {
+    @apply flex items-center gap-2;
+    font-size: var(--text-size-xs);
+  }
+
+  .app-button {
+    @apply rounded;
+    border: var(--border-width) solid var(--color-border-secondary);
+    padding: var(--spacing-sm) var(--spacing-md);
+    color: var(--color-text-secondary);
+    background-color: transparent;
+    cursor: pointer;
+    transition: background-color 150ms ease-in-out;
+  }
+
+  .app-button:hover {
+    background-color: var(--color-surface-secondary);
+  }
+
+  .app-main {
+    @apply relative min-h-0 overflow-hidden;
+    background-color: var(--color-map-background);
+  }
+
+  .app-map-placeholder {
+    @apply flex h-full items-center justify-center text-sm;
+    color: var(--color-text-tertiary);
+  }
+
+  .app-sidebar {
+    @apply min-h-0 overflow-y-auto;
+    border-left: var(--border-width) solid var(--color-border-secondary);
+    background-color: var(--color-surface-secondary);
+    width: var(--sidebar-width);
+  }
+
+  .app-section {
+    border-bottom: var(--border-width) solid var(--color-border-secondary);
+    padding: var(--spacing-md);
+  }
+
+  .app-section-title {
+    @apply mb-3;
+    font-size: var(--text-size-xs);
+    letter-spacing: var(--tracking-normal);
+    color: var(--color-text-secondary);
+  }
+
+  .app-alert {
+    @apply rounded p-3;
+    border: var(--border-width) solid var(--color-accent-amber);
+    background-color: rgba(30, 41, 59, 0.6); /* slate-800/60 */
+  }
+
+  .app-alert-title {
+    @apply text-[10px] font-semibold;
+    letter-spacing: var(--tracking-tight);
+    color: var(--color-accent-amber-light);
+  }
+
+  .app-alert-subtitle {
+    @apply mt-1 text-xs;
+    color: var(--color-text-secondary);
+  }
+
+  .app-alert-meta {
+    @apply mt-1 text-[10px];
+    color: var(--color-text-secondary);
+  }
+
+  .app-conditions-section {
+    @apply mt-3 flex items-end gap-3;
+  }
+
+  .app-conditions-temp {
+    @apply text-4xl font-light;
+  }
+
+  .app-conditions-meta {
+    @apply pb-1 text-xs;
+    color: var(--color-text-secondary);
+  }
+
+  .app-conditions-description {
+    @apply mt-2 text-xs;
+    color: var(--color-text-secondary);
+  }
+
+  .app-conditions-grid {
+    @apply mt-5 grid grid-cols-2 gap-4 text-xs;
+  }
+
+  .app-conditions-item-label {
+    @apply text-[10px];
+    color: var(--color-text-tertiary);
+  }
+
+  .app-conditions-item-value {
+    @apply mt-1;
+  }
+
+  .app-conditions-item-meta {
+    color: var(--color-text-secondary);
+  }
+
+  .app-conditions-item-meta.negative {
+    color: var(--color-accent-rose);
+  }
+
+  .app-forecast-grid {
+    @apply border-b pb-2;
+    border-color: var(--color-border-secondary);
+  }
+
+  .app-forecast-header {
+    @apply grid grid-cols-[54px_24px_42px_32px_1fr] gap-x-2;
+    font-size: var(--text-size-xs);
+    color: var(--color-text-tertiary);
+  }
+
+  .app-forecast-row {
+    @apply grid grid-cols-[54px_24px_42px_32px_1fr] items-center gap-x-2 py-2 text-xs;
+    border-color: var(--color-border-secondary);
+  }
+
+  .app-forecast-row:not(:first-child) {
+    border-top: var(--border-width) solid var(--color-border-secondary);
+  }
+
+  .app-forecast-time {
+    color: var(--color-text-secondary);
+  }
+
+  .app-forecast-icon {
+    @apply text-base;
+  }
+
+  .app-forecast-precip {
+    color: var(--color-text-secondary);
+  }
+
+  .app-forecast-wind {
+    color: var(--color-text-secondary);
+  }
+}
