@@ -2,13 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Local imports
- * - design tokens
- * - CSS icons
- */
-@import './tokens.css';
-@import './weather-icons.css';
-
 @layer base {
   html {
     scroll-behavior: smooth;
@@ -34,3 +27,10 @@
     text-wrap: balance;
   }
 }
+
+/* Local imports
+ * - design tokens
+ * - CSS icons
+ */
+@import './tokens.css';
+@import './weather-icons.css';
