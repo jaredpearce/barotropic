@@ -10,22 +10,22 @@ const config: Config = {
     extend: {
       colors: {
         // Design-token-backed semantic colors.
-        background: "var(--color-bg-primary)",
-        surface: "var(--color-bg-surface)",
+        background: "var(--color-background)",
+        surface: "var(--color-surface-primary)",
         foreground: "var(--color-text-primary)",
         muted: "var(--color-text-secondary)",
         border: "var(--color-border)",
-        accent: "var(--color-accent)",
-        "accent-subtle": "var(--color-accent-subtle)",
+        accent: "var(--color-accent-emerald)",
+        "accent-subtle": "var(--color-surface-secondary)",
         // Preserve the existing weather vocabulary while routing it through tokens.
         sky: {
-          50: "var(--color-accent-subtle)",
-          100: "color-mix(in srgb, var(--color-accent) 15%, var(--color-bg-primary))",
+          50: "var(--color-surface-secondary)",
+          100: "color-mix(in srgb, var(--color-accent-emerald) 15%, var(--color-background))",
           200: "var(--color-border)",
-          300: "color-mix(in srgb, var(--color-accent) 45%, var(--color-bg-surface))",
-          500: "var(--color-accent)",
-          600: "var(--color-accent)",
-          700: "color-mix(in srgb, var(--color-accent) 80%, var(--color-text-primary))",
+          300: "color-mix(in srgb, var(--color-accent-emerald) 45%, var(--color-surface-primary))",
+          500: "var(--color-accent-emerald)",
+          600: "var(--color-accent-emerald)",
+          700: "color-mix(in srgb, var(--color-accent-emerald) 80%, var(--color-text-primary))",
           900: "var(--color-text-primary)",
         },
       },

@@ -7,7 +7,8 @@
   "scripts": {
     "dev": "bun --bun next dev",
     "build": "bun --bun next build",
-    "start": "bun --bun next start",
+    "start": "bun --bun next dev",
+    "start:prod": "bun --bun next start",
     "lint": "oxlint",
     "format": "oxcformatter --write .",
     "format:check": "oxcformatter --check .",
@@ -20,7 +21,8 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "tailwind-merge": "^2.2.0",
-    "@vercel/analytics": "^1.4.0"
+    "@vercel/analytics": "^1.4.0",
+    "@vercel/speed-insights": "^2.0.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
