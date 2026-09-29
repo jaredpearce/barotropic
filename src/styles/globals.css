@@ -2,99 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Barotropic design tokens
- * Generated from the barotropic design-tokens.io workspace.
- * Semantic aliases below make application styling independent of the active theme.
+/* Local imports
+ * - design tokens
+ * - CSS icons
  */
-:root {
-  /* Primitive tokens — light theme */
-  --color_dark_bg-primary: #0b0f19;
-  --color_dark_bg-surface: #1e293b;
-  --color_dark_cerulean: #38bdf8;
-  --color_dark_crimson: #fb7185;
-  --color_dark_emerald: #34d399;
-  --color_dark_gold: #fcd34d;
-  --color_dark_ochre: #f59e0b;
-  --color_dark_text-primary: #f1f5f9;
-  --color_dark_text-secondary: #94a3b8;
-  --color_light_bg-primary: #f8fafc;
-  --color_light_bg-surface: #ffffff;
-  --color_light_cerulean: #005f9e;
-  --color_light_crimson: #b8001f;
-  --color_light_emerald: #00664b;
-  --color_light_gold: #8a6200;
-  --color_light_ochre: #a05200;
-  --color_light_text-primary: #0f172a;
-  --color_light_text-secondary: #475569;
-
-  --font_family: Tahoma, Geneva, sans-serif;
-  --font_size_base: 16px;
-  --font_size_step-1: 1rem;
-  --font_size_step-2: 1.25rem;
-  --font_size_step-3: 1.56rem;
-  --font_size_step-4: 1.95rem;
-  --font_size_step-5: 2.44rem;
-  --font_size_step-6: 3.05rem;
-  --font_weight_bold: bold;
-  --font_weight_light: thin;
-  --font_weight_regular: normal;
-  --font_weight_semi-bold: 600;
-  --space_scale-1: 4px;
-  --space_scale-2: 8px;
-  --space_scale-3: 16px;
-  --space_scale-4: 24px;
-  --space_scale-5: 32px;
-
-  /* Semantic tokens */
-  --margin_bottom_lg: var(--space_scale-4);
-  --margin_bottom_md: var(--space_scale-3);
-  --margin_bottom_sm: var(--space_scale-2);
-  --margin_bottom_xl: var(--space_scale-5);
-  --margin_bottom_xs: var(--space_scale-1);
-  --margin_right_lg: var(--space_scale-4);
-  --margin_right_md: var(--space_scale-3);
-  --margin_right_sm: var(--space_scale-2);
-  --margin_right_xl: var(--space_scale-5);
-  --margin_right_xs: var(--space_scale-1);
-
-  /* Application aliases */
-  --color-bg-primary: var(--color_light_bg-primary);
-  --color-bg-surface: var(--color_light_bg-surface);
-  --color-text-primary: var(--color_light_text-primary);
-  --color-text-secondary: var(--color_light_text-secondary);
-  --color-accent: var(--color_light_cerulean);
-  --color-accent-subtle: color-mix(in srgb, var(--color-accent) 10%, transparent);
-  --color-border: color-mix(in srgb, var(--color-text-secondary) 25%, transparent);
-
-  /* Weather icon semantic colors — light theme */
-  --icon-clear: var(--color_light_gold);
-  --icon-cloudy: color-mix(in srgb, var(--color_light_text-primary) 65%, transparent);
-  --icon-rainy: var(--color_light_cerulean);
-  --icon-thunderstorm: var(--color_light_crimson);
-  --icon-snowy: color-mix(in srgb, var(--color_light_text-primary) 40%, transparent);
-  --icon-foggy: color-mix(in srgb, var(--color_light_text-secondary) 55%, transparent);
-  --icon-windy: color-mix(in srgb, var(--color_light_cerulean) 70%, transparent);
-}
-
-/* Opt into the dark primitive set with <html data-theme="dark">. */
-[data-theme="dark"] {
-  --color-bg-primary: var(--color_dark_bg-primary);
-  --color-bg-surface: var(--color_dark_bg-surface);
-  --color-text-primary: var(--color_dark_text-primary);
-  --color-text-secondary: var(--color_dark_text-secondary);
-  --color-accent: var(--color_dark_cerulean);
-  --color-accent-subtle: color-mix(in srgb, var(--color-accent) 15%, transparent);
-  --color-border: color-mix(in srgb, var(--color-text-secondary) 30%, transparent);
-
-  /* Weather icon semantic colors — dark theme */
-  --icon-clear: var(--color_dark_gold);
-  --icon-cloudy: var(--color_dark_text-secondary);
-  --icon-rainy: var(--color_dark_cerulean);
-  --icon-thunderstorm: var(--color_dark_crimson);
-  --icon-snowy: var(--color_dark_text-primary);
-  --icon-foggy: color-mix(in srgb, var(--color_dark_text-secondary) 70%, transparent);
-  --icon-windy: var(--color_dark_cerulean);
-}
+@import './tokens.css';
+@import './weather-icons.css';
 
 @layer base {
   html {
@@ -121,5 +34,3 @@
     text-wrap: balance;
   }
 }
-
-@import './weather-icons.css';
