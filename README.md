@@ -93,7 +93,8 @@ Open [http://localhost:3000](http://localhost:3000) to see the application.
 # Development
 bun dev              # Start development server
 bun run build        # Build for production
-bun start            # Start production server
+bun start            # Start development server with HMR
+bun run start:prod   # Start production server
 
 # Code Quality
 bun lint             # Run Oxlint

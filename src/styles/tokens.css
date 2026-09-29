@@ -1,4 +1,5 @@
 /* Design tokens for Barotropic */
+@tailwind components;
 
 :root {
   /* Primary colors */
@@ -22,17 +23,37 @@
   --color-map-background: rgb(13, 26, 44); /* #0d1a2c */
 
   /* Spacing */
-  --spacing-xs: 0.5rem; /* 8px */
-  --spacing-sm: 0.75rem; /* 12px */
-  --spacing-md: 1rem; /* 16px */
-  --spacing-lg: 1.5rem; /* 24px */
-  --spacing-xl: 2rem; /* 32px */
+  --space_scale-1: 4px;
+  --space_scale-2: 8px;
+  --space_scale-3: 16px;
+  --space_scale-4: 24px;
+  --space_scale-5: 32px;
+
+  --spacing-xs: var(--space_scale-1); /* 4px */
+  --spacing-sm: var(--space_scale-2); /* 8px */
+  --spacing-md: var(--space_scale-3); /* 16px */
+  --spacing-lg: var(--space_scale-4); /* 24px */
+  --spacing-xl: var(--space_scale-5); /* 32px */
 
   /* Typography */
+  --font_family: Tahoma, Geneva, sans-serif;
+  --font_size_base: 16px;
+  --font_size_step-1: 1rem;
+  --font_size_step-2: 1.25rem;
+  --font_size_step-3: 1.56rem;
+  --font_size_step-4: 1.95rem;
+  --font_size_step-5: 2.44rem;
+  --font_size_step-6: 3.05rem;
+
+  --font_weight_bold: bold;
+  --font_weight_light: thin;
+  --font_weight_regular: normal;
+  --font_weight_semi-bold: 600;
+
   --text-size-xs: 0.75rem; /* 12px */
   --text-size-sm: 0.875rem; /* 14px */
-  --text-size-base: 1rem; /* 16px */
-  --text-size-lg: 1.125rem; /* 18px */
+  --text-size-base: var(--font_size_step-1); /* 16px */
+  --text-size-lg: var(--font_size_step-2); /* 20px */
 
   /* Letter spacing for tracking */
   --tracking-wide: 0.18em;
@@ -46,6 +67,10 @@
   /* Borders */
   --border-width: 1px;
   --border-radius: 0.375rem; /* rounded */
+}
+
+@theme {
+  --font-body: var(--font_family);
 }
 
 @layer components {
@@ -65,6 +90,7 @@
   .app-header-title {
     @apply text-sm font-semibold;
     letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
   }
 
   .app-header-status {
@@ -72,6 +98,7 @@
     font-size: var(--text-size-xs);
     letter-spacing: var(--tracking-normal);
     color: var(--color-text-secondary);
+    text-transform: uppercase;
   }
 
   .app-header-status-indicator {
@@ -125,6 +152,7 @@
     font-size: var(--text-size-xs);
     letter-spacing: var(--tracking-normal);
     color: var(--color-text-secondary);
+    text-transform: uppercase;
   }
 
   .app-alert {
@@ -137,6 +165,7 @@
     @apply text-[10px] font-semibold;
     letter-spacing: var(--tracking-tight);
     color: var(--color-accent-amber-light);
+    text-transform: uppercase;
   }
 
   .app-alert-subtitle {

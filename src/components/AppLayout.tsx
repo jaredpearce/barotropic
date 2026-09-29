@@ -25,9 +25,9 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     <div className="app-shell">
       <nav className="app-header">
         <div className="flex items-center gap-4">
-          <span className="app-header-title">◉ BAROTROPIC</span>
+          <span className="app-header-title">◉ Barotropic</span>
           <span className="app-header-status">
-            <span className="app-header-status-indicator" /> LIVE · 4 MIN AGO
+            <span className="app-header-status-indicator" /> Live · 4 min ago
           </span>
         </div>
         <div className="app-header-actions">
@@ -44,9 +44,9 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
         <aside className="app-sidebar">
           <section className="app-section">
-            <h2 className="app-section-title">ACTIVE ALERTS (1)</h2>
+            <h2 className="app-section-title">Active alerts (1)</h2>
             <div className="app-alert">
-              <p className="app-alert-title">HEAT ADVISORY</p>
+              <p className="app-alert-title">Heat advisory</p>
               <p className="app-alert-subtitle">Wake / Chatham / Durham counties</p>
               <p className="app-alert-meta">Until 8:00 PM EDT · NWS Raleigh</p>
             </div>
@@ -54,7 +54,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
           <section className="app-section">
             <div className="flex justify-between text-[10px] tracking-[0.14em]">
-              <h2 className="app-section-title" style={{ marginBottom: 0 }}>CURRENT CONDITIONS · KRDU</h2>
+              <h2 className="app-section-title" style={{ marginBottom: 0 }}>Current conditions · KRDU</h2>
               <span>⌄</span>
             </div>
             <div className="app-conditions-section">
@@ -87,7 +87,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
           </section>
 
           <section className="app-section">
-            <h2 className="app-section-title">HOURLY FORECAST · 24H LOCAL</h2>
+            <h2 className="app-section-title">Hourly forecast · 24h local</h2>
             <div className="app-forecast-grid">
               <div className="app-forecast-header">
                 <span>Time</span>

@@ -1,13 +1,13 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 /* Local imports
  * - design tokens
  * - CSS icons
  */
 @import './tokens.css';
 @import './weather-icons.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @layer base {
   html {
@@ -16,7 +16,7 @@
   }
 
   body {
-    background-color: var(--color-bg-primary);
+    background-color: var(--color-background);
     color: var(--color-text-primary);
     font-family: var(--font_family);
     font-weight: var(--font_weight_regular);
@@ -34,3 +34,4 @@
     text-wrap: balance;
   }
 }
+
