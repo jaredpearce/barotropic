@@ -1,23 +1,21 @@
 import { defineConfig } from 'vitest/config';
-import react from '@vitejs/plugin-react';
 
 export default defineConfig({
-  plugins: [react()],
   test: {
     globals: true,
     setupFiles: ['./tests/setup/vitest.setup.ts'],
     projects: [
       {
+        name: 'unit',
         test: {
-          name: 'unit',
           environment: 'node',
           include: ['src/**/*.unit.test.{ts,tsx}'],
           exclude: ['src/**/*.integration.test.{ts,tsx}', 'tests/**'],
         },
       },
       {
+        name: 'integration',
         test: {
-          name: 'integration',
           environment: 'happy-dom',
           include: ['src/**/*.integration.test.{ts,tsx}', 'tests/**/*.test.{ts,tsx}'],
           exclude: ['tests/e2e/**', 'node_modules/**'],
