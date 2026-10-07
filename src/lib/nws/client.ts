@@ -5,10 +5,25 @@
  */
 
 import { z } from 'zod';
+import 'server-only';
 
 const NWS_BASE_URL = 'https://api.weather.gov';
 const NWS_USER_AGENT =
   process.env.NWS_USER_AGENT ?? 'Barotropic/0.1.0';
+const NWS_REQUEST_TIMEOUT_MS = 10_000;
+
+function resolveNwsUrl(endpoint: string): URL {
+  if (!endpoint.startsWith('/') || endpoint.startsWith('//')) {
+    throw new TypeError('NWS endpoint must be a path on api.weather.gov');
+  }
+
+  const url = new URL(endpoint, NWS_BASE_URL);
+  if (url.origin !== NWS_BASE_URL) {
+    throw new TypeError('NWS endpoint must be a path on api.weather.gov');
+  }
+
+  return url;
+}
 
 /**
  * Create NWS-compatible request headers
@@ -35,23 +50,22 @@ export async function fetchFromNws<Schema extends z.ZodTypeAny>(
   endpoint: string,
   schema: Schema
 ): Promise<z.output<Schema>> {
-  const url = `${NWS_BASE_URL}${endpoint}`;
+  const url = resolveNwsUrl(endpoint);
 
   try {
     const response = await fetch(url, {
       headers: createNwsHeaders(),
       cache: 'no-store',
+      signal: AbortSignal.timeout(NWS_REQUEST_TIMEOUT_MS),
     });
 
     if (!response.ok) {
-      const text = await response.text();
-      console.error(`NWS API error: ${response.status} from ${url}`, text);
+      console.error(`NWS API error: ${response.status} from ${url.pathname}`);
 
       throw new Response(
         JSON.stringify({
           error: 'Failed to fetch data from National Weather Service',
           status: response.status,
-          endpoint,
           details:
             response.status === 404
               ? 'The requested location or resource was not found'
