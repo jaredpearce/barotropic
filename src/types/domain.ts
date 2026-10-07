@@ -1,5 +1,19 @@
 /**
  * Domain type definitions for weather forecasting
+ *
+ * @design-decision Pattern 2: Types as Source of Truth
+ * These interfaces serve as the canonical type definitions for the application's
+ * weather domain. Validation schemas (see {@link src/lib/schemas.ts}) are derived
+ * from these types to validate external data (API responses, form inputs, etc.)
+ * rather than the reverse.
+ *
+ * This pattern:
+ * - Keeps domain interfaces focused on business logic requirements
+ * - Uses schemas at API boundaries for runtime validation only
+ * - Prevents type duplication between interface and schema definitions
+ * - Makes interfaces the single source of truth for internal code
+ *
+ * @see {@link src/lib/schemas.ts} for Zod validation schemas
  */
 
 /**
