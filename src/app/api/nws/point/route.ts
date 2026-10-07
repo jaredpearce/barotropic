@@ -13,6 +13,7 @@ import {
   PointSchema,
   ForecastSchema,
   LatestObservationSchema,
+  ObservationStationsSchema,
 } from '@/lib/nws/schemas';
 import {
   validateLatitudeLongitude,
@@ -54,13 +55,12 @@ export async function GET(request: Request) {
 
     // Fetch point metadata and observation stations
     const point = await fetchFromNws(
-      request,
       `/points/${latitude},${longitude}`,
       PointSchema
     );
 
     const forecastUrl = point.properties.forecast;
-    const observationStations = point.properties.observationStations ?? [];
+    const stationsUrl = point.properties.observationStations;
     const relativeLocation = point.properties.relativeLocation?.properties;
 
     if (!forecastUrl) {
@@ -74,18 +74,23 @@ export async function GET(request: Request) {
       );
     }
 
-    // Fetch forecast and current conditions in parallel
+    // Fetch the forecast and nearby stations in parallel
     const forecastPath = forecastUrl.replace('https://api.weather.gov', '');
-    const [forecast, currentConditions] = await Promise.all([
-      fetchFromNws(request, forecastPath, ForecastSchema),
-      observationStations.length > 0
-        ? fetchFromNws(
-            request,
-            `/stations/${extractStationId(observationStations[0])}/observations/latest`,
-            LatestObservationSchema
-          ).catch(() => null) // Observation data may not always be available
+    const stationsPath = stationsUrl?.replace('https://api.weather.gov', '');
+    const [forecast, stations] = await Promise.all([
+      fetchFromNws(forecastPath, ForecastSchema),
+      stationsPath
+        ? fetchFromNws(stationsPath, ObservationStationsSchema).catch(() => null)
         : Promise.resolve(null),
     ]);
+    const stationUrl = stations?.features[0]?.id;
+    const stationId = stationUrl ? extractStationId(stationUrl) : null;
+    const currentConditions = stationId
+      ? await fetchFromNws(
+          `/stations/${stationId}/observations/latest`,
+          LatestObservationSchema
+        ).catch(() => null)
+      : null;
 
     return NextResponse.json({
       location: {

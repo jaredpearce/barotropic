@@ -13,7 +13,7 @@ import { StationObservationsSchema } from '@/lib/nws/schemas';
 export const dynamic = 'force-dynamic';
 
 export async function GET(
-  request: Request,
+  _request: Request,
   { params }: { params: { stationId: string } }
 ) {
   try {
@@ -32,7 +32,6 @@ export async function GET(
 
     // Fetch observations with a limit of 20 most recent
     const observations = await fetchFromNws(
-      request,
       `/stations/${stationId}/observations?limit=20`,
       StationObservationsSchema
     );

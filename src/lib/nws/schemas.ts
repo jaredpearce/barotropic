@@ -16,7 +16,7 @@ export const PointSchema = z.object({
     .object({
       forecast: z.string().url().optional(),
       forecastHourly: z.string().url().optional(),
-      observationStations: z.array(z.string().url()).default([]),
+      observationStations: z.string().url().optional(),
       relativeLocation: z
         .object({
           properties: z
@@ -34,6 +34,15 @@ export const PointSchema = z.object({
 }).passthrough();
 
 export type Point = z.infer<typeof PointSchema>;
+
+/**
+ * NWS observation station collection returned by a point's observationStations URL
+ */
+export const ObservationStationsSchema = z.object({
+  features: z
+    .array(z.object({ id: z.string().url() }).passthrough())
+    .default([]),
+}).passthrough();
 
 /**
  * NWS Forecast API response

@@ -45,8 +45,8 @@ export async function GET(request: Request) {
 
     // Fetch zone metadata (includes geometry) and active alerts in parallel
     const [zoneData, alertsResponse] = await Promise.all([
-      fetchFromNws(request, `/zones/forecast/${zoneId}`, ZoneSchema),
-      fetchFromNws(request, `/alerts/active?zone=${zoneId}`, AlertsResponseSchema),
+      fetchFromNws(`/zones/forecast/${zoneId}`, ZoneSchema),
+      fetchFromNws(`/alerts/active?zone=${zoneId}`, AlertsResponseSchema),
     ]);
 
     return NextResponse.json({

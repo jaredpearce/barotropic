@@ -7,39 +7,17 @@
 import { z } from 'zod';
 
 const NWS_BASE_URL = 'https://api.weather.gov';
-
-/**
- * Ensures User-Agent header is present in request.
- * NWS requires a descriptive User-Agent for all API calls.
- * @throws Response with 400 status if User-Agent is missing
- */
-function ensureUserAgent(request: Request): string {
-  const userAgent = request.headers.get('user-agent');
-  if (!userAgent) {
-    throw new Response(
-      JSON.stringify({
-        error: 'User-Agent header is required by the NWS API',
-        details:
-          'Please include a User-Agent header identifying your application (e.g., "MyWeatherApp (contact@example.com)")',
-      }),
-      {
-        status: 400,
-        headers: { 'content-type': 'application/json' },
-      }
-    );
-  }
-  return userAgent;
-}
+const NWS_USER_AGENT =
+  process.env.NWS_USER_AGENT ?? 'Barotropic/0.1.0';
 
 /**
  * Create NWS-compatible request headers
- * @param request - The incoming HTTP request (used to extract User-Agent)
  * @returns Headers object suitable for NWS API calls
  */
-export function createNwsHeaders(request: Request): HeadersInit {
+export function createNwsHeaders(): HeadersInit {
   return {
     Accept: 'application/geo+json',
-    'User-Agent': ensureUserAgent(request),
+    'User-Agent': NWS_USER_AGENT,
   };
 }
 
@@ -53,16 +31,15 @@ export function createNwsHeaders(request: Request): HeadersInit {
  * @returns Validated response data
  * @throws Response with appropriate HTTP status on error
  */
-export async function fetchFromNws<T>(
-  request: Request,
+export async function fetchFromNws<Schema extends z.ZodTypeAny>(
   endpoint: string,
-  schema: z.ZodType<T>
-): Promise<T> {
+  schema: Schema
+): Promise<z.output<Schema>> {
   const url = `${NWS_BASE_URL}${endpoint}`;
 
   try {
     const response = await fetch(url, {
-      headers: createNwsHeaders(request),
+      headers: createNwsHeaders(),
       cache: 'no-store',
     });
 
