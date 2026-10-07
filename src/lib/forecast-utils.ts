@@ -47,8 +47,8 @@ export function validateForecast(forecast: ForecastAnalysis): {
 } {
   const errors: string[] = [];
 
-  if (!forecast.location) errors.push("Location is required");
-  if (!forecast.hypothesis) errors.push("Hypothesis is required");
+  if (!forecast.location.trim()) errors.push("Location is required");
+  if (!forecast.hypothesis.trim()) errors.push("Hypothesis is required");
   if (forecast.evidence.length === 0) errors.push("At least one evidence item is required");
   if (forecast.overallConfidence < 0 || forecast.overallConfidence > 100) {
     errors.push("Confidence must be between 0 and 100");
