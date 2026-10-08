@@ -1,9 +1,10 @@
 /**
  * Open-Meteo API Client
  * Provides a centralized, reusable interface for Open-Meteo API calls.
- * Mirrors NWS client pattern for consistency and maintainability.
+ * Mirrors the repo's NWS client pattern for consistency and maintainability.
  *
- * @see https://open-meteo.com/en/docs
+ * Note: current upstream model naming uses `gfs` and `hrrr` in the Open-Meteo API.
+ * We keep a small app-layer alias (`hrr` -> `hrrr`) so the app contract remains simple.
  */
 
 import { z } from 'zod';
@@ -36,10 +37,9 @@ export function createOpenMeteoHeaders(): HeadersInit {
 }
 
 /**
- * Generic fetch wrapper for Open-Meteo API calls with validation
- * Handles errors, validates response with provided schema, and logs issues
+ * Generic fetch wrapper for Open-Meteo API calls with validation.
  *
- * @param endpoint - Open-Meteo API endpoint path (e.g., '/forecast')
+ * @param endpoint - Open-Meteo API endpoint path (e.g., '/forecast?latitude=40&longitude=-105')
  * @param schema - Zod schema to validate and parse the response
  * @returns Validated response data
  * @throws Response with appropriate HTTP status on error
