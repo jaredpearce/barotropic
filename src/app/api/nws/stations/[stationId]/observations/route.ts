@@ -8,9 +8,8 @@
 
 import { NextResponse } from 'next/server';
 import { fetchFromNws } from '@/lib/nws/client';
+import { upstreamErrorResponse } from '@/lib/api-errors';
 import { StationObservationsSchema } from '@/lib/nws/schemas';
-
-export const dynamic = 'force-dynamic';
 
 export async function GET(
   _request: Request,
@@ -36,11 +35,15 @@ export async function GET(
       StationObservationsSchema
     );
 
+    const retrievedAt = new Date().toISOString();
+
     return NextResponse.json({
       stationId,
       observations: observations.features.map((feature) => ({
         id: feature.id,
         timestamp: feature.properties.timestamp ?? null,
+        retrievedAt,
+        issuedAt: null,
         description: feature.properties.textDescription ?? null,
         temperature: feature.properties.temperature ?? null,
         dewpoint: feature.properties.dewpoint ?? null,
@@ -49,8 +52,9 @@ export async function GET(
       })),
     });
   } catch (error) {
-    if (error instanceof Response) {
-      return error;
+    const upstreamResponse = upstreamErrorResponse(error);
+    if (upstreamResponse) {
+      return upstreamResponse;
     }
 
     console.error(

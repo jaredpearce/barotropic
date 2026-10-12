@@ -9,16 +9,19 @@
 
 import { z } from 'zod';
 import 'server-only';
+import { isUpstreamTimeout, UpstreamApiError } from '../api-errors';
 
-const OPEN_METEO_BASE_URL = 'https://api.open-meteo.com/v1';
+const OPEN_METEO_BASE_URL = 'https://api.open-meteo.com';
+const OPEN_METEO_API_PATH = '/v1';
 const OPEN_METEO_REQUEST_TIMEOUT_MS = 10_000;
+const OPEN_METEO_REVALIDATE_SECONDS = 60;
 
 function resolveOpenMeteoUrl(endpoint: string): URL {
   if (!endpoint.startsWith('/') || endpoint.startsWith('//')) {
     throw new TypeError('Open-Meteo endpoint must be a path on api.open-meteo.com');
   }
 
-  const url = new URL(endpoint, OPEN_METEO_BASE_URL);
+  const url = new URL(`${OPEN_METEO_API_PATH}${endpoint}`, OPEN_METEO_BASE_URL);
   if (url.origin !== OPEN_METEO_BASE_URL) {
     throw new TypeError('Open-Meteo endpoint must be a path on api.open-meteo.com');
   }
@@ -42,7 +45,7 @@ export function createOpenMeteoHeaders(): HeadersInit {
  * @param endpoint - Open-Meteo API endpoint path (e.g., '/forecast?latitude=40&longitude=-105')
  * @param schema - Zod schema to validate and parse the response
  * @returns Validated response data
- * @throws Response with appropriate HTTP status on error
+ * @throws UpstreamApiError when the provider request or response fails
  */
 export async function fetchFromOpenMeteo<Schema extends z.ZodTypeAny>(
   endpoint: string,
@@ -53,59 +56,61 @@ export async function fetchFromOpenMeteo<Schema extends z.ZodTypeAny>(
   try {
     const response = await fetch(url, {
       headers: createOpenMeteoHeaders(),
-      cache: 'no-store',
+      next: { revalidate: OPEN_METEO_REVALIDATE_SECONDS },
       signal: AbortSignal.timeout(OPEN_METEO_REQUEST_TIMEOUT_MS),
     });
 
     if (!response.ok) {
       console.error(`Open-Meteo API error: ${response.status} from ${url.pathname}`);
 
-      throw new Response(
-        JSON.stringify({
-          error: 'Failed to fetch data from Open-Meteo',
-          status: response.status,
-          details:
-            response.status === 404
-              ? 'The requested resource was not found'
-              : 'Check your request parameters and try again',
-        }),
-        {
-          status: response.status >= 500 ? 502 : response.status,
-          headers: { 'content-type': 'application/json' },
-        }
+      throw new UpstreamApiError(
+        'UPSTREAM_HTTP_ERROR',
+        'Open-Meteo request failed',
+        'Open-Meteo',
+        502,
+        response.status >= 500 || response.status === 429,
+        response.status
       );
     }
 
-    const data = await response.json();
-    return schema.parse(data);
+    try {
+      const data = await response.json();
+      return schema.parse(data);
+    } catch (error) {
+      if (error instanceof z.ZodError || error instanceof SyntaxError) {
+        console.error('Open-Meteo response validation failed:', error);
+        throw new UpstreamApiError(
+          'UPSTREAM_MALFORMED_RESPONSE',
+          'Open-Meteo returned an invalid response',
+          'Open-Meteo',
+          502,
+          false
+        );
+      }
+      throw error;
+    }
   } catch (error) {
-    if (error instanceof Response) {
+    if (error instanceof UpstreamApiError) {
       throw error;
     }
 
-    if (error instanceof z.ZodError) {
-      console.error('Open-Meteo response validation failed:', error.errors);
-      throw new Response(
-        JSON.stringify({
-          error: 'Invalid response format from Open-Meteo',
-          details: 'Response validation failed',
-        }),
-        {
-          status: 502,
-          headers: { 'content-type': 'application/json' },
-        }
+    if (isUpstreamTimeout(error)) {
+      throw new UpstreamApiError(
+        'UPSTREAM_TIMEOUT',
+        'Open-Meteo request timed out',
+        'Open-Meteo',
+        504,
+        true
       );
     }
 
     console.error('Unexpected error fetching from Open-Meteo:', error);
-    throw new Response(
-      JSON.stringify({
-        error: 'Unexpected error fetching from Open-Meteo',
-      }),
-      {
-        status: 500,
-        headers: { 'content-type': 'application/json' },
-      }
+    throw new UpstreamApiError(
+      'UPSTREAM_UNAVAILABLE',
+      'Open-Meteo is unavailable',
+      'Open-Meteo',
+      502,
+      true
     );
   }
 }

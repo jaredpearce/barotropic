@@ -8,10 +8,9 @@
 
 import { NextResponse } from 'next/server';
 import { fetchFromNws } from '@/lib/nws/client';
+import { upstreamErrorResponse } from '@/lib/api-errors';
 import { ZoneSchema, AlertsResponseSchema } from '@/lib/nws/schemas';
 import { validateZoneId } from '@/lib/nws/utils';
-
-export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
   try {
@@ -49,9 +48,13 @@ export async function GET(request: Request) {
       fetchFromNws(`/alerts/active?zone=${zoneId}`, AlertsResponseSchema),
     ]);
 
+    const retrievedAt = new Date().toISOString();
+
     return NextResponse.json({
       zone: {
         id: zoneData.id,
+        retrievedAt,
+        issuedAt: null,
         name: zoneData.properties?.name ?? null,
         state: zoneData.properties?.state ?? null,
         type: zoneData.properties?.type ?? null,
@@ -60,6 +63,8 @@ export async function GET(request: Request) {
       },
       alerts: alertsResponse.features.map((feature) => ({
         id: feature.id,
+        retrievedAt,
+        issuedAt: feature.properties.sent ?? null,
         event: feature.properties.event ?? null,
         headline: feature.properties.headline ?? null,
         severity: feature.properties.severity ?? null,
@@ -74,8 +79,9 @@ export async function GET(request: Request) {
       })),
     });
   } catch (error) {
-    if (error instanceof Response) {
-      return error;
+    const upstreamResponse = upstreamErrorResponse(error);
+    if (upstreamResponse) {
+      return upstreamResponse;
     }
 
     console.error('Unexpected error in /api/nws/alerts/zone:', error);
