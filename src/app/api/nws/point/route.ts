@@ -9,6 +9,7 @@
 
 import { NextResponse } from 'next/server';
 import { fetchFromNws } from '@/lib/nws/client';
+import { upstreamErrorResponse } from '@/lib/api-errors';
 import {
   PointSchema,
   ForecastSchema,
@@ -19,8 +20,6 @@ import {
   validateLatitudeLongitude,
   extractStationId,
 } from '@/lib/nws/utils';
-
-export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
   try {
@@ -92,6 +91,8 @@ export async function GET(request: Request) {
         ).catch(() => null)
       : null;
 
+    const retrievedAt = new Date().toISOString();
+
     return NextResponse.json({
       location: {
         latitude,
@@ -102,6 +103,8 @@ export async function GET(request: Request) {
       currentConditions: currentConditions
         ? {
             timestamp: currentConditions.properties.timestamp,
+            retrievedAt,
+            issuedAt: null,
             description: currentConditions.properties.textDescription,
             temperature: currentConditions.properties.temperature,
             dewpoint: currentConditions.properties.dewpoint,
@@ -110,11 +113,16 @@ export async function GET(request: Request) {
             windDirection: currentConditions.properties.windDirection,
           }
         : null,
-      forecast: forecast.properties.periods ?? [],
+      forecast: (forecast.properties.periods ?? []).map((period) => ({
+        ...period,
+        retrievedAt,
+        issuedAt: forecast.properties.updateTime ?? null,
+      })),
     });
   } catch (error) {
-    if (error instanceof Response) {
-      return error;
+    const upstreamResponse = upstreamErrorResponse(error);
+    if (upstreamResponse) {
+      return upstreamResponse;
     }
 
     console.error('Unexpected error in /api/nws/point:', error);

@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 vi.mock('server-only', () => ({}));
 
 import { fetchFromNws } from './client';
+import { UpstreamApiError } from '../api-errors';
 import { z } from 'zod';
 
 afterEach(() => {
@@ -23,8 +24,32 @@ describe('fetchFromNws', () => {
     ).resolves.toEqual({ value: 'forecast' });
     expect(fetchMock).toHaveBeenCalledWith(
       new URL('https://api.weather.gov/points/39.7392,-104.9903'),
-      expect.objectContaining({ cache: 'no-store' })
+      expect.objectContaining({ next: { revalidate: 60 } })
     );
+  });
+
+  it('Use Case: reports upstream server failures with a typed error', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(null, { status: 503 })));
+
+    await expect(
+      fetchFromNws('/points/39.7392,-104.9903', responseSchema)
+    ).rejects.toMatchObject<Partial<UpstreamApiError>>({
+      code: 'UPSTREAM_HTTP_ERROR',
+      httpStatus: 502,
+      retryable: true,
+      upstreamStatus: 503,
+    });
+  });
+
+  it('Use Case: reports malformed provider data with a typed error', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(Response.json({ value: 42 })));
+
+    await expect(
+      fetchFromNws('/points/39.7392,-104.9903', responseSchema)
+    ).rejects.toMatchObject<Partial<UpstreamApiError>>({
+      code: 'UPSTREAM_MALFORMED_RESPONSE',
+      httpStatus: 502,
+    });
   });
 
   it('Use Case: rejects absolute URLs outside the NWS origin', async () => {

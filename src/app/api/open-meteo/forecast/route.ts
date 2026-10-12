@@ -11,14 +11,13 @@
 
 import { NextResponse } from 'next/server';
 import { fetchFromOpenMeteo } from '@/lib/open-meteo/client';
+import { upstreamErrorResponse } from '@/lib/api-errors';
 import { OpenMeteoForecastSchema } from '@/lib/open-meteo/schemas';
 import {
   buildOpenMeteoForecastQuery,
   normalizeOpenMeteoModels,
 } from '@/lib/open-meteo/utils';
 import { validateLatitudeLongitude } from '@/lib/nws/utils';
-
-export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
   try {
@@ -76,7 +75,11 @@ export async function GET(request: Request) {
 
         return {
           model,
-          forecast,
+          forecast: {
+            ...forecast,
+            retrievedAt: new Date().toISOString(),
+            issuedAt: null,
+          },
         };
       })
     );
@@ -100,8 +103,9 @@ export async function GET(request: Request) {
       },
     });
   } catch (error) {
-    if (error instanceof Response) {
-      return error;
+    const upstreamResponse = upstreamErrorResponse(error);
+    if (upstreamResponse) {
+      return upstreamResponse;
     }
 
     console.error('Unexpected error in /api/open-meteo/forecast:', error);

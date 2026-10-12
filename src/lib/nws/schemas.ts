@@ -51,6 +51,7 @@ export const ObservationStationsSchema = z.object({
 export const ForecastSchema = z.object({
   properties: z
     .object({
+      updateTime: z.string().datetime().optional(),
       periods: z
         .array(
           z.object({
@@ -156,6 +157,7 @@ export const AlertsResponseSchema = z.object({
           .object({
             event: z.string().optional(),
             headline: z.string().optional(),
+            sent: z.string().datetime().optional(),
             severity: z.string().optional(),
             urgency: z.string().optional(),
             status: z.string().optional(),
