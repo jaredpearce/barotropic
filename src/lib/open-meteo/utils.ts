@@ -1,29 +1,31 @@
-export const OPEN_METEO_MODEL_ALIASES: Record<string, string> = {
+export const OPEN_METEO_MODELS = {
+  gfs: { name: 'GFS', id: 'ncep_gfs_seamless' },
+  hrrr: { name: 'HRRR', id: 'ncep_hrrr_conus' },
+} as const;
+
+export type OpenMeteoModelName = keyof typeof OPEN_METEO_MODELS;
+
+export const DEFAULT_OPEN_METEO_MODELS: OpenMeteoModelName[] = ['gfs', 'hrrr'];
+
+const OPEN_METEO_MODEL_ALIASES: Record<string, OpenMeteoModelName> = {
   gfs: 'gfs',
+  ncep_gfs_seamless: 'gfs',
   hrr: 'hrrr',
   hrrr: 'hrrr',
+  ncep_hrrr_conus: 'hrrr',
 };
 
-export const DEFAULT_OPEN_METEO_MODELS = ['gfs', 'hrrr'];
-
-/**
- * Open-Meteo model names in the current upstream API are `gfs` and `hrrr`.
- * We accept `hrr` as an app-level shorthand while mapping it to `hrrr` when calling the API.
- */
-export function normalizeOpenMeteoModels(rawModels: string | null): string[] {
+export function normalizeOpenMeteoModels(
+  rawModels: string | null
+): OpenMeteoModelName[] {
   const requested = rawModels?.trim() || DEFAULT_OPEN_METEO_MODELS.join(',');
-
   const normalized = requested
     .split(',')
-    .map((model) => model.trim().toLowerCase())
-    .filter(Boolean)
-    .map((model) => OPEN_METEO_MODEL_ALIASES[model] ?? model)
-    .filter((model) => model === 'gfs' || model === 'hrrr');
+    .map((model) => OPEN_METEO_MODEL_ALIASES[model.trim().toLowerCase()])
+    .filter((model): model is OpenMeteoModelName => model !== undefined);
 
   if (normalized.length === 0) {
-    throw new Error(
-      'models must include at least one valid Open-Meteo model (e.g., gfs,hrrr)'
-    );
+    throw new Error('models must include gfs or hrrr');
   }
 
   return [...new Set(normalized)];
@@ -32,7 +34,7 @@ export function normalizeOpenMeteoModels(rawModels: string | null): string[] {
 export function buildOpenMeteoForecastQuery(
   latitude: number,
   longitude: number,
-  model: string,
+  modelId: string,
   forecastDays = 7
 ) {
   const params = new URLSearchParams({
@@ -48,7 +50,10 @@ export function buildOpenMeteoForecastQuery(
     daily: ['weather_code', 'temperature_2m_max', 'temperature_2m_min'].join(','),
     timezone: 'auto',
     forecast_days: String(forecastDays),
-    models: model,
+    temperature_unit: 'celsius',
+    wind_speed_unit: 'ms',
+    precipitation_unit: 'mm',
+    models: modelId,
   });
 
   return `/forecast?${params.toString()}`;

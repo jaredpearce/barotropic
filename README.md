@@ -183,6 +183,13 @@ Create a `.env.local` file based on `.env.example`:
 cp .env.example .env.local
 ```
 
+## Weather Data Sources
+
+- NWS conditions, forecasts, alerts, and station observations use the [weather.gov API](https://www.weather.gov/documentation/services-web-api).
+- Radar imagery uses NOAA/NCEP's [MRMS Base Reflectivity WMS layer](https://opengeo.ncep.noaa.gov/geoserver/conus/conus_bref_qcd/ows?service=WMS&request=GetCapabilities), layer `conus_bref_qcd`. The API response includes a WMS tile URL template and NOAA/NCEP attribution.
+- Open-Meteo's generic forecast API is currently pinned to Cary, NC. The named GFS and HRRR products use the provider IDs `ncep_gfs_seamless` and `ncep_hrrr_conus`, respectively. The generic endpoint does not expose a model initialization time; per-record `runTime` is therefore `null`, while `retrievedAt` and the valid timestamp are populated.
+- Review [Open-Meteo API documentation](https://open-meteo.com/en/docs/gfs-api) and [terms](https://open-meteo.com/en/terms) before deployment. The public API currently describes free access for non-commercial use; commercial use requires the applicable paid API access.
+
 ## Deployment
 
 This project is optimized for deployment on [Vercel](https://vercel.com/):

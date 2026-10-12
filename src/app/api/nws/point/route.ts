@@ -11,11 +11,20 @@ import { NextResponse } from 'next/server';
 import { fetchFromNws } from '@/lib/nws/client';
 import { upstreamErrorResponse } from '@/lib/api-errors';
 import {
+  NormalizedObservationSchema,
+  NormalizedWeatherRecordSchema,
   PointSchema,
   ForecastSchema,
   LatestObservationSchema,
   ObservationStationsSchema,
-} from '@/lib/nws/schemas';
+} from '@/lib/schemas';
+import {
+  normalizeNwsQuantityValue,
+  normalizeNwsTemperature,
+  normalizeNwsWindDirection,
+  normalizeNwsWindSpeed,
+  normalizeNwsWindSpeedText,
+} from '@/lib/weather-normalizers';
 import {
   validateLatitudeLongitude,
   extractStationId,
@@ -79,7 +88,7 @@ export async function GET(request: Request) {
     const [forecast, stations] = await Promise.all([
       fetchFromNws(forecastPath, ForecastSchema),
       stationsPath
-        ? fetchFromNws(stationsPath, ObservationStationsSchema).catch(() => null)
+        ? fetchFromNws(stationsPath, ObservationStationsSchema)
         : Promise.resolve(null),
     ]);
     const stationUrl = stations?.features[0]?.id;
@@ -88,10 +97,30 @@ export async function GET(request: Request) {
       ? await fetchFromNws(
           `/stations/${stationId}/observations/latest`,
           LatestObservationSchema
-        ).catch(() => null)
+        )
       : null;
 
     const retrievedAt = new Date().toISOString();
+    const normalizedCurrentConditions = currentConditions
+      ? NormalizedObservationSchema.parse({
+          source: 'NWS',
+          id: `${stationId}:${currentConditions.properties.timestamp ?? retrievedAt}`,
+          stationId,
+          timestamp: currentConditions.properties.timestamp ?? null,
+          retrievedAt,
+          issuedAt: currentConditions.properties.timestamp ?? retrievedAt,
+          description: currentConditions.properties.textDescription ?? null,
+          temperatureC: normalizeNwsTemperature(currentConditions.properties.temperature),
+          dewpointC: normalizeNwsTemperature(currentConditions.properties.dewpoint),
+          humidityPercent: normalizeNwsQuantityValue(
+            currentConditions.properties.relativeHumidity
+          ),
+          windSpeedMps: normalizeNwsWindSpeed(currentConditions.properties.windSpeed),
+          windDirectionDegrees: normalizeNwsQuantityValue(
+            currentConditions.properties.windDirection
+          ),
+        })
+      : null;
 
     return NextResponse.json({
       location: {
@@ -100,24 +129,28 @@ export async function GET(request: Request) {
         city: relativeLocation?.city ?? undefined,
         state: relativeLocation?.state ?? undefined,
       },
-      currentConditions: currentConditions
-        ? {
-            timestamp: currentConditions.properties.timestamp,
-            retrievedAt,
-            issuedAt: null,
-            description: currentConditions.properties.textDescription,
-            temperature: currentConditions.properties.temperature,
-            dewpoint: currentConditions.properties.dewpoint,
-            humidity: currentConditions.properties.relativeHumidity,
-            windSpeed: currentConditions.properties.windSpeed,
-            windDirection: currentConditions.properties.windDirection,
-          }
-        : null,
-      forecast: (forecast.properties.periods ?? []).map((period) => ({
-        ...period,
-        retrievedAt,
-        issuedAt: forecast.properties.updateTime ?? null,
-      })),
+      currentConditions: normalizedCurrentConditions,
+      forecast: (forecast.properties.periods ?? []).map((period) =>
+        NormalizedWeatherRecordSchema.parse({
+          source: 'NWS',
+          timestamp: period.startTime ?? retrievedAt,
+          retrievedAt,
+          issuedAt: forecast.properties.updateTime ?? retrievedAt,
+          temperatureC:
+            period.temperatureUnit === 'F'
+              ? ((period.temperature - 32) * 5) / 9
+              : period.temperature,
+          humidityPercent: normalizeNwsQuantityValue(period.relativeHumidity),
+          windSpeedMps: normalizeNwsWindSpeedText(period.windSpeed),
+          windDirectionDegrees: normalizeNwsWindDirection(period.windDirection),
+          precipitationProbabilityPercent: normalizeNwsQuantityValue(
+            period.probabilityOfPrecipitation
+          ),
+          condition: period.shortForecast,
+          periodName: period.name,
+          isDaytime: period.isDaytime,
+        })
+      ),
     });
   } catch (error) {
     const upstreamResponse = upstreamErrorResponse(error);

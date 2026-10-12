@@ -8,27 +8,6 @@ import type {
   ForecastNarrative,
 } from '@/types/domain';
 
-/**
- * Zod validation schemas for weather domain types
- *
- * These schemas validate external data (API responses, form inputs, database records)
- * against the domain interfaces defined in {@link src/types/domain.ts}.
- *
- * **Usage Pattern (Pattern 2: Types as Source of Truth):**
- * - Use these schemas at API boundaries: route handlers, form submissions, external API calls
- * - Never export types from schemas; use domain interfaces instead
- * - Parse incoming data with these schemas; throw or handle errors gracefully
- *
- * @see {@link src/types/domain.ts} for the source-of-truth type definitions
- */
-
-// ============================================================================
-// Weather Condition Schemas
-// ============================================================================
-
-/**
- * Weather condition enum that aligns with WeatherData.condition
- */
 export const WeatherConditionEnum = z.enum([
   'clear',
   'cloudy',
@@ -47,10 +26,6 @@ export const WeatherConditionEnum = z.enum([
   'squall',
 ]);
 
-/**
- * Validates weather observation/forecast data point
- * Corresponds to {@link WeatherData}
- */
 export const WeatherDataSchema: z.ZodType<WeatherData> = z.object({
   timestamp: z.coerce.date(),
   temperature: z.number(),
@@ -64,13 +39,6 @@ export const WeatherDataSchema: z.ZodType<WeatherData> = z.object({
   visibility: z.number().min(0),
 });
 
-// ============================================================================
-// Evidence & Pattern Schemas
-// ============================================================================
-
-/**
- * Evidence type enum
- */
 export const EvidenceTypeEnum = z.enum([
   'satellite',
   'surface',
@@ -79,15 +47,8 @@ export const EvidenceTypeEnum = z.enum([
   'other',
 ]);
 
-/**
- * Confidence level enum
- */
 export const ConfidenceLevelEnum = z.enum(['low', 'medium', 'high']);
 
-/**
- * Validates atmospheric evidence supporting a forecast
- * Corresponds to {@link Evidence}
- */
 export const EvidenceSchema: z.ZodType<Evidence> = z.object({
   id: z.string().uuid(),
   createdAt: z.coerce.date(),
@@ -98,9 +59,6 @@ export const EvidenceSchema: z.ZodType<Evidence> = z.object({
   notes: z.string().optional(),
 });
 
-/**
- * Pattern scale enum
- */
 export const PatternScaleEnum = z.enum([
   'local',
   'regional',
@@ -108,10 +66,6 @@ export const PatternScaleEnum = z.enum([
   'global',
 ]);
 
-/**
- * Validates atmospheric pattern identified in analysis
- * Corresponds to {@link AtmosphericPattern}
- */
 export const AtmosphericPatternSchema: z.ZodType<AtmosphericPattern> = z.object({
   id: z.string().uuid(),
   name: z.string().min(1),
@@ -122,14 +76,6 @@ export const AtmosphericPatternSchema: z.ZodType<AtmosphericPattern> = z.object(
   confidence: z.number().min(0).max(100),
 });
 
-// ============================================================================
-// Forecast Schemas
-// ============================================================================
-
-/**
- * Validates forecast scenario comparison
- * Corresponds to {@link ForecastScenario}
- */
 export const ForecastScenarioSchema: z.ZodType<ForecastScenario> = z.object({
   id: z.string().uuid(),
   name: z.string().min(1),
@@ -139,10 +85,6 @@ export const ForecastScenarioSchema: z.ZodType<ForecastScenario> = z.object({
   weatherOutcome: z.array(WeatherDataSchema),
 });
 
-/**
- * Validates forecast narrative for structured communication
- * Corresponds to {@link ForecastNarrative}
- */
 export const ForecastNarrativeSchema: z.ZodType<ForecastNarrative> = z.object({
   id: z.string().uuid(),
   forecastId: z.string().uuid(),
@@ -153,10 +95,6 @@ export const ForecastNarrativeSchema: z.ZodType<ForecastNarrative> = z.object({
   confidence: z.number().min(0).max(100),
 });
 
-/**
- * Validates core forecast analysis
- * Corresponds to {@link ForecastAnalysis}
- */
 export const ForecastAnalysisSchema: z.ZodType<ForecastAnalysis> = z.object({
   id: z.string().uuid(),
   createdAt: z.coerce.date(),
@@ -174,62 +112,34 @@ export const ForecastAnalysisSchema: z.ZodType<ForecastAnalysis> = z.object({
   accuracy: z.number().min(0).max(100).optional(),
 });
 
-// ============================================================================
-// Utility Functions
-// ============================================================================
-
-/**
- * Validate weather data, throwing on invalid input
- */
 export function validateWeatherData(data: unknown): WeatherData {
   return WeatherDataSchema.parse(data);
 }
 
-/**
- * Safely validate weather data, returning errors instead of throwing
- */
 export function validateWeatherDataSafe(data: unknown) {
   return WeatherDataSchema.safeParse(data);
 }
 
-/**
- * Validate forecast analysis, throwing on invalid input
- */
 export function validateForecastAnalysis(data: unknown): ForecastAnalysis {
   return ForecastAnalysisSchema.parse(data);
 }
 
-/**
- * Safely validate forecast analysis, returning errors instead of throwing
- */
 export function validateForecastAnalysisSafe(data: unknown) {
   return ForecastAnalysisSchema.safeParse(data);
 }
 
-/**
- * Validate evidence, throwing on invalid input
- */
 export function validateEvidence(data: unknown): Evidence {
   return EvidenceSchema.parse(data);
 }
 
-/**
- * Safely validate evidence, returning errors instead of throwing
- */
 export function validateEvidenceSafe(data: unknown) {
   return EvidenceSchema.safeParse(data);
 }
 
-/**
- * Validate forecast narrative, throwing on invalid input
- */
 export function validateForecastNarrative(data: unknown): ForecastNarrative {
   return ForecastNarrativeSchema.parse(data);
 }
 
-/**
- * Safely validate forecast narrative, returning errors instead of throwing
- */
 export function validateForecastNarrativeSafe(data: unknown) {
   return ForecastNarrativeSchema.safeParse(data);
 }
