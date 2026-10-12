@@ -9,7 +9,12 @@
 import { NextResponse } from 'next/server';
 import { fetchFromNws } from '@/lib/nws/client';
 import { upstreamErrorResponse } from '@/lib/api-errors';
-import { ZoneSchema, AlertsResponseSchema } from '@/lib/nws/schemas';
+import {
+  AlertsResponseSchema,
+  NormalizedAlertSchema,
+  NormalizedZoneSchema,
+  ZoneSchema,
+} from '@/lib/schemas';
 import { validateZoneId } from '@/lib/nws/utils';
 
 export async function GET(request: Request) {
@@ -51,32 +56,34 @@ export async function GET(request: Request) {
     const retrievedAt = new Date().toISOString();
 
     return NextResponse.json({
-      zone: {
+      zone: NormalizedZoneSchema.parse({
+        source: 'NWS',
         id: zoneData.id,
         retrievedAt,
-        issuedAt: null,
+        issuedAt: zoneData.properties?.effectiveDate ?? retrievedAt,
         name: zoneData.properties?.name ?? null,
         state: zoneData.properties?.state ?? null,
         type: zoneData.properties?.type ?? null,
-        // Include full polygon geometry (not bounding box)
-        geometry: zoneData.geometry ?? null,
-      },
-      alerts: alertsResponse.features.map((feature) => ({
-        id: feature.id,
-        retrievedAt,
-        issuedAt: feature.properties.sent ?? null,
-        event: feature.properties.event ?? null,
-        headline: feature.properties.headline ?? null,
-        severity: feature.properties.severity ?? null,
-        urgency: feature.properties.urgency ?? null,
-        status: feature.properties.status ?? null,
-        areaDescription: feature.properties.areaDesc ?? null,
-        effective: feature.properties.effective ?? null,
-        expires: feature.properties.expires ?? null,
-        description: feature.properties.description ?? null,
-        // Include alert geometry if available
-        geometry: feature.geometry ?? null,
-      })),
+        geometry: zoneData.geometry,
+      }),
+      alerts: alertsResponse.features.map((feature) =>
+        NormalizedAlertSchema.parse({
+          source: 'NWS',
+          id: feature.id,
+          retrievedAt,
+          issuedAt: feature.properties.sent ?? retrievedAt,
+          event: feature.properties.event ?? null,
+          headline: feature.properties.headline ?? null,
+          severity: feature.properties.severity ?? null,
+          urgency: feature.properties.urgency ?? null,
+          status: feature.properties.status ?? null,
+          areaDescription: feature.properties.areaDesc ?? null,
+          effective: feature.properties.effective ?? null,
+          expires: feature.properties.expires ?? null,
+          description: feature.properties.description ?? null,
+          geometry: feature.geometry,
+        })
+      ),
     });
   } catch (error) {
     const upstreamResponse = upstreamErrorResponse(error);

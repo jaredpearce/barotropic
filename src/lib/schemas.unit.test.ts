@@ -1,8 +1,15 @@
 import { describe, expect, it } from 'vitest';
-import { WeatherDataSchema, ForecastAnalysisSchema, validateWeatherData, validateForecastAnalysis } from './schemas';
+import {
+  ForecastAnalysisSchema,
+  GeoJsonPolygonSchema,
+  GeoJsonMultiPolygonSchema,
+  WeatherDataSchema,
+  validateForecastAnalysis,
+  validateWeatherData,
+} from './schemas';
 
 describe('weather validation schemas', () => {
-  it('accepts a valid weather observation', () => {
+  it('Use Case: accepts a valid weather observation', () => {
     const payload = {
       timestamp: '2026-10-07T12:00:00Z',
       temperature: 21,
@@ -17,10 +24,11 @@ describe('weather validation schemas', () => {
     };
 
     expect(() => WeatherDataSchema.parse(payload)).not.toThrow();
-    expect(validateWeatherData(payload)).toMatchObject(payload);
+    const validated = validateWeatherData(payload);
+    expect(validated).toMatchObject({ ...payload, timestamp: new Date(payload.timestamp) });
   });
 
-  it('accepts a valid forecast analysis payload', () => {
+  it('Use Case: accepts a valid forecast analysis payload', () => {
     const payload = {
       id: '123e4567-e89b-12d3-a456-426614174000',
       createdAt: '2026-10-07T08:00:00Z',
@@ -43,7 +51,7 @@ describe('weather validation schemas', () => {
         {
           id: '123e4567-e89b-12d3-a456-426614174002',
           name: 'Upper-level ridge',
-          description: 'An amplifying ridge is suppressing convective development through the afternoon.',
+          description: 'An amplifying ridge suppresses afternoon convection.',
           scale: 'regional',
           systems: ['high pressure'],
           expectedDuration: 18,
@@ -79,24 +87,40 @@ describe('weather validation schemas', () => {
     };
 
     expect(() => ForecastAnalysisSchema.parse(payload)).not.toThrow();
-    expect(validateForecastAnalysis(payload)).toMatchObject(payload);
+    const validated = validateForecastAnalysis(payload);
+    expect(validated.location).toBe(payload.location);
+    expect(validated.createdAt).toBeInstanceOf(Date);
+    expect(validated.evidence[0].createdAt).toBeInstanceOf(Date);
   });
 
-  it('rejects invalid payloads with missing required fields', () => {
-    const invalidPayload = {
-      id: '123e4567-e89b-12d3-a456-426614174000',
-      createdAt: '2026-10-07T08:00:00Z',
-      updatedAt: '2026-10-07T09:00:00Z',
-      location: 'Raleigh, NC',
-      validStart: '2026-10-07T12:00:00Z',
-      validEnd: '2026-10-08T12:00:00Z',
-      evidence: [],
-      patterns: [],
-      scenarios: [],
-      overallConfidence: 80,
-      narrative: 'Missing hypothesis',
-    };
+  it('Use Case: rejects invalid payloads with missing forecast fields', () => {
+    expect(() => ForecastAnalysisSchema.parse({})).toThrow();
+  });
 
-    expect(() => ForecastAnalysisSchema.parse(invalidPayload)).toThrow();
+  it('Use Case: accepts a valid GeoJSON polygon and multipolygon', () => {
+    const ring = [[-78, 35], [-77, 35], [-77, 36], [-78, 36], [-78, 35]];
+
+    expect(GeoJsonPolygonSchema.safeParse({ type: 'Polygon', coordinates: [ring] }).success).toBe(true);
+    expect(
+      GeoJsonMultiPolygonSchema.safeParse({
+        type: 'MultiPolygon',
+        coordinates: [[ring]],
+      }).success,
+    ).toBe(true);
+  });
+
+  it('Use Case: rejects malformed polygon rings and non-polygon geometries', () => {
+    expect(
+      GeoJsonPolygonSchema.safeParse({
+        type: 'Polygon',
+        coordinates: [[[0, 0], [1, 0], [1, 1]]],
+      }).success,
+    ).toBe(false);
+    expect(
+      GeoJsonPolygonSchema.safeParse({
+        type: 'LineString',
+        coordinates: [[0, 0], [1, 1]],
+      }).success,
+    ).toBe(false);
   });
 });

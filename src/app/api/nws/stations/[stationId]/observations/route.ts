@@ -9,7 +9,12 @@
 import { NextResponse } from 'next/server';
 import { fetchFromNws } from '@/lib/nws/client';
 import { upstreamErrorResponse } from '@/lib/api-errors';
-import { StationObservationsSchema } from '@/lib/nws/schemas';
+import { NormalizedObservationSchema, StationObservationsSchema } from '@/lib/schemas';
+import {
+  normalizeNwsQuantityValue,
+  normalizeNwsTemperature,
+  normalizeNwsWindSpeed,
+} from '@/lib/weather-normalizers';
 
 export async function GET(
   _request: Request,
@@ -39,17 +44,26 @@ export async function GET(
 
     return NextResponse.json({
       stationId,
-      observations: observations.features.map((feature) => ({
-        id: feature.id,
-        timestamp: feature.properties.timestamp ?? null,
-        retrievedAt,
-        issuedAt: null,
-        description: feature.properties.textDescription ?? null,
-        temperature: feature.properties.temperature ?? null,
-        dewpoint: feature.properties.dewpoint ?? null,
-        windSpeed: feature.properties.windSpeed ?? null,
-        windDirection: feature.properties.windDirection ?? null,
-      })),
+      observations: observations.features.map((feature) =>
+        NormalizedObservationSchema.parse({
+          source: 'NWS',
+          id: feature.id,
+          stationId,
+          timestamp: feature.properties.timestamp ?? null,
+          retrievedAt,
+          issuedAt: feature.properties.timestamp ?? retrievedAt,
+          description: feature.properties.textDescription ?? null,
+          temperatureC: normalizeNwsTemperature(feature.properties.temperature),
+          dewpointC: normalizeNwsTemperature(feature.properties.dewpoint),
+          humidityPercent: normalizeNwsQuantityValue(
+            feature.properties.relativeHumidity
+          ),
+          windSpeedMps: normalizeNwsWindSpeed(feature.properties.windSpeed),
+          windDirectionDegrees: normalizeNwsQuantityValue(
+            feature.properties.windDirection
+          ),
+        })
+      ),
     });
   } catch (error) {
     const upstreamResponse = upstreamErrorResponse(error);

@@ -1,57 +1,38 @@
 /**
  * Open-Meteo forecast route handler
- * GET /api/open-meteo/forecast?lat={latitude}&lon={longitude}&models={gfs,hrr}
+ * GET /api/open-meteo/forecast?models={gfs,hrrr}
  *
- * Confirmed current upstream terms:
- * - model names: `gfs`, `hrrr`
- * - app alias kept for convenience: `hrr` -> `hrrr`
- * - radar tile URLs are not returned by the same Open-Meteo forecast endpoint;
- *   for map overlays we should separate a dedicated radar tile source from the model fetch.
+ * The generic endpoint uses a fixed Cary, NC location while this API is being developed.
  */
 
 import { NextResponse } from 'next/server';
 import { fetchFromOpenMeteo } from '@/lib/open-meteo/client';
 import { upstreamErrorResponse } from '@/lib/api-errors';
-import { OpenMeteoForecastSchema } from '@/lib/open-meteo/schemas';
+import { OpenMeteoForecastSchema } from '@/lib/schemas';
 import {
   buildOpenMeteoForecastQuery,
   normalizeOpenMeteoModels,
+  OPEN_METEO_MODELS,
+  type OpenMeteoModelName,
 } from '@/lib/open-meteo/utils';
-import { validateLatitudeLongitude } from '@/lib/nws/utils';
+import { NormalizedWeatherRecordSchema } from '@/lib/schemas';
+
+const CARY_LOCATION = {
+  latitude: 35.7915,
+  longitude: -78.7811,
+  city: 'Cary',
+  state: 'NC',
+};
+
+const RADAR_WMS_URL =
+  'https://opengeo.ncep.noaa.gov/geoserver/conus/conus_bref_qcd/ows';
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const lat = searchParams.get('lat');
-    const lon = searchParams.get('lon');
     const modelParam = searchParams.get('models');
 
-    if (!lat || !lon) {
-      return NextResponse.json(
-        {
-          error: 'Missing required parameters',
-          details: 'Both lat and lon query parameters are required',
-          example: '/api/open-meteo/forecast?lat=39.7392&lon=-104.9903&models=gfs,hrr',
-        },
-        { status: 400 }
-      );
-    }
-
-    let latitude: number;
-    let longitude: number;
-    try {
-      ({ latitude, longitude } = validateLatitudeLongitude(lat, lon));
-    } catch (error) {
-      return NextResponse.json(
-        {
-          error: 'Invalid coordinates',
-          details: error instanceof Error ? error.message : 'Validation failed',
-        },
-        { status: 400 }
-      );
-    }
-
-    let models: string[];
+    let models: OpenMeteoModelName[];
     try {
       models = normalizeOpenMeteoModels(modelParam);
     } catch (error) {
@@ -60,46 +41,85 @@ export async function GET(request: Request) {
           error: 'Invalid model selection',
           details:
             error instanceof Error ? error.message : 'A valid Open-Meteo model is required',
+          example: '/api/open-meteo/forecast?models=gfs,hrrr',
         },
         { status: 400 }
       );
     }
 
     const forecasts = await Promise.all(
-      models.map(async (model) => {
-        const endpoint = buildOpenMeteoForecastQuery(latitude, longitude, model, 7);
+      models.map(async (modelName) => {
+        const model = OPEN_METEO_MODELS[modelName];
+        const endpoint = buildOpenMeteoForecastQuery(
+          CARY_LOCATION.latitude,
+          CARY_LOCATION.longitude,
+          model.id,
+          7
+        );
         const forecast = await fetchFromOpenMeteo(
           endpoint,
           OpenMeteoForecastSchema
         );
+        const retrievedAt = new Date().toISOString();
+        const hourly = (forecast.hourly?.time ?? []).map((timestamp, index) =>
+          NormalizedWeatherRecordSchema.parse({
+            source: 'Open-Meteo',
+            model: model.name,
+            modelId: model.id,
+            timestamp,
+            retrievedAt,
+            runTime: null,
+            temperatureC: forecast.hourly?.temperature_2m[index] ?? null,
+            humidityPercent: forecast.hourly?.relative_humidity_2m[index] ?? null,
+            precipitationProbabilityPercent:
+              forecast.hourly?.precipitation_probability[index] ?? null,
+            weatherCode: forecast.hourly?.weather_code[index] ?? null,
+            windSpeedMps: forecast.hourly?.wind_speed_10m[index] ?? null,
+          })
+        );
+        const daily = (forecast.daily?.time ?? []).map((timestamp, index) =>
+          NormalizedWeatherRecordSchema.parse({
+            source: 'Open-Meteo',
+            model: model.name,
+            modelId: model.id,
+            timestamp,
+            retrievedAt,
+            runTime: null,
+            weatherCode: forecast.daily?.weather_code[index] ?? null,
+            minimumTemperatureC: forecast.daily?.temperature_2m_min[index] ?? null,
+            maximumTemperatureC: forecast.daily?.temperature_2m_max[index] ?? null,
+          })
+        );
 
         return {
-          model,
-          forecast: {
-            ...forecast,
-            retrievedAt: new Date().toISOString(),
-            issuedAt: null,
-          },
+          modelName,
+          modelId: model.id,
+          name: model.name,
+          hourly,
+          daily,
         };
       })
     );
 
     const modelResults = Object.fromEntries(
-      forecasts.map(({ model, forecast }) => [model, forecast])
+      forecasts.map(({ modelName, ...forecast }) => [modelName, forecast])
     );
 
     return NextResponse.json({
       location: {
-        latitude,
-        longitude,
+        ...CARY_LOCATION,
       },
       requestedModels: models,
       models: modelResults,
       radar: {
-        source: 'external-radar-tile-source',
-        note:
-          'Open-Meteo forecast API does not expose radar tile URLs directly; use a dedicated radar tile source or overlay config for map tiles.',
-        tiles: [],
+        source: 'NOAA/NCEP MRMS Base Reflectivity',
+        attribution: 'NOAA/NCEP Multi-Radar Multi-Sensor (MRMS)',
+        attributionUrl: 'https://opengeo.ncep.noaa.gov/geoserver/',
+        capabilitiesUrl: `${RADAR_WMS_URL}?service=WMS&request=GetCapabilities`,
+        tileUrlTemplate:
+          `${RADAR_WMS_URL}?service=WMS&version=1.1.1&request=GetMap` +
+          '&layers=conus_bref_qcd&styles=&format=image/png&transparent=true' +
+          '&srs=EPSG:3857&width=256&height=256&bbox={bbox-epsg-3857}',
       },
     });
   } catch (error) {
