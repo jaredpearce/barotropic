@@ -6,3 +6,21 @@ test('Use Case: loads the home page and surfaces the primary app shell', async (
   await expect(page).toHaveTitle(/barotropic/i);
   await expect(page.getByText(/barotropic/i)).toBeVisible();
 });
+
+test('Use Case: uses granted browser geolocation to select the current city', async ({ page }) => {
+  await page.context().grantPermissions(['geolocation']);
+  await page.context().setGeolocation({ latitude: 35.78, longitude: -78.64 });
+  await page.route('**/api/nws/point/location**', (route) =>
+    route.fulfill({
+      json: {
+        location: { latitude: 35.78, longitude: -78.64, city: 'Raleigh', state: 'NC' },
+      },
+    })
+  );
+
+  await page.goto('/');
+  await page.getByRole('button', { name: /Cary, NC/i }).click();
+  await page.getByRole('button', { name: 'Use my current location' }).click();
+
+  await expect(page.getByRole('button', { name: /Raleigh, NC/i })).toBeVisible();
+});
