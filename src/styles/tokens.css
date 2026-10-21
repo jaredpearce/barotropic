@@ -125,6 +125,160 @@
     background-color: var(--color-surface-secondary);
   }
 
+  .location-picker-backdrop {
+    @apply fixed inset-0 z-50 flex items-start justify-center px-4 pt-24;
+    background: rgba(3, 7, 18, 0.76);
+  }
+
+  .location-picker {
+    @apply w-full max-w-lg;
+    border: var(--border-width) solid var(--color-border-secondary);
+    background: var(--color-surface-primary);
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.45);
+  }
+
+  .location-picker-heading {
+    @apply flex items-center justify-between;
+    border-bottom: var(--border-width) solid var(--color-border);
+    padding: var(--spacing-md) var(--spacing-lg);
+  }
+
+  .location-picker-heading h2 {
+    @apply text-sm font-semibold;
+    color: var(--color-text-primary);
+  }
+
+  .location-picker-close {
+    @apply h-8 w-8 text-lg;
+    color: var(--color-text-secondary);
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .location-search-form {
+    padding: var(--spacing-md) var(--spacing-lg) var(--spacing-sm);
+  }
+
+  .location-current-button {
+    @apply mb-4 w-full text-left;
+    border: var(--border-width) solid var(--color-border-secondary);
+    padding: 10px 12px;
+    color: var(--color-accent-emerald);
+    background: rgba(52, 211, 153, 0.06);
+    font-size: var(--text-size-sm);
+    cursor: pointer;
+  }
+
+  .location-current-button:disabled {
+    cursor: wait;
+    opacity: 0.65;
+  }
+
+  .location-permission-message {
+    @apply mb-3;
+    color: var(--color-accent-amber-light);
+    font-size: var(--text-size-xs);
+  }
+
+  .location-search-label {
+    @apply mb-2 block;
+    color: var(--color-text-secondary);
+    font-size: var(--text-size-xs);
+  }
+
+  .location-search-row {
+    @apply flex gap-2;
+  }
+
+  .location-search-row input {
+    @apply min-w-0 flex-1;
+    border: var(--border-width) solid var(--color-border-secondary);
+    padding: 10px 12px;
+    color: var(--color-text-primary);
+    background: var(--color-background);
+    outline: none;
+  }
+
+  .location-search-row input:focus {
+    border-color: var(--color-accent-emerald);
+  }
+
+  .location-search-submit {
+    border: var(--border-width) solid var(--color-accent-emerald);
+    padding: 0 16px;
+    color: var(--color-background);
+    background: var(--color-accent-emerald);
+    font-size: var(--text-size-sm);
+    font-weight: var(--font_weight_semi-bold);
+    cursor: pointer;
+  }
+
+  .location-search-submit:disabled {
+    cursor: wait;
+    opacity: 0.65;
+  }
+
+  .location-search-results {
+    min-height: 48px;
+    padding: var(--spacing-xs) var(--spacing-lg);
+  }
+
+  .location-search-results > p {
+    padding: 12px 0;
+    color: var(--color-text-secondary);
+    font-size: var(--text-size-sm);
+  }
+
+  .location-result {
+    @apply flex w-full items-center justify-between gap-4 text-left;
+    border-bottom: var(--border-width) solid var(--color-border);
+    padding: 12px 0;
+    color: var(--color-text-primary);
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .location-result:hover,
+  .location-result:focus-visible {
+    color: var(--color-accent-emerald);
+    outline: none;
+  }
+
+  .location-result-country {
+    color: var(--color-text-tertiary);
+    font-size: var(--text-size-xs);
+    text-align: right;
+  }
+
+  .location-picker-current {
+    border-top: var(--border-width) solid var(--color-border);
+    padding: 12px var(--spacing-lg);
+    color: var(--color-text-tertiary);
+    font-size: var(--text-size-xs);
+  }
+
+  @media (max-width: 640px) {
+    .location-picker-backdrop {
+      @apply items-start px-3 pt-16;
+    }
+
+    .location-picker-heading,
+    .location-search-form {
+      padding-right: var(--spacing-md);
+      padding-left: var(--spacing-md);
+    }
+
+    .location-search-results {
+      padding-right: var(--spacing-md);
+      padding-left: var(--spacing-md);
+    }
+
+    .location-picker-current {
+      padding-right: var(--spacing-md);
+      padding-left: var(--spacing-md);
+    }
+  }
+
   .app-main {
     @apply relative min-h-0 overflow-hidden;
     background-color: var(--color-map-background);
