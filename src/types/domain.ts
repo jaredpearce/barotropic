@@ -33,6 +33,41 @@ export interface WeatherData {
 }
 
 /**
+ * Current conditions observation rendered by the condition tiles.
+ *
+ * All readings use the canonical domain units of the application:
+ * Celsius, meters per second, hectopascals, degrees, and percent.
+ * Every field is optional because stations routinely report a partial
+ * observation; consumers render a placeholder for missing readings.
+ */
+export interface CurrentConditions {
+  /** Air temperature in Celsius. */
+  temperature?: number;
+  /** Relative humidity, 0-100 percent. */
+  humidity?: number;
+  /** Dewpoint in Celsius. */
+  dewpoint?: number;
+  /** Apparent ("feels like") temperature in Celsius. */
+  feelsLike?: number;
+  /** Surface pressure in hectopascals (1 hPa is equivalent to 1 mb). */
+  pressure?: number;
+  /** Pressure change over the last three hours in hectopascals. */
+  pressureTrend?: number;
+  /** Sustained wind speed in meters per second. */
+  windSpeed?: number;
+  /** Wind direction in degrees (0-360), the direction the wind comes from. */
+  windDirection?: number;
+  /** Wind gust in meters per second. */
+  windGust?: number;
+  /** Short description of the sky condition, e.g. "Partly Cloudy". */
+  condition?: string;
+  /** Identifier of the station that produced the observation. */
+  stationId?: string;
+  /** Time the observation was issued. */
+  observedAt?: Date;
+}
+
+/**
  * Atmospheric evidence supporting a forecast
  */
 export interface Evidence {

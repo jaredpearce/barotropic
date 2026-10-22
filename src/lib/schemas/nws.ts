@@ -45,14 +45,14 @@ export const ForecastSchema = z
   .object({
     properties: z
       .object({
-        updateTime: z.string().datetime().optional(),
+        updateTime: z.string().datetime({ offset: true }).optional(),
         periods: z
           .array(
             z.object({
               number: z.number(),
               name: z.string(),
-              startTime: z.string().datetime().optional(),
-              endTime: z.string().datetime().optional(),
+              startTime: z.string().datetime({ offset: true }).optional(),
+              endTime: z.string().datetime({ offset: true }).optional(),
               isDaytime: z.boolean().optional(),
               temperature: z.number(),
               temperatureUnit: z.enum(['F', 'C']),
@@ -74,13 +74,15 @@ export const LatestObservationSchema = z
   .object({
     properties: z
       .object({
-        timestamp: z.string().datetime().optional(),
+        timestamp: z.string().datetime({ offset: true }).optional(),
         textDescription: z.string().optional(),
         temperature: NwsQuantitySchema.optional(),
         dewpoint: NwsQuantitySchema.optional(),
         relativeHumidity: NwsQuantitySchema.optional(),
         windSpeed: NwsQuantitySchema.optional(),
+        windGust: NwsQuantitySchema.optional(),
         windDirection: NwsQuantitySchema.optional(),
+        barometricPressure: NwsQuantitySchema.optional(),
       })
       .passthrough(),
   })
@@ -95,7 +97,7 @@ export const ZoneSchema = z
         name: z.string().optional(),
         state: z.string().optional(),
         type: z.string().optional(),
-        effectiveDate: z.string().datetime().optional(),
+        effectiveDate: z.string().datetime({ offset: true }).optional(),
       })
       .passthrough(),
     geometry: GeoJsonPolygonalGeometryOrNullSchema,
@@ -112,13 +114,13 @@ export const AlertsResponseSchema = z
             .object({
               event: z.string().optional(),
               headline: z.string().nullable().optional(),
-              sent: z.string().datetime().optional(),
+              sent: z.string().datetime({ offset: true }).optional(),
               severity: z.string().optional(),
               urgency: z.string().optional(),
               status: z.string().optional(),
               areaDesc: z.string().optional(),
-              effective: z.string().datetime().optional(),
-              expires: z.string().datetime().optional(),
+              effective: z.string().datetime({ offset: true }).optional(),
+              expires: z.string().datetime({ offset: true }).optional(),
               description: z.string().optional(),
             })
             .passthrough(),
@@ -137,7 +139,7 @@ export const StationObservationsSchema = z
           id: z.string(),
           properties: z
             .object({
-              timestamp: z.string().datetime().optional(),
+              timestamp: z.string().datetime({ offset: true }).optional(),
               textDescription: z.string().optional(),
               temperature: NwsQuantitySchema.optional(),
               dewpoint: NwsQuantitySchema.optional(),
