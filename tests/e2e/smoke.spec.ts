@@ -1,10 +1,21 @@
 import { test, expect } from '@playwright/test';
 
+test.beforeEach(async ({ page }) => {
+  await page.route('**/api/nws/alerts/point**', (route) =>
+    route.fulfill({
+      json: {
+        point: { latitude: 35.7915, longitude: -78.7811 },
+        alerts: [],
+      },
+    })
+  );
+});
+
 test('Use Case: loads the home page and surfaces the primary app shell', async ({ page }) => {
   await page.goto('/');
 
   await expect(page).toHaveTitle(/barotropic/i);
-  await expect(page.getByText(/barotropic/i)).toBeVisible();
+  await expect(page.getByText('◉ Barotropic')).toBeVisible();
 });
 
 test('Use Case: uses granted browser geolocation to select the current city', async ({ page }) => {
