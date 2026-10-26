@@ -42,6 +42,18 @@ const AREA_ALERT = {
   geometry: null,
 };
 
+test.beforeEach(async ({ page }) => {
+  await page.route('**/api/nws/point**', (route) =>
+    route.fulfill({
+      json: {
+        location: POINT,
+        currentConditions: null,
+        forecast: [],
+      },
+    })
+  );
+});
+
 test('Use Case: renders polygon and area-based active alerts in the sidebar', async ({
   page,
 }) => {

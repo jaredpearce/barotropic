@@ -22,4 +22,14 @@ export const handlers = [
       { headers: { 'Cache-Control': 'no-store' } },
     );
   }),
+  http.get('/api/nws/point', () => {
+    return HttpResponse.json(
+      {
+        location: { latitude: 35.7915, longitude: -78.7811 },
+        currentConditions: null,
+        forecast: [],
+      },
+      { headers: { 'Cache-Control': 'no-store' } },
+    );
+  }),
 ];

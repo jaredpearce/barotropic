@@ -1,11 +1,8 @@
 'use client';
 
 import React, { ReactNode, useEffect, useState } from 'react';
-import { buildConditionTiles } from '@/lib/conditions';
-import { formatTemperatureDegrees } from '@/lib/conditions/format';
-import type { CurrentConditions } from '@/types/domain';
 import ActiveAlerts from './ActiveAlerts';
-import ConditionTile from './ConditionTile';
+import CurrentConditions from './CurrentConditions';
 
 interface AppLayoutProps {
   children?: ReactNode;
@@ -51,30 +48,6 @@ const hourlyForecast = Array.from({ length: 24 }, (_, hour) => {
     wind: hour < 6 ? 'NW 5 kt' : hour < 12 ? 'N 4 kt' : 'SE 9 kt',
   };
 });
-
-/**
- * Placeholder observation for the sidebar until it is wired to the live
- * observation feed. Values use the canonical domain units.
- */
-const currentConditions: CurrentConditions = {
-  temperature: 28.9,
-  humidity: 64,
-  dewpoint: 21.1,
-  windSpeed: 4.63,
-  windDirection: 135,
-  windGust: 7.72,
-  pressure: 1012.4,
-  pressureTrend: -0.8,
-  condition: 'Partly Cloudy',
-};
-
-/**
- * The sidebar hero already renders the air temperature, so the tile grid shows
- * the remaining conditions.
- */
-const sidebarTiles = buildConditionTiles(currentConditions).filter(
-  (tile) => tile.kind !== 'temperature'
-);
 
 /** Main dark-mode application shell for Barotropic. */
 export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
@@ -313,23 +286,10 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
             longitude={location.longitude}
           />
 
-          <section className="app-section">
-            <div className="flex justify-between text-[10px] tracking-[0.14em]">
-              <h2 className="app-section-title" style={{ marginBottom: 0 }}>Current conditions · KRDU</h2>
-              <span>⌄</span>
-            </div>
-            <div className="app-conditions-section">
-              <span className="app-conditions-temp">{formatTemperatureDegrees(currentConditions.temperature)}</span>
-            </div>
-            <p className="app-conditions-description">
-              SCT045 · {currentConditions.condition}
-            </p>
-            <div className="app-conditions-grid">
-              {sidebarTiles.map((tile) => (
-                <ConditionTile key={tile.kind} {...tile} variant="bare" />
-              ))}
-            </div>
-          </section>
+          <CurrentConditions
+            latitude={location.latitude}
+            longitude={location.longitude}
+          />
 
           <section className="app-section">
             <h2 className="app-section-title">Hourly forecast · 24h local</h2>

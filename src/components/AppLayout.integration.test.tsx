@@ -7,15 +7,18 @@ import { renderWithProviders } from '../../tests/utils/render';
 interface StubAppFetchOptions {
   results?: unknown[];
   alerts?: unknown[];
+  conditions?: unknown;
 }
 
 /**
- * Route-aware fetch stub: the layout loads alerts on mount and geocodes only
- * after a search, so a single fixed response would be consumed twice.
+ * Route-aware fetch stub: the layout loads alerts and conditions on mount and
+ * geocodes only after a search, so a single fixed response would be consumed
+ * twice.
  */
 function stubAppFetch({
   results = [],
   alerts = [],
+  conditions = null,
 }: StubAppFetchOptions = {}) {
   const fetchMock = vi.fn((input: RequestInfo | URL) => {
     const url = input instanceof Request ? input.url : input.toString();
@@ -25,6 +28,16 @@ function stubAppFetch({
         Response.json({
           point: { latitude: 35.7915, longitude: -78.7811 },
           alerts,
+        })
+      );
+    }
+
+    if (url.includes('/api/nws/point')) {
+      return Promise.resolve(
+        Response.json({
+          location: { latitude: 35.7915, longitude: -78.7811 },
+          currentConditions: conditions,
+          forecast: [],
         })
       );
     }
@@ -63,6 +76,23 @@ const ACTIVE_ALERT = {
   instruction: 'Drink water.',
   senderName: 'NWS Raleigh',
   geometry: null,
+};
+
+const CURRENT_OBSERVATION = {
+  source: 'NWS',
+  id: 'KRDU:2026-10-26T16:53:00Z',
+  stationId: 'KRDU',
+  timestamp: '2026-10-26T16:53:00Z',
+  retrievedAt: '2026-10-26T17:00:00Z',
+  issuedAt: '2026-10-26T16:53:00Z',
+  description: 'Partly Cloudy',
+  temperatureC: 28.9,
+  dewpointC: 21.1,
+  humidityPercent: 64,
+  windSpeedMps: 4.63,
+  windGustMps: 7.72,
+  windDirectionDegrees: 135,
+  pressureHpa: 1012.4,
 };
 
 afterEach(() => {
@@ -109,5 +139,19 @@ describe('AppLayout location selection', () => {
     ).toBeInTheDocument();
     expect(screen.getByText('Heat Advisory')).toBeInTheDocument();
     expect(screen.getByText('Highest: Moderate')).toBeInTheDocument();
+  });
+
+  it('Use Case: shows the live current conditions for the selected location', async () => {
+    stubAppFetch({ conditions: CURRENT_OBSERVATION });
+
+    renderWithProviders(<AppLayout />);
+
+    expect(
+      await screen.findByRole('heading', {
+        name: 'Current conditions · KRDU',
+      })
+    ).toBeInTheDocument();
+    expect(screen.getByText('Partly Cloudy')).toBeInTheDocument();
+    expect(screen.getByText('1012.4 mb')).toBeInTheDocument();
   });
 });

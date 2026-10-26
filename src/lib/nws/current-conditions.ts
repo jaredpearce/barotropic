@@ -17,6 +17,7 @@ import {
 } from '@/lib/schemas';
 import { fetchFromNws } from './client';
 import { normalizeNwsObservation } from './normalize-observation';
+import { toCurrentConditions } from './observation-to-conditions';
 import { extractStationId, toNwsPath } from './utils';
 
 /**
@@ -67,18 +68,5 @@ export async function fetchCurrentConditions(
   longitude: number
 ): Promise<CurrentConditions> {
   const observation = await fetchLatestObservation(latitude, longitude);
-  if (!observation) return {};
-
-  return {
-    temperature: observation.temperatureC ?? undefined,
-    humidity: observation.humidityPercent ?? undefined,
-    dewpoint: observation.dewpointC ?? undefined,
-    windSpeed: observation.windSpeedMps ?? undefined,
-    windGust: observation.windGustMps ?? undefined,
-    windDirection: observation.windDirectionDegrees ?? undefined,
-    pressure: observation.pressureHpa ?? undefined,
-    condition: observation.description ?? undefined,
-    stationId: observation.stationId,
-    observedAt: observation.timestamp ? new Date(observation.timestamp) : undefined,
-  };
+  return toCurrentConditions(observation) ?? {};
 }

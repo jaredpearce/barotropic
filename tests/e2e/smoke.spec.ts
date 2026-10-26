@@ -9,6 +9,15 @@ test.beforeEach(async ({ page }) => {
       },
     })
   );
+  await page.route('**/api/nws/point**', (route) =>
+    route.fulfill({
+      json: {
+        location: { latitude: 35.7915, longitude: -78.7811 },
+        currentConditions: null,
+        forecast: [],
+      },
+    })
+  );
 });
 
 test('Use Case: loads the home page and surfaces the primary app shell', async ({ page }) => {
