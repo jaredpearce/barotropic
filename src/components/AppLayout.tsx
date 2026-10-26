@@ -4,6 +4,7 @@ import React, { ReactNode, useEffect, useState } from 'react';
 import { buildConditionTiles } from '@/lib/conditions';
 import { formatTemperatureDegrees } from '@/lib/conditions/format';
 import type { CurrentConditions } from '@/types/domain';
+import ActiveAlerts from './ActiveAlerts';
 import ConditionTile from './ConditionTile';
 
 interface AppLayoutProps {
@@ -307,14 +308,10 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         </main>
 
         <aside className="app-sidebar">
-          <section className="app-section">
-            <h2 className="app-section-title">Active alerts (1)</h2>
-            <div className="app-alert">
-              <p className="app-alert-title">Heat advisory</p>
-              <p className="app-alert-subtitle">Wake / Chatham / Durham counties</p>
-              <p className="app-alert-meta">Until 8:00 PM EDT · NWS Raleigh</p>
-            </div>
-          </section>
+          <ActiveAlerts
+            latitude={location.latitude}
+            longitude={location.longitude}
+          />
 
           <section className="app-section">
             <div className="flex justify-between text-[10px] tracking-[0.14em]">

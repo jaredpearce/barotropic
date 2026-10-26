@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  AlertsResponseSchema,
   ForecastAnalysisSchema,
   GeoJsonPolygonSchema,
   GeoJsonMultiPolygonSchema,
@@ -107,6 +108,43 @@ describe('weather validation schemas', () => {
         coordinates: [[ring]],
       }).success,
     ).toBe(true);
+  });
+
+  it('Use Case: accepts alerts with null optional CAP fields', () => {
+    const payload = {
+      features: [
+        {
+          id: 'https://api.weather.gov/alerts/urn:oid:test',
+          properties: {
+            event: 'Heat Advisory',
+            headline: null,
+            sent: '2026-10-26T11:00:00-04:00',
+            onset: null,
+            ends: null,
+            severity: 'Moderate',
+            certainty: null,
+            urgency: 'Expected',
+            status: 'Actual',
+            messageType: null,
+            category: null,
+            areaDesc: 'Central North Carolina',
+            effective: '2026-10-26T12:00:00-04:00',
+            expires: '2026-10-26T23:00:00-04:00',
+            description: 'Hot and humid conditions.',
+            instruction: null,
+            senderName: null,
+          },
+          geometry: null,
+        },
+      ],
+    };
+
+    expect(() => AlertsResponseSchema.parse(payload)).not.toThrow();
+
+    const parsed = AlertsResponseSchema.parse(payload);
+    expect(parsed.features[0].properties.instruction).toBeNull();
+    expect(parsed.features[0].properties.onset).toBeNull();
+    expect(parsed.features[0].geometry).toBeNull();
   });
 
   it('Use Case: rejects malformed polygon rings and non-polygon geometries', () => {

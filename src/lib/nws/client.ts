@@ -14,6 +14,11 @@ const NWS_USER_AGENT =
 const NWS_REQUEST_TIMEOUT_MS = 10_000;
 const NWS_REVALIDATE_SECONDS = 60;
 
+export interface FetchFromNwsOptions {
+  /** Seconds to cache the upstream response. Defaults to 60. */
+  revalidate?: number;
+}
+
 function resolveNwsUrl(endpoint: string): URL {
   if (!endpoint.startsWith('/') || endpoint.startsWith('//')) {
     throw new TypeError('NWS endpoint must be a path on api.weather.gov');
@@ -45,19 +50,21 @@ export function createNwsHeaders(): HeadersInit {
  * @param request - The incoming HTTP request (used for User-Agent)
  * @param endpoint - NWS API endpoint path (e.g., '/points/39.7392,-104.9903')
  * @param schema - Zod schema to validate and parse the response
+ * @param options - Upstream caching options
  * @returns Validated response data
  * @throws UpstreamApiError when the provider request or response fails
  */
 export async function fetchFromNws<Schema extends z.ZodTypeAny>(
   endpoint: string,
-  schema: Schema
+  schema: Schema,
+  options: FetchFromNwsOptions = {}
 ): Promise<z.output<Schema>> {
   const url = resolveNwsUrl(endpoint);
 
   try {
     const response = await fetch(url, {
       headers: createNwsHeaders(),
-      next: { revalidate: NWS_REVALIDATE_SECONDS },
+      next: { revalidate: options.revalidate ?? NWS_REVALIDATE_SECONDS },
       signal: AbortSignal.timeout(NWS_REQUEST_TIMEOUT_MS),
     });
 

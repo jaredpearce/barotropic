@@ -19,6 +19,18 @@
   --color-accent-amber-light: rgb(251, 191, 36); /* amber-400 */
   --color-accent-rose: rgb(244, 63, 94); /* rose-500 */
 
+  /* Alert severity (CAP values, independent of brand accents) */
+  --color-severity-extreme: rgb(244, 63, 94); /* rose-500 */
+  --color-severity-extreme-soft: rgba(244, 63, 94, 0.16);
+  --color-severity-severe: rgb(251, 146, 60); /* orange-400 */
+  --color-severity-severe-soft: rgba(251, 146, 60, 0.16);
+  --color-severity-moderate: rgb(251, 191, 36); /* amber-400 */
+  --color-severity-moderate-soft: rgba(251, 191, 36, 0.14);
+  --color-severity-minor: rgb(52, 211, 153); /* emerald-400 */
+  --color-severity-minor-soft: rgba(52, 211, 153, 0.14);
+  --color-severity-unknown: rgb(148, 163, 184); /* slate-400 */
+  --color-severity-unknown-soft: rgba(148, 163, 184, 0.14);
+
   /* Map area */
   --color-map-background: rgb(13, 26, 44); /* #0d1a2c */
 
@@ -309,27 +321,203 @@
     text-transform: uppercase;
   }
 
-  .app-alert {
-    @apply rounded p-3;
-    border: var(--border-width) solid var(--color-accent-amber);
-    background-color: rgba(30, 41, 59, 0.6); /* slate-800/60 */
+  .active-alerts-heading {
+    @apply flex items-start justify-between gap-2;
+    margin-bottom: var(--spacing-sm);
   }
 
-  .app-alert-title {
-    @apply text-[10px] font-semibold;
+  .active-alerts-heading .app-section-title {
+    margin-bottom: 0;
+  }
+
+  .active-alerts-highest,
+  .alert-card-severity {
+    @apply inline-flex shrink-0 items-center rounded px-2 py-0.5 text-[10px] font-semibold uppercase;
     letter-spacing: var(--tracking-tight);
-    color: var(--color-accent-amber-light);
-    text-transform: uppercase;
+    border: var(--border-width) solid var(--alert-severity);
+    color: var(--alert-severity);
+    background-color: var(--alert-severity-soft);
   }
 
-  .app-alert-subtitle {
-    @apply mt-1 text-xs;
-    color: var(--color-text-secondary);
+  .alert-card,
+  .active-alerts-highest {
+    --alert-severity: var(--color-severity-unknown);
+    --alert-severity-soft: var(--color-severity-unknown-soft);
   }
 
-  .app-alert-meta {
+  .alert-card[data-severity='extreme'],
+  .active-alerts-highest[data-severity='extreme'] {
+    --alert-severity: var(--color-severity-extreme);
+    --alert-severity-soft: var(--color-severity-extreme-soft);
+  }
+
+  .alert-card[data-severity='severe'],
+  .active-alerts-highest[data-severity='severe'] {
+    --alert-severity: var(--color-severity-severe);
+    --alert-severity-soft: var(--color-severity-severe-soft);
+  }
+
+  .alert-card[data-severity='moderate'],
+  .active-alerts-highest[data-severity='moderate'] {
+    --alert-severity: var(--color-severity-moderate);
+    --alert-severity-soft: var(--color-severity-moderate-soft);
+  }
+
+  .alert-card[data-severity='minor'],
+  .active-alerts-highest[data-severity='minor'] {
+    --alert-severity: var(--color-severity-minor);
+    --alert-severity-soft: var(--color-severity-minor-soft);
+  }
+
+  .alert-card[data-severity='unknown'],
+  .active-alerts-highest[data-severity='unknown'] {
+    --alert-severity: var(--color-severity-unknown);
+    --alert-severity-soft: var(--color-severity-unknown-soft);
+  }
+
+  .alert-card {
+    @apply rounded;
+    border: var(--border-width) solid var(--color-border);
+    border-left: 3px solid var(--alert-severity);
+    padding: var(--spacing-sm) var(--spacing-sm) var(--spacing-sm) 10px;
+    background-color: rgba(15, 23, 42, 0.72);
+  }
+
+  .alert-card-heading {
+    @apply flex items-start justify-between gap-2;
+  }
+
+  .alert-card-heading-copy {
+    @apply min-w-0;
+  }
+
+  .alert-card-event {
+    @apply text-xs font-semibold;
+    line-height: 1.35;
+  }
+
+  .alert-card-headline {
     @apply mt-1 text-[10px];
     color: var(--color-text-secondary);
+    line-height: 1.4;
+  }
+
+  .alert-card-area {
+    @apply mt-1 text-[10px];
+    color: var(--color-text-tertiary);
+    line-height: 1.4;
+  }
+
+  .alert-card-preview {
+    @apply mt-2;
+  }
+
+  .alert-card-preview-svg {
+    @apply block w-full rounded;
+    height: 72px;
+    border: var(--border-width) solid var(--color-border);
+    background-color: rgba(2, 6, 23, 0.55);
+  }
+
+  .alert-card-preview-shape {
+    fill: var(--alert-severity);
+    fill-opacity: 0.12;
+    stroke: var(--alert-severity);
+    stroke-width: 1.5;
+    stroke-linejoin: round;
+  }
+
+  .alert-card-preview-shape--contained {
+    fill-opacity: 0.45;
+    stroke-width: 2;
+  }
+
+  .alert-card-preview-shape--outside {
+    fill-opacity: 0.06;
+    stroke-opacity: 0.6;
+  }
+
+  .alert-card-preview-caption {
+    @apply mt-1 flex items-center justify-between gap-2 text-[10px];
+    color: var(--color-text-secondary);
+  }
+
+  .alert-card-preview-count {
+    color: var(--color-text-tertiary);
+  }
+
+  .alert-card-area-note {
+    @apply mt-2 rounded p-2 text-[10px];
+    border: 1px dashed var(--color-border-secondary);
+    color: var(--color-text-secondary);
+    line-height: 1.4;
+  }
+
+  .alert-card-meta {
+    @apply mt-2 grid gap-1 text-[10px];
+  }
+
+  .alert-card-meta-row {
+    @apply flex items-baseline justify-between gap-2;
+  }
+
+  .alert-card-meta dt {
+    color: var(--color-text-tertiary);
+  }
+
+  .alert-card-meta dd {
+    color: var(--color-text-secondary);
+    text-align: right;
+  }
+
+  .alert-card-instructions {
+    @apply mt-2 text-[10px];
+  }
+
+  .alert-card-instructions summary {
+    cursor: pointer;
+    color: var(--alert-severity);
+  }
+
+  .alert-card-instructions summary:hover {
+    text-decoration: underline;
+  }
+
+  .alert-card-instructions p {
+    @apply mt-1;
+    color: var(--color-text-secondary);
+    line-height: 1.45;
+  }
+
+  .active-alerts-list {
+    @apply flex flex-col gap-2;
+  }
+
+  .active-alerts-message {
+    @apply text-xs;
+    color: var(--color-text-secondary);
+  }
+
+  .active-alerts-error {
+    @apply flex flex-col items-start gap-2 rounded p-2 text-xs;
+    border: var(--border-width) solid var(--color-accent-rose);
+    background-color: rgba(244, 63, 94, 0.08);
+  }
+
+  .active-alerts-error p {
+    color: var(--color-accent-rose);
+  }
+
+  .active-alerts-retry {
+    @apply rounded px-2 py-1 text-[10px] font-semibold uppercase;
+    border: var(--border-width) solid var(--color-accent-rose);
+    color: var(--color-background);
+    background-color: var(--color-accent-rose);
+    cursor: pointer;
+  }
+
+  .active-alerts-retry:hover {
+    opacity: 0.9;
   }
 
   .app-conditions-section {

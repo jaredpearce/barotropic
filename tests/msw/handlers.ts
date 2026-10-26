@@ -13,4 +13,13 @@ export const handlers = [
       { headers: { 'Cache-Control': 'no-store' } },
     );
   }),
+  http.get('/api/nws/alerts/point', () => {
+    return HttpResponse.json(
+      {
+        point: { latitude: 35.7915, longitude: -78.7811 },
+        alerts: [],
+      },
+      { headers: { 'Cache-Control': 'no-store' } },
+    );
+  }),
 ];

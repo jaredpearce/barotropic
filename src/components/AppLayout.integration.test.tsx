@@ -4,6 +4,67 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { AppLayout } from './AppLayout';
 import { renderWithProviders } from '../../tests/utils/render';
 
+interface StubAppFetchOptions {
+  results?: unknown[];
+  alerts?: unknown[];
+}
+
+/**
+ * Route-aware fetch stub: the layout loads alerts on mount and geocodes only
+ * after a search, so a single fixed response would be consumed twice.
+ */
+function stubAppFetch({
+  results = [],
+  alerts = [],
+}: StubAppFetchOptions = {}) {
+  const fetchMock = vi.fn((input: RequestInfo | URL) => {
+    const url = input instanceof Request ? input.url : input.toString();
+
+    if (url.includes('/api/nws/alerts/point')) {
+      return Promise.resolve(
+        Response.json({
+          point: { latitude: 35.7915, longitude: -78.7811 },
+          alerts,
+        })
+      );
+    }
+
+    return Promise.resolve(Response.json({ results }));
+  });
+
+  vi.stubGlobal('fetch', fetchMock);
+  return fetchMock;
+}
+
+const SEATTLE_RESULT = {
+  id: 123,
+  name: 'Seattle',
+  latitude: 47.6062,
+  longitude: -122.3321,
+  country: 'United States',
+  admin1: 'Washington',
+};
+
+const ACTIVE_ALERT = {
+  source: 'NWS',
+  id: 'alert-1',
+  retrievedAt: '2026-10-26T12:00:00Z',
+  issuedAt: '2026-10-26T11:00:00Z',
+  event: 'Heat Advisory',
+  headline: 'Heat advisory in effect',
+  severity: 'Moderate',
+  certainty: 'Likely',
+  urgency: 'Expected',
+  status: 'Actual',
+  areaDescription: 'Wake / Chatham / Durham counties',
+  effective: '2026-10-26T12:00:00Z',
+  expires: '2099-10-26T23:00:00Z',
+  description: 'Hot and humid conditions.',
+  instruction: 'Drink water.',
+  senderName: 'NWS Raleigh',
+  geometry: null,
+};
+
 afterEach(() => {
   window.localStorage.clear();
   vi.unstubAllGlobals();
@@ -12,23 +73,7 @@ afterEach(() => {
 describe('AppLayout location selection', () => {
   it('Use Case: searches for a place and updates the selected navigation location', async () => {
     const user = userEvent.setup();
-    vi.stubGlobal(
-      'fetch',
-      vi.fn().mockResolvedValue(
-        Response.json({
-          results: [
-            {
-              id: 123,
-              name: 'Seattle',
-              latitude: 47.6062,
-              longitude: -122.3321,
-              country: 'United States',
-              admin1: 'Washington',
-            },
-          ],
-        })
-      )
-    );
+    stubAppFetch({ results: [SEATTLE_RESULT] });
 
     renderWithProviders(<AppLayout />);
     await user.click(screen.getByRole('button', { name: /Cary, NC/i }));
@@ -44,7 +89,7 @@ describe('AppLayout location selection', () => {
 
   it('Use Case: displays an empty state when location search has no matches', async () => {
     const user = userEvent.setup();
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(Response.json({ results: [] })));
+    stubAppFetch();
 
     renderWithProviders(<AppLayout />);
     await user.click(screen.getByRole('button', { name: /Cary, NC/i }));
@@ -52,5 +97,17 @@ describe('AppLayout location selection', () => {
     await user.click(screen.getByRole('button', { name: 'Search' }));
 
     expect(await screen.findByText(/No locations found/i)).toBeInTheDocument();
+  });
+
+  it('Use Case: shows the active alerts for the selected location in the sidebar', async () => {
+    stubAppFetch({ alerts: [ACTIVE_ALERT] });
+
+    renderWithProviders(<AppLayout />);
+
+    expect(
+      await screen.findByRole('heading', { name: 'Active alerts (1)' })
+    ).toBeInTheDocument();
+    expect(screen.getByText('Heat Advisory')).toBeInTheDocument();
+    expect(screen.getByText('Highest: Moderate')).toBeInTheDocument();
   });
 });
