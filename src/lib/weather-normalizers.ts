@@ -75,3 +75,19 @@ export function normalizeNwsWindDirection(value: string): number | null {
 export function normalizeNwsQuantityValue(quantity?: NwsQuantity): number | null {
   return quantity?.value ?? null;
 }
+
+/**
+ * Normalize a barometric pressure reading to hectopascals.
+ *
+ * The NWS publishes pressure in pascals with a `wmoUnit:Pa` unit code;
+ * 1 hPa equals 1 mb.
+ */
+export function normalizeNwsPressure(quantity?: NwsQuantity): number | null {
+  const value = quantity?.value;
+  if (value == null) return null;
+
+  const unit = quantity?.unitCode?.toLowerCase() ?? '';
+  if (unit.includes('hpa')) return value;
+  if (unit.includes('pa')) return value / 100;
+  return null;
+}

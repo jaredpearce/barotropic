@@ -4,3 +4,4 @@
  */
 
 export { default as Button } from "./Button";
+export { default as ConditionTile } from "./ConditionTile";

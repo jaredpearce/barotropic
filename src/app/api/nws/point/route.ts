@@ -9,9 +9,9 @@
 
 import { NextResponse } from 'next/server';
 import { fetchFromNws } from '@/lib/nws/client';
+import { normalizeNwsObservation } from '@/lib/nws/normalize-observation';
 import { upstreamErrorResponse } from '@/lib/api-errors';
 import {
-  NormalizedObservationSchema,
   NormalizedWeatherRecordSchema,
   PointSchema,
   ForecastSchema,
@@ -20,14 +20,13 @@ import {
 } from '@/lib/schemas';
 import {
   normalizeNwsQuantityValue,
-  normalizeNwsTemperature,
   normalizeNwsWindDirection,
-  normalizeNwsWindSpeed,
   normalizeNwsWindSpeedText,
 } from '@/lib/weather-normalizers';
 import {
   validateLatitudeLongitude,
   extractStationId,
+  toNwsPath,
 } from '@/lib/nws/utils';
 
 export async function GET(request: Request) {
@@ -83,8 +82,8 @@ export async function GET(request: Request) {
     }
 
     // Fetch the forecast and nearby stations in parallel
-    const forecastPath = forecastUrl.replace('https://api.weather.gov', '');
-    const stationsPath = stationsUrl?.replace('https://api.weather.gov', '');
+    const forecastPath = toNwsPath(forecastUrl);
+    const stationsPath = stationsUrl ? toNwsPath(stationsUrl) : null;
     const [forecast, stations] = await Promise.all([
       fetchFromNws(forecastPath, ForecastSchema),
       stationsPath
@@ -101,26 +100,10 @@ export async function GET(request: Request) {
       : null;
 
     const retrievedAt = new Date().toISOString();
-    const normalizedCurrentConditions = currentConditions
-      ? NormalizedObservationSchema.parse({
-          source: 'NWS',
-          id: `${stationId}:${currentConditions.properties.timestamp ?? retrievedAt}`,
-          stationId,
-          timestamp: currentConditions.properties.timestamp ?? null,
-          retrievedAt,
-          issuedAt: currentConditions.properties.timestamp ?? retrievedAt,
-          description: currentConditions.properties.textDescription ?? null,
-          temperatureC: normalizeNwsTemperature(currentConditions.properties.temperature),
-          dewpointC: normalizeNwsTemperature(currentConditions.properties.dewpoint),
-          humidityPercent: normalizeNwsQuantityValue(
-            currentConditions.properties.relativeHumidity
-          ),
-          windSpeedMps: normalizeNwsWindSpeed(currentConditions.properties.windSpeed),
-          windDirectionDegrees: normalizeNwsQuantityValue(
-            currentConditions.properties.windDirection
-          ),
-        })
-      : null;
+    const normalizedCurrentConditions =
+      stationId && currentConditions
+        ? normalizeNwsObservation(stationId, currentConditions, retrievedAt)
+        : null;
 
     return NextResponse.json({
       location: {

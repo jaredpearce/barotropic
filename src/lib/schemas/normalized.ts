@@ -3,8 +3,8 @@ import { GeoJsonPolygonalGeometryOrNullSchema } from './geojson';
 
 const MetadataFields = {
   retrievedAt: z.string().datetime(),
-  issuedAt: z.string().datetime().nullable().optional(),
-  runTime: z.string().datetime().nullable().optional(),
+  issuedAt: z.string().datetime({ offset: true }).nullable().optional(),
+  runTime: z.string().datetime({ offset: true }).nullable().optional(),
 };
 
 export const NormalizedWeatherRecordSchema = z
@@ -42,7 +42,9 @@ export const NormalizedObservationSchema = z
     dewpointC: z.number().nullable(),
     humidityPercent: z.number().min(0).max(100).nullable(),
     windSpeedMps: z.number().nullable(),
+    windGustMps: z.number().nullable(),
     windDirectionDegrees: z.number().min(0).max(360).nullable(),
+    pressureHpa: z.number().nullable().optional(),
   })
   .refine((record) => record.issuedAt !== undefined || record.runTime !== undefined, {
     message: 'An observation must include issuedAt or runTime metadata',

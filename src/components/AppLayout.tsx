@@ -1,6 +1,10 @@
 'use client';
 
 import React, { ReactNode, useEffect, useState } from 'react';
+import { buildConditionTiles } from '@/lib/conditions';
+import { formatTemperatureDegrees } from '@/lib/conditions/format';
+import type { CurrentConditions } from '@/types/domain';
+import ConditionTile from './ConditionTile';
 
 interface AppLayoutProps {
   children?: ReactNode;
@@ -46,6 +50,30 @@ const hourlyForecast = Array.from({ length: 24 }, (_, hour) => {
     wind: hour < 6 ? 'NW 5 kt' : hour < 12 ? 'N 4 kt' : 'SE 9 kt',
   };
 });
+
+/**
+ * Placeholder observation for the sidebar until it is wired to the live
+ * observation feed. Values use the canonical domain units.
+ */
+const currentConditions: CurrentConditions = {
+  temperature: 28.9,
+  humidity: 64,
+  dewpoint: 21.1,
+  windSpeed: 4.63,
+  windDirection: 135,
+  windGust: 7.72,
+  pressure: 1012.4,
+  pressureTrend: -0.8,
+  condition: 'Partly Cloudy',
+};
+
+/**
+ * The sidebar hero already renders the air temperature, so the tile grid shows
+ * the remaining conditions.
+ */
+const sidebarTiles = buildConditionTiles(currentConditions).filter(
+  (tile) => tile.kind !== 'temperature'
+);
 
 /** Main dark-mode application shell for Barotropic. */
 export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
@@ -294,31 +322,15 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
               <span>⌄</span>
             </div>
             <div className="app-conditions-section">
-              <span className="app-conditions-temp">84°</span>
-              <span className="app-conditions-meta">Feels 91°F</span>
+              <span className="app-conditions-temp">{formatTemperatureDegrees(currentConditions.temperature)}</span>
             </div>
-            <p className="app-conditions-description">SCT045 · Partly Cloudy</p>
+            <p className="app-conditions-description">
+              SCT045 · {currentConditions.condition}
+            </p>
             <div className="app-conditions-grid">
-              <div>
-                <p className="app-conditions-item-label">Wind</p>
-                <p className="app-conditions-item-value">↘ SE 9 kt</p>
-                <p className="app-conditions-item-meta">G 15 kt</p>
-              </div>
-              <div>
-                <p className="app-conditions-item-label">PoP</p>
-                <p className="app-conditions-item-value">60%</p>
-                <p className="app-conditions-item-meta">TSRA possible</p>
-              </div>
-              <div>
-                <p className="app-conditions-item-label">Pressure</p>
-                <p className="app-conditions-item-value">1012.4 mb</p>
-                <p className="app-conditions-item-meta negative">-0.8/3h ↓</p>
-              </div>
-              <div>
-                <p className="app-conditions-item-label">Dewpoint</p>
-                <p className="app-conditions-item-value">70°F</p>
-                <p className="app-conditions-item-meta">RH 64%</p>
-              </div>
+              {sidebarTiles.map((tile) => (
+                <ConditionTile key={tile.kind} {...tile} variant="bare" />
+              ))}
             </div>
           </section>
 

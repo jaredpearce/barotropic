@@ -19,6 +19,16 @@ export function extractStationId(stationUrl: string): string | null {
 }
 
 /**
+ * Convert an absolute api.weather.gov URL into a path the client accepts.
+ *
+ * @param url - Absolute URL on api.weather.gov
+ * @returns The path portion of the URL
+ */
+export function toNwsPath(url: string): string {
+  return url.replace('https://api.weather.gov', '');
+}
+
+/**
  * Validate latitude/longitude values
  *
  * @param lat - Latitude string

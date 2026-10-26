@@ -371,6 +371,71 @@
     color: var(--color-accent-rose);
   }
 
+  .condition-tile {
+    @apply rounded p-3;
+    border: var(--border-width) solid var(--color-border);
+    background-color: var(--color-surface-primary);
+  }
+
+  .condition-tile--bare {
+    border: none;
+    padding: 0;
+    background-color: transparent;
+  }
+
+  .condition-tile-label {
+    @apply text-[10px];
+    color: var(--color-text-tertiary);
+  }
+
+  .condition-tile-value {
+    @apply mt-1 text-base font-semibold;
+  }
+
+  .condition-tile--bare .condition-tile-value {
+    @apply text-xs font-normal;
+  }
+
+  .condition-tile-meta {
+    @apply mt-1 text-[10px];
+    color: var(--color-text-secondary);
+  }
+
+  .condition-tile--bare .condition-tile-meta {
+    @apply text-xs;
+  }
+
+  .condition-tile-meta.negative {
+    color: var(--color-accent-rose);
+  }
+
+  .condition-tile-meta.positive {
+    color: var(--color-accent-emerald);
+  }
+
+  .condition-tile-meta.warning {
+    color: var(--color-accent-amber-light);
+  }
+
+  .condition-tile-grid {
+    @apply mt-5 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5;
+  }
+
+  .condition-page {
+    @apply absolute inset-0 overflow-y-auto;
+    padding: var(--spacing-lg);
+  }
+
+  .condition-page-title {
+    @apply text-sm font-semibold uppercase;
+    letter-spacing: var(--tracking-wide);
+  }
+
+  .condition-page-meta {
+    @apply mt-1 text-xs;
+    color: var(--color-text-secondary);
+  }
+
   .app-forecast-grid {
     @apply border-b pb-2;
     border-color: var(--color-border-secondary);
