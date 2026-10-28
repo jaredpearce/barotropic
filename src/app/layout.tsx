@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+// @ts-ignore CSS is loaded by Next.js and has no TypeScript declarations.
 import "@/styles/globals.css";
 
 export const metadata: Metadata = {

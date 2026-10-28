@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "description": "Weather intelligence platform - examining evidence, recognizing patterns, forming hypotheses",
-  "packageManager": "bun@latest",
+  "packageManager": "bun@1.4.2",
   "type": "module",
   "scripts": {
     "dev": "bun --bun next dev",
@@ -39,6 +39,7 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.45.0",
+    "@svgr/webpack": "^8.1.0",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/jest-dom": "^6.6.0",
     "@testing-library/react": "^16.3.3",

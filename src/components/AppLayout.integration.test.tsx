@@ -101,6 +101,15 @@ afterEach(() => {
 });
 
 describe('AppLayout location selection', () => {
+  it('renders the Barotropic logo and wordmark as one accessible brand', () => {
+    stubAppFetch();
+
+    renderWithProviders(<AppLayout />);
+
+    expect(screen.getByRole('img', { name: 'Barotropic' })).toBeInTheDocument();
+    expect(screen.getByText('Barotropic')).toBeInTheDocument();
+  });
+
   it('Use Case: searches for a place and updates the selected navigation location', async () => {
     const user = userEvent.setup();
     stubAppFetch({ results: [SEATTLE_RESULT] });

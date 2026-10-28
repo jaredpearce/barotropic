@@ -17,9 +17,13 @@ import {
 } from '@/lib/schemas';
 import { validateZoneId } from '@/lib/nws/utils';
 
-export async function GET(request: Request) {
+import { NextRequest } from 'next/server';
+
+export const dynamic = 'force-dynamic';
+
+export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
+    const { searchParams } = request.nextUrl;
     const zone = searchParams.get('zone');
 
     if (!zone) {

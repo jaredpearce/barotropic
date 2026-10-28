@@ -5,6 +5,7 @@
 
 export { default as ActiveAlerts } from "./ActiveAlerts";
 export { default as AlertCard } from "./AlertCard";
+export { default as BarotropicLogo } from "./BarotropicLogo";
 export { default as Button } from "./Button";
 export { default as ConditionTile } from "./ConditionTile";
 export { default as CurrentConditions } from "./CurrentConditions";
