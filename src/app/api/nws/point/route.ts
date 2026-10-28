@@ -7,7 +7,7 @@
  * with Forecast API and latest observations.
  */
 
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { fetchFromNws } from '@/lib/nws/client';
 import { normalizeNwsObservation } from '@/lib/nws/normalize-observation';
 import { upstreamErrorResponse } from '@/lib/api-errors';
@@ -29,9 +29,11 @@ import {
   toNwsPath,
 } from '@/lib/nws/utils';
 
-export async function GET(request: Request) {
+export const dynamic = 'force-dynamic';
+
+export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
+    const { searchParams } = request.nextUrl;
     const lat = searchParams.get('lat');
     const lon = searchParams.get('lon');
 

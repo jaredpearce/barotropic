@@ -4,8 +4,12 @@ import { fetchFromNws } from '@/lib/nws/client';
 import { validateLatitudeLongitude } from '@/lib/nws/utils';
 import { PointSchema } from '@/lib/schemas';
 
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
+import { NextRequest } from 'next/server';
+
+export const dynamic = 'force-dynamic';
+
+export async function GET(request: NextRequest) {
+  const { searchParams } = request.nextUrl;
   const lat = searchParams.get('lat');
   const lon = searchParams.get('lon');
 

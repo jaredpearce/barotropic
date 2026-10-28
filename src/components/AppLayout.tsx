@@ -2,6 +2,7 @@
 
 import React, { ReactNode, useEffect, useState } from 'react';
 import ActiveAlerts from './ActiveAlerts';
+import BarotropicLogo from './BarotropicLogo';
 import CurrentConditions from './CurrentConditions';
 
 interface AppLayoutProps {
@@ -182,7 +183,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     <div className="app-shell">
       <nav className="app-header">
         <div className="flex items-center gap-4">
-          <span className="app-header-title">◉ Barotropic</span>
+          <BarotropicLogo />
           <span className="app-header-status">
             <span className="app-header-status-indicator" /> Live · 4 min ago
           </span>

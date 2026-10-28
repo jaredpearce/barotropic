@@ -1,5 +1,7 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
+
+export const dynamic = 'force-dynamic';
 
 const GeocodingResponseSchema = z.object({
   results: z
@@ -17,8 +19,8 @@ const GeocodingResponseSchema = z.object({
     .default([]),
 });
 
-export async function GET(request: Request) {
-  const query = new URL(request.url).searchParams.get('q')?.trim() ?? '';
+export async function GET(request: NextRequest) {
+  const query = request.nextUrl.searchParams.get('q')?.trim() ?? '';
   if (query.length < 2 || query.length > 100) {
     return NextResponse.json(
       { error: 'Search query must be between 2 and 100 characters' },

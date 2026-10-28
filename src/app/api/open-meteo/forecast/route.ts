@@ -5,7 +5,7 @@
  * The generic endpoint uses a fixed Cary, NC location while this API is being developed.
  */
 
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { fetchFromOpenMeteo } from '@/lib/open-meteo/client';
 import { upstreamErrorResponse } from '@/lib/api-errors';
 import { OpenMeteoForecastSchema } from '@/lib/schemas';
@@ -17,6 +17,8 @@ import {
 } from '@/lib/open-meteo/utils';
 import { NormalizedWeatherRecordSchema } from '@/lib/schemas';
 
+export const dynamic = 'force-dynamic';
+
 const CARY_LOCATION = {
   latitude: 35.7915,
   longitude: -78.7811,
@@ -27,9 +29,9 @@ const CARY_LOCATION = {
 const RADAR_WMS_URL =
   'https://opengeo.ncep.noaa.gov/geoserver/conus/conus_bref_qcd/ows';
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
+    const { searchParams } = request.nextUrl;
     const modelParam = searchParams.get('models');
 
     let models: OpenMeteoModelName[];

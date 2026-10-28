@@ -7,7 +7,7 @@
  * distinguish polygon-based alerts from area-based alerts.
  */
 
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { upstreamErrorResponse } from '@/lib/api-errors';
 import { fetchFromNws } from '@/lib/nws/client';
 import { validateLatitudeLongitude } from '@/lib/nws/utils';
@@ -18,8 +18,8 @@ import {
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
+export async function GET(request: NextRequest) {
+  const { searchParams } = request.nextUrl;
   const lat = searchParams.get('lat');
   const lon = searchParams.get('lon');
 
