@@ -4,6 +4,7 @@ import React, { ReactNode, useEffect, useState } from 'react';
 import ActiveAlerts from './ActiveAlerts';
 import BarotropicLogo from './BarotropicLogo';
 import CurrentConditions from './CurrentConditions';
+import HourlyForecast from './HourlyForecast';
 
 interface AppLayoutProps {
   children?: ReactNode;
@@ -36,19 +37,6 @@ function locationLabel(location: LocationResult) {
   const region = location.admin1 || location.country;
   return region ? `${location.name}, ${region}` : location.name;
 }
-
-const hourlyForecast = Array.from({ length: 24 }, (_, hour) => {
-  const period = hour < 12 ? 'AM' : 'PM';
-  const displayHour = hour % 12 || 12;
-  const temperature = Math.round(72 - Math.max(0, hour - 5) * 0.25 + Math.max(0, hour - 14) * 0.8);
-
-  return {
-    time: `${displayHour}:00 ${period}`,
-    temperature: `${temperature}°`,
-    precipitation: hour >= 13 && hour <= 18 ? '20%' : '5%',
-    wind: hour < 6 ? 'NW 5 kt' : hour < 12 ? 'N 4 kt' : 'SE 9 kt',
-  };
-});
 
 /** Main dark-mode application shell for Barotropic. */
 export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
@@ -292,29 +280,10 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
             longitude={location.longitude}
           />
 
-          <section className="app-section">
-            <h2 className="app-section-title">Hourly forecast · 24h local</h2>
-            <div className="app-forecast-grid">
-              <div className="app-forecast-header">
-                <span>Time</span>
-                <span />
-                <span>°F</span>
-                <span>PoP</span>
-                <span>Wind</span>
-              </div>
-            </div>
-            <div>
-              {hourlyForecast.map((hour) => (
-                <div key={hour.time} className="app-forecast-row">
-                  <span className="app-forecast-time">{hour.time}</span>
-                  <span className="app-forecast-icon">☀</span>
-                  <span>{hour.temperature}</span>
-                  <span className="app-forecast-precip">{hour.precipitation}</span>
-                  <span className="app-forecast-wind">{hour.wind}</span>
-                </div>
-              ))}
-            </div>
-          </section>
+          <HourlyForecast
+            latitude={location.latitude}
+            longitude={location.longitude}
+          />
         </aside>
       </div>
     </div>
