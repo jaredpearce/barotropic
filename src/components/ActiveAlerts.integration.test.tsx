@@ -5,8 +5,15 @@ import { renderWithProviders } from '../../tests/utils/render';
 import { ActiveAlerts } from './ActiveAlerts';
 import type { GeoJsonPolygon } from '@/lib/schemas/geojson';
 import type { NormalizedAlert } from '@/lib/schemas/normalized';
+import { useActiveAlerts } from '@/lib/hooks/use-active-alerts';
 
 const POINT = { latitude: 35.7915, longitude: -78.7811 };
+
+/** Test harness that supplies the request state AppLayout owns in production. */
+function ActiveAlertsHarness({ latitude, longitude }: { latitude: number; longitude: number }) {
+  const state = useActiveAlerts({ latitude, longitude });
+  return <ActiveAlerts {...state} />;
+}
 
 const POLYGON_AROUND_POINT: GeoJsonPolygon = {
   type: 'Polygon',
@@ -73,7 +80,7 @@ describe('ActiveAlerts integration', () => {
     vi.stubGlobal('fetch', fetchMock);
 
     const { container } = renderWithProviders(
-      <ActiveAlerts latitude={POINT.latitude} longitude={POINT.longitude} />,
+      <ActiveAlertsHarness latitude={POINT.latitude} longitude={POINT.longitude} />,
     );
 
     expect(screen.getByRole('status')).toHaveTextContent('Loading active alerts');
@@ -114,7 +121,7 @@ describe('ActiveAlerts integration', () => {
     );
 
     const { container } = renderWithProviders(
-      <ActiveAlerts latitude={POINT.latitude} longitude={POINT.longitude} />,
+      <ActiveAlertsHarness latitude={POINT.latitude} longitude={POINT.longitude} />,
     );
 
     await screen.findByText('Heat Advisory');
@@ -131,7 +138,9 @@ describe('ActiveAlerts integration', () => {
   it('Use Case: shows an empty state when the location has no alerts', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(alertsResponse([])));
 
-    renderWithProviders(<ActiveAlerts latitude={POINT.latitude} longitude={POINT.longitude} />);
+    renderWithProviders(
+      <ActiveAlertsHarness latitude={POINT.latitude} longitude={POINT.longitude} />,
+    );
 
     expect(await screen.findByText('No active alerts for this location.')).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Active alerts' })).toBeInTheDocument();
@@ -145,7 +154,9 @@ describe('ActiveAlerts integration', () => {
       .mockResolvedValueOnce(alertsResponse([makeAlert({ event: 'Heat Advisory' })]));
     vi.stubGlobal('fetch', fetchMock);
 
-    renderWithProviders(<ActiveAlerts latitude={POINT.latitude} longitude={POINT.longitude} />);
+    renderWithProviders(
+      <ActiveAlertsHarness latitude={POINT.latitude} longitude={POINT.longitude} />,
+    );
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
       'Unable to load alerts for this location.',
@@ -165,12 +176,12 @@ describe('ActiveAlerts integration', () => {
     vi.stubGlobal('fetch', fetchMock);
 
     const { rerender } = renderWithProviders(
-      <ActiveAlerts latitude={POINT.latitude} longitude={POINT.longitude} />,
+      <ActiveAlertsHarness latitude={POINT.latitude} longitude={POINT.longitude} />,
     );
 
     await screen.findByText('No active alerts for this location.');
 
-    rerender(<ActiveAlerts latitude={40.7128} longitude={-74.006} />);
+    rerender(<ActiveAlertsHarness latitude={40.7128} longitude={-74.006} />);
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
     expect(await screen.findByText('Flood Watch')).toBeInTheDocument();

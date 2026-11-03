@@ -24,6 +24,7 @@ function makeCard(overrides: Partial<AlertCardData> = {}): AlertCardData {
       polygonCount: 1,
       paths: [{ d: 'M4,4 L116,4 L116,68 L4,68 Z', containsPoint: true }],
     },
+    polygon: null,
     ...overrides,
   };
 }

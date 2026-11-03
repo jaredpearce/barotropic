@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { deriveFreshness, FRESHNESS_THRESHOLD_MS } from './freshness';
+import { deriveFreshness, FRESHNESS_THRESHOLD_MS, getOldestTimestamp } from './freshness';
 
 const NOW = new Date('2026-11-03T12:00:00Z');
 
@@ -51,5 +51,24 @@ describe('deriveFreshness', () => {
 
     expect(deriveFreshness(retrievedAt, NOW, 10 * 60 * 1000).state).toBe('live');
     expect(deriveFreshness(retrievedAt, NOW, 4 * 60 * 1000).state).toBe('stale');
+  });
+});
+
+describe('getOldestTimestamp', () => {
+  it('Use Case: summarizes several panels using the oldest valid timestamp', () => {
+    const oldest = getOldestTimestamp([
+      new Date('2026-11-03T11:58:00Z'),
+      '2026-11-03T11:52:00Z',
+      null,
+      undefined,
+      'not-a-timestamp',
+    ]);
+
+    expect(oldest?.toISOString()).toBe('2026-11-03T11:52:00.000Z');
+  });
+
+  it('Use Case: returns null when no source has a valid timestamp', () => {
+    expect(getOldestTimestamp([])).toBeNull();
+    expect(getOldestTimestamp([null, undefined, 'nope'])).toBeNull();
   });
 });

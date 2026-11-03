@@ -24,6 +24,7 @@ import {
   normalizeNwsWindSpeedText,
 } from '@/lib/weather-normalizers';
 import { validateLatitudeLongitude, extractStationId, toNwsPath } from '@/lib/nws/utils';
+import { normalizeObservationStations } from '@/lib/nws/stations';
 
 export const dynamic = 'force-dynamic';
 
@@ -85,6 +86,7 @@ export async function GET(request: Request) {
     ]);
     const stationUrl = stations?.features[0]?.id;
     const stationId = stationUrl ? extractStationId(stationUrl) : null;
+    const stationCoordinates = normalizeObservationStations(stations);
     const currentConditions = stationId
       ? await fetchFromNws(`/stations/${stationId}/observations/latest`, LatestObservationSchema)
       : null;
@@ -103,6 +105,7 @@ export async function GET(request: Request) {
         state: relativeLocation?.state ?? undefined,
       },
       currentConditions: normalizedCurrentConditions,
+      stations: stationCoordinates,
       forecast: (forecast.properties.periods ?? []).map((period) =>
         NormalizedWeatherRecordSchema.parse({
           source: 'NWS',

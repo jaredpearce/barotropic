@@ -33,6 +33,7 @@
 
   /* Map area */
   --color-map-background: rgb(13, 26, 44); /* #0d1a2c */
+  --color-map-station: rgb(56, 189, 248); /* sky-400 */
 
   /* Spacing */
   --space_scale-1: 4px;
@@ -303,9 +304,81 @@
     background-color: var(--color-map-background);
   }
 
-  .app-map-placeholder {
-    @apply flex h-full items-center justify-center text-sm;
-    color: var(--color-text-tertiary);
+  .desk-map {
+    @apply relative h-full w-full overflow-hidden;
+    background-color: var(--color-map-background);
+  }
+
+  .desk-map-canvas {
+    @apply absolute inset-0;
+  }
+
+  .desk-map--error .desk-map-canvas {
+    visibility: hidden;
+  }
+
+  .desk-map-overlay {
+    @apply absolute inset-0 z-[5] flex flex-col items-center justify-center gap-2 px-6 text-center text-sm;
+    background-color: var(--color-map-background);
+    color: var(--color-text-secondary);
+  }
+
+  .desk-map-overlay-title {
+    @apply text-base font-semibold;
+    color: var(--color-text-primary);
+  }
+
+  .desk-map-overlay--error {
+    background-color: rgba(5, 6, 13, 0.92);
+  }
+
+  .desk-map-marker {
+    @apply h-3.5 w-3.5 rounded-full;
+    border: 2px solid var(--color-background);
+    background-color: var(--color-accent-emerald);
+    box-shadow: 0 0 0 4px rgba(52, 211, 153, 0.28);
+  }
+
+  .desk-map-legend {
+    @apply absolute left-3 top-3 z-[4] flex items-center gap-3 rounded px-2.5 py-1.5 text-[11px] font-semibold uppercase;
+    border: var(--border-width) solid var(--color-border-secondary);
+    background-color: rgba(5, 6, 13, 0.82);
+    color: var(--color-text-secondary);
+    letter-spacing: var(--tracking-tight);
+  }
+
+  .desk-map-legend span + span {
+    border-left: var(--border-width) solid var(--color-border-secondary);
+    padding-left: var(--spacing-sm);
+  }
+
+  .desk-map .maplibregl-ctrl-group {
+    border: var(--border-width) solid var(--color-border-secondary);
+    background-color: var(--color-surface-secondary);
+  }
+
+  .desk-map .maplibregl-ctrl-group button + button {
+    border-top-color: var(--color-border-secondary);
+  }
+
+  .desk-map .maplibregl-ctrl button .maplibregl-ctrl-icon {
+    filter: invert(0.82);
+  }
+
+  .desk-map .maplibregl-ctrl-attrib,
+  .desk-map .maplibregl-ctrl-scale {
+    border: var(--border-width) solid var(--color-border-secondary);
+    background-color: rgba(5, 6, 13, 0.78);
+    color: var(--color-text-secondary);
+    font-size: var(--text-size-xs);
+  }
+
+  .desk-map .maplibregl-ctrl-attrib a {
+    color: var(--color-text-secondary);
+  }
+
+  .desk-map .maplibregl-ctrl-attrib a:hover {
+    color: var(--color-accent-emerald);
   }
 
   .app-sidebar {

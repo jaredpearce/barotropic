@@ -93,6 +93,16 @@ describe('alert cards', () => {
 
     expect(polygonCard.match).toBe('polygon');
     expect(polygonCard.geometry.paths[0].containsPoint).toBe(true);
+    expect(polygonCard.polygon).toBe(POLYGON_AROUND_POINT);
+  });
+
+  it('Use Case: keeps area-based alerts without a polygon for the map', () => {
+    const [card] = buildAlertCards([makeAlert({ geometry: null })], {
+      now: NOW,
+      point: POINT,
+    });
+
+    expect(card.polygon).toBeNull();
   });
 
   it('Use Case: labels null geometry as area-based', () => {

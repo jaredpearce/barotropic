@@ -75,3 +75,24 @@ export function deriveFreshness(
     title: formatAge(ageMs),
   };
 }
+
+/**
+ * Return the oldest valid timestamp from a set of sources.
+ *
+ * The header pill uses this to summarize several panels conservatively: if any
+ * panel is stale, the header is stale. Invalid or missing values are ignored.
+ */
+export function getOldestTimestamp(
+  values: ReadonlyArray<string | Date | null | undefined>,
+): Date | null {
+  let oldest: number | null = null;
+
+  for (const value of values) {
+    const timestamp = toTimestamp(value);
+    if (timestamp === null) continue;
+
+    oldest = oldest === null ? timestamp : Math.min(oldest, timestamp);
+  }
+
+  return oldest === null ? null : new Date(oldest);
+}

@@ -33,9 +33,29 @@ export const PointSchema = z
   })
   .passthrough();
 
+const StationSchema = z
+  .object({
+    id: z.string().url(),
+    geometry: z
+      .object({
+        type: z.literal('Point'),
+        coordinates: z.array(z.number()).min(2),
+      })
+      .passthrough()
+      .optional(),
+    properties: z
+      .object({
+        name: z.string().optional(),
+        stationIdentifier: z.string().optional(),
+      })
+      .passthrough()
+      .optional(),
+  })
+  .passthrough();
+
 export const ObservationStationsSchema = z
   .object({
-    features: z.array(z.object({ id: z.string().url() }).passthrough()).default([]),
+    features: z.array(StationSchema).default([]),
   })
   .passthrough();
 
@@ -165,3 +185,4 @@ export type LatestObservation = z.infer<typeof LatestObservationSchema>;
 export type Zone = z.infer<typeof ZoneSchema>;
 export type AlertsResponse = z.infer<typeof AlertsResponseSchema>;
 export type StationObservations = z.infer<typeof StationObservationsSchema>;
+export type ObservationStations = z.infer<typeof ObservationStationsSchema>;

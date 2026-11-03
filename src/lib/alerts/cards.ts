@@ -7,6 +7,7 @@
  */
 
 import type { NormalizedAlert } from '@/lib/schemas/normalized';
+import type { GeoJsonPolygonalGeometry } from '@/lib/schemas/geojson';
 import {
   buildGeometryPreview,
   classifyAlertGeometry,
@@ -41,6 +42,8 @@ export interface AlertCardData {
   expiresLabel?: string;
   match: AlertGeometryMatch;
   geometry: AlertGeometryPreview;
+  /** Raw polygon geometry retained for map overlays. */
+  polygon: GeoJsonPolygonalGeometry | null;
   /** Transport timestamp used to derive LIVE/STALE status. */
   retrievedAt?: string;
 }
@@ -128,6 +131,7 @@ function toCard(
     expiresLabel: expires?.label,
     match: classifyAlertGeometry(alert.geometry, options.point),
     geometry: buildGeometryPreview(alert.geometry, options.point),
+    polygon: alert.geometry,
     retrievedAt: alert.retrievedAt,
   };
 }

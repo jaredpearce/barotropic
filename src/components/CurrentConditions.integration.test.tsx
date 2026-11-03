@@ -4,8 +4,28 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { renderWithProviders } from '../../tests/utils/render';
 import { CurrentConditions } from './CurrentConditions';
 import type { NormalizedObservation } from '@/lib/schemas/normalized';
+import { useCurrentConditions } from '@/lib/hooks/use-current-conditions';
 
 const POINT = { latitude: 35.7915, longitude: -78.7811 };
+
+/** Test harness that supplies the request state AppLayout owns in production. */
+function CurrentConditionsHarness({
+  latitude,
+  longitude,
+}: {
+  latitude: number;
+  longitude: number;
+}) {
+  const state = useCurrentConditions({ latitude, longitude });
+  return (
+    <CurrentConditions
+      conditions={state.conditions}
+      error={state.error}
+      refresh={state.refresh}
+      status={state.status}
+    />
+  );
+}
 
 const OBSERVATION: NormalizedObservation = {
   source: 'NWS',
@@ -42,7 +62,7 @@ describe('CurrentConditions integration', () => {
     vi.stubGlobal('fetch', fetchMock);
 
     renderWithProviders(
-      <CurrentConditions latitude={POINT.latitude} longitude={POINT.longitude} />,
+      <CurrentConditionsHarness latitude={POINT.latitude} longitude={POINT.longitude} />,
     );
 
     expect(screen.getByRole('status')).toHaveTextContent('Loading current conditions');
@@ -68,7 +88,7 @@ describe('CurrentConditions integration', () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(conditionsResponse(null)));
 
     renderWithProviders(
-      <CurrentConditions latitude={POINT.latitude} longitude={POINT.longitude} />,
+      <CurrentConditionsHarness latitude={POINT.latitude} longitude={POINT.longitude} />,
     );
 
     expect(
@@ -86,7 +106,7 @@ describe('CurrentConditions integration', () => {
     vi.stubGlobal('fetch', fetchMock);
 
     renderWithProviders(
-      <CurrentConditions latitude={POINT.latitude} longitude={POINT.longitude} />,
+      <CurrentConditionsHarness latitude={POINT.latitude} longitude={POINT.longitude} />,
     );
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
@@ -111,12 +131,12 @@ describe('CurrentConditions integration', () => {
     vi.stubGlobal('fetch', fetchMock);
 
     const { rerender } = renderWithProviders(
-      <CurrentConditions latitude={POINT.latitude} longitude={POINT.longitude} />,
+      <CurrentConditionsHarness latitude={POINT.latitude} longitude={POINT.longitude} />,
     );
 
     await screen.findByText('No current conditions available for this location.');
 
-    rerender(<CurrentConditions latitude={40.7128} longitude={-74.006} />);
+    rerender(<CurrentConditionsHarness latitude={40.7128} longitude={-74.006} />);
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
     expect(

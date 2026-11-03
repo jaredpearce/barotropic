@@ -8,10 +8,15 @@ import {
   type LocationResult,
   type SelectedLocation,
 } from '@/lib/location';
+import { getOldestTimestamp } from '@/lib/freshness';
+import { useActiveAlerts } from '@/lib/hooks/use-active-alerts';
+import { useCurrentConditions } from '@/lib/hooks/use-current-conditions';
 import ActiveAlerts from './ActiveAlerts';
 import BarotropicLogo from './BarotropicLogo';
 import CurrentConditions from './CurrentConditions';
 import HourlyForecast from './HourlyForecast';
+import MapPanel from './MapPanel';
+import StatusPill from './StatusPill';
 
 interface AppLayoutProps {
   children?: ReactNode;
@@ -26,6 +31,19 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const [searchState, setSearchState] = useState<'idle' | 'loading' | 'empty' | 'error'>('idle');
   const [locationState, setLocationState] = useState<'idle' | 'loading' | 'error'>('idle');
   const [locationMessage, setLocationMessage] = useState('');
+
+  const alerts = useActiveAlerts({
+    latitude: location.latitude,
+    longitude: location.longitude,
+  });
+  const currentConditions = useCurrentConditions({
+    latitude: location.latitude,
+    longitude: location.longitude,
+  });
+  const headerRetrievedAt = getOldestTimestamp([
+    currentConditions.conditions?.retrievedAt,
+    alerts.alerts[0]?.retrievedAt,
+  ]);
 
   async function useCurrentLocation() {
     if (!navigator.geolocation) {
@@ -157,6 +175,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
           <BarotropicLogo />
         </div>
         <div className="app-header-actions">
+          {headerRetrievedAt ? <StatusPill retrievedAt={headerRetrievedAt} /> : null}
           <button className="app-button">ⓘ Ask Barotropic</button>
           <button
             aria-expanded={isLocationPickerOpen}
@@ -259,13 +278,32 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
       <div className="grid min-h-0 grid-cols-[minmax(0,1fr)_300px]">
         <main className="app-main">
-          {children ?? <div className="app-map-placeholder">Map Area</div>}
+          {children ?? (
+            <MapPanel
+              alerts={alerts.alerts}
+              label={location.label}
+              latitude={location.latitude}
+              longitude={location.longitude}
+              stations={currentConditions.stations}
+            />
+          )}
         </main>
 
         <aside className="app-sidebar">
-          <ActiveAlerts latitude={location.latitude} longitude={location.longitude} />
+          <ActiveAlerts
+            alerts={alerts.alerts}
+            error={alerts.error}
+            highestSeverity={alerts.highestSeverity}
+            refresh={alerts.refresh}
+            status={alerts.status}
+          />
 
-          <CurrentConditions latitude={location.latitude} longitude={location.longitude} />
+          <CurrentConditions
+            conditions={currentConditions.conditions}
+            error={currentConditions.error}
+            refresh={currentConditions.refresh}
+            status={currentConditions.status}
+          />
 
           <HourlyForecast latitude={location.latitude} longitude={location.longitude} />
         </aside>
