@@ -21,11 +21,7 @@ interface ActiveAlertsProps {
  * `AlertCard` stays presentational. Alerts are already sorted by relevance and
  * severity when they arrive here.
  */
-export function ActiveAlerts({
-  latitude,
-  longitude,
-  className,
-}: ActiveAlertsProps) {
+export function ActiveAlerts({ latitude, longitude, className }: ActiveAlertsProps) {
   const headingId = useId();
   const { alerts, highestSeverity, status, error, refresh } = useActiveAlerts({
     latitude,
@@ -37,9 +33,7 @@ export function ActiveAlerts({
 
   const isLoading = status === 'idle' || status === 'loading';
   const hasAlerts = status === 'success' && alerts.length > 0;
-  const heading = hasAlerts
-    ? `Active alerts (${alerts.length})`
-    : 'Active alerts';
+  const heading = hasAlerts ? `Active alerts (${alerts.length})` : 'Active alerts';
 
   return (
     <section aria-labelledby={headingId} className={classes.join(' ')}>
@@ -48,10 +42,7 @@ export function ActiveAlerts({
           {heading}
         </h2>
         {hasAlerts ? (
-          <span
-            className="active-alerts-highest"
-            data-severity={highestSeverity}
-          >
+          <span className="active-alerts-highest" data-severity={highestSeverity}>
             Highest: {ALERT_SEVERITY_META[highestSeverity].label}
           </span>
         ) : null}
@@ -66,20 +57,14 @@ export function ActiveAlerts({
       {status === 'error' ? (
         <div className="active-alerts-error" role="alert">
           <p>{error ?? 'Unable to load alerts for this location.'}</p>
-          <button
-            className="active-alerts-retry"
-            onClick={refresh}
-            type="button"
-          >
+          <button className="active-alerts-retry" onClick={refresh} type="button">
             Try again
           </button>
         </div>
       ) : null}
 
       {status === 'success' && alerts.length === 0 ? (
-        <p className="active-alerts-message">
-          No active alerts for this location.
-        </p>
+        <p className="active-alerts-message">No active alerts for this location.</p>
       ) : null}
 
       {hasAlerts ? (

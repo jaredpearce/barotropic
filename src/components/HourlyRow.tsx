@@ -1,4 +1,11 @@
-export type HourlyCondition = 'clear' | 'partly-cloudy' | 'cloudy' | 'rain' | 'storm' | 'snow' | 'fog';
+export type HourlyCondition =
+  | 'clear'
+  | 'partly-cloudy'
+  | 'cloudy'
+  | 'rain'
+  | 'storm'
+  | 'snow'
+  | 'fog';
 
 interface HourlyRowProps {
   timeLabel: string;
@@ -47,7 +54,11 @@ export function HourlyRow({
       role="listitem"
     >
       <span className="app-forecast-time">{timeLabel}</span>
-      <span aria-label={isNight ? 'Night conditions' : 'Day conditions'} className="app-forecast-icon" role="img">
+      <span
+        aria-label={isNight ? 'Night conditions' : 'Day conditions'}
+        className="app-forecast-icon"
+        role="img"
+      >
         {icon}
       </span>
       <span>{temperature}</span>

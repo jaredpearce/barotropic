@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
 export const dynamic = 'force-dynamic';
@@ -13,18 +13,18 @@ const GeocodingResponseSchema = z.object({
         longitude: z.number().min(-180).max(180),
         country: z.string(),
         admin1: z.string().optional(),
-      })
+      }),
     )
     .optional()
     .default([]),
 });
 
-export async function GET(request: NextRequest) {
-  const query = request.nextUrl.searchParams.get('q')?.trim() ?? '';
+export async function GET(request: Request) {
+  const query = new URL(request.url).searchParams.get('q')?.trim() ?? '';
   if (query.length < 2 || query.length > 100) {
     return NextResponse.json(
       { error: 'Search query must be between 2 and 100 characters' },
-      { status: 400 }
+      { status: 400 },
     );
   }
 

@@ -69,28 +69,20 @@ export function useActiveAlerts({
         const payload = (await response.json()) as ActiveAlertsResponse;
         if (cancelled) return;
 
-        const nextAlerts = buildAlertCards(
-          Array.isArray(payload.alerts) ? payload.alerts : [],
-          {
-            point: { latitude, longitude },
-            now: new Date(),
-          }
-        );
+        const nextAlerts = buildAlertCards(Array.isArray(payload.alerts) ? payload.alerts : [], {
+          point: { latitude, longitude },
+          now: new Date(),
+        });
 
         setAlerts(nextAlerts);
         setStatus('success');
       } catch (caught) {
-        if (
-          cancelled ||
-          (caught instanceof Error && caught.name === 'AbortError')
-        ) {
+        if (cancelled || (caught instanceof Error && caught.name === 'AbortError')) {
           return;
         }
 
         setError(
-          caught instanceof Error
-            ? caught.message
-            : 'Unable to load alerts for this location.'
+          caught instanceof Error ? caught.message : 'Unable to load alerts for this location.',
         );
         setStatus('error');
       }

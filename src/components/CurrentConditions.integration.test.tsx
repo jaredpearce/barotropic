@@ -24,9 +24,7 @@ const OBSERVATION: NormalizedObservation = {
   pressureHpa: 1012.4,
 };
 
-function conditionsResponse(
-  currentConditions: NormalizedObservation | null
-) {
+function conditionsResponse(currentConditions: NormalizedObservation | null) {
   return Response.json({
     location: POINT,
     currentConditions,
@@ -40,23 +38,19 @@ afterEach(() => {
 
 describe('CurrentConditions integration', () => {
   it('Use Case: loads the station observation and renders the condition tiles', async () => {
-    const fetchMock = vi
-      .fn()
-      .mockResolvedValue(conditionsResponse(OBSERVATION));
+    const fetchMock = vi.fn().mockResolvedValue(conditionsResponse(OBSERVATION));
     vi.stubGlobal('fetch', fetchMock);
 
     renderWithProviders(
-      <CurrentConditions latitude={POINT.latitude} longitude={POINT.longitude} />
+      <CurrentConditions latitude={POINT.latitude} longitude={POINT.longitude} />,
     );
 
-    expect(screen.getByRole('status')).toHaveTextContent(
-      'Loading current conditions'
-    );
+    expect(screen.getByRole('status')).toHaveTextContent('Loading current conditions');
 
     expect(
       await screen.findByRole('heading', {
         name: 'Current conditions · KRDU',
-      })
+      }),
     ).toBeInTheDocument();
     expect(screen.getByText('Partly Cloudy')).toBeInTheDocument();
     expect(screen.getByText('1012.4 mb')).toBeInTheDocument();
@@ -73,35 +67,29 @@ describe('CurrentConditions integration', () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(conditionsResponse(null)));
 
     renderWithProviders(
-      <CurrentConditions latitude={POINT.latitude} longitude={POINT.longitude} />
+      <CurrentConditions latitude={POINT.latitude} longitude={POINT.longitude} />,
     );
 
     expect(
-      await screen.findByText(
-        'No current conditions available for this location.'
-      )
+      await screen.findByText('No current conditions available for this location.'),
     ).toBeInTheDocument();
-    expect(
-      screen.getByRole('heading', { name: 'Current conditions' })
-    ).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Current conditions' })).toBeInTheDocument();
   });
 
   it('Use Case: retries after the conditions request fails', async () => {
     const user = userEvent.setup();
     const fetchMock = vi
       .fn()
-      .mockResolvedValueOnce(
-        Response.json({ error: 'NWS unavailable' }, { status: 502 })
-      )
+      .mockResolvedValueOnce(Response.json({ error: 'NWS unavailable' }, { status: 502 }))
       .mockResolvedValueOnce(conditionsResponse(OBSERVATION));
     vi.stubGlobal('fetch', fetchMock);
 
     renderWithProviders(
-      <CurrentConditions latitude={POINT.latitude} longitude={POINT.longitude} />
+      <CurrentConditions latitude={POINT.latitude} longitude={POINT.longitude} />,
     );
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
-      'Unable to load current conditions for this location.'
+      'Unable to load current conditions for this location.',
     );
 
     await user.click(screen.getByRole('button', { name: 'Try again' }));
@@ -109,7 +97,7 @@ describe('CurrentConditions integration', () => {
     expect(
       await screen.findByRole('heading', {
         name: 'Current conditions · KRDU',
-      })
+      }),
     ).toBeInTheDocument();
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
@@ -122,12 +110,10 @@ describe('CurrentConditions integration', () => {
     vi.stubGlobal('fetch', fetchMock);
 
     const { rerender } = renderWithProviders(
-      <CurrentConditions latitude={POINT.latitude} longitude={POINT.longitude} />
+      <CurrentConditions latitude={POINT.latitude} longitude={POINT.longitude} />,
     );
 
-    await screen.findByText(
-      'No current conditions available for this location.'
-    );
+    await screen.findByText('No current conditions available for this location.');
 
     rerender(<CurrentConditions latitude={40.7128} longitude={-74.006} />);
 
@@ -135,7 +121,7 @@ describe('CurrentConditions integration', () => {
     expect(
       await screen.findByRole('heading', {
         name: 'Current conditions · KRDU',
-      })
+      }),
     ).toBeInTheDocument();
 
     const secondUrl = fetchMock.mock.calls[1][0] as URL;

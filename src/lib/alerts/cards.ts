@@ -70,7 +70,7 @@ interface FormattedAlertTime {
 function formatAlertTime(
   value: string | null | undefined,
   locale: string,
-  timeZone?: string
+  timeZone?: string,
 ): FormattedAlertTime | null {
   if (!value) return null;
 
@@ -100,12 +100,13 @@ function getExpiryTimestamp(alert: AlertCardData): number {
   if (!alert.expiresIso) return Number.POSITIVE_INFINITY;
 
   const expiresAt = new Date(alert.expiresIso);
-  return Number.isNaN(expiresAt.getTime())
-    ? Number.POSITIVE_INFINITY
-    : expiresAt.getTime();
+  return Number.isNaN(expiresAt.getTime()) ? Number.POSITIVE_INFINITY : expiresAt.getTime();
 }
 
-function toCard(alert: NormalizedAlert, options: Required<Pick<BuildAlertCardsOptions, 'locale'>> & BuildAlertCardsOptions): AlertCardData {
+function toCard(
+  alert: NormalizedAlert,
+  options: Required<Pick<BuildAlertCardsOptions, 'locale'>> & BuildAlertCardsOptions,
+): AlertCardData {
   const severity = normalizeAlertSeverity(alert.severity);
   const effective = formatAlertTime(alert.effective, options.locale, options.timeZone);
   const expires = formatAlertTime(alert.expires, options.locale, options.timeZone);
@@ -136,7 +137,7 @@ function toCard(alert: NormalizedAlert, options: Required<Pick<BuildAlertCardsOp
  */
 export function buildAlertCards(
   alerts: ReadonlyArray<NormalizedAlert>,
-  options: BuildAlertCardsOptions = {}
+  options: BuildAlertCardsOptions = {},
 ): AlertCardData[] {
   const now = options.now ?? new Date();
   const normalizedOptions = {
@@ -155,13 +156,11 @@ export function buildAlertCards(
   }
 
   return [...cardsById.values()].sort((left, right) => {
-    const matchDifference =
-      MATCH_SORT_ORDER[left.match] - MATCH_SORT_ORDER[right.match];
+    const matchDifference = MATCH_SORT_ORDER[left.match] - MATCH_SORT_ORDER[right.match];
     if (matchDifference !== 0) return matchDifference;
 
     const severityDifference =
-      ALERT_SEVERITY_META[right.severity].rank -
-      ALERT_SEVERITY_META[left.severity].rank;
+      ALERT_SEVERITY_META[right.severity].rank - ALERT_SEVERITY_META[left.severity].rank;
     if (severityDifference !== 0) return severityDifference;
 
     const expiryDifference = getExpiryTimestamp(left) - getExpiryTimestamp(right);

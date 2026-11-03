@@ -15,7 +15,7 @@ import type { CurrentConditions } from '@/types/domain';
  * @returns The current conditions, or null when there is no observation.
  */
 export function toCurrentConditions(
-  observation: NormalizedObservation | null | undefined
+  observation: NormalizedObservation | null | undefined,
 ): CurrentConditions | null {
   if (!observation) return null;
 

@@ -22,11 +22,7 @@ interface CurrentConditionsProps {
  * The component owns request state (loading, empty, error, retry) while the
  * existing condition builders and tiles stay presentational.
  */
-export function CurrentConditions({
-  latitude,
-  longitude,
-  className,
-}: CurrentConditionsProps) {
+export function CurrentConditions({ latitude, longitude, className }: CurrentConditionsProps) {
   const headingId = useId();
   const { conditions, status, error, refresh } = useCurrentConditions({
     latitude,
@@ -62,11 +58,7 @@ export function CurrentConditions({
       {status === 'error' ? (
         <div className="current-conditions-error" role="alert">
           <p>{error ?? 'Unable to load current conditions for this location.'}</p>
-          <button
-            className="current-conditions-retry"
-            onClick={refresh}
-            type="button"
-          >
+          <button className="current-conditions-retry" onClick={refresh} type="button">
             Try again
           </button>
         </div>

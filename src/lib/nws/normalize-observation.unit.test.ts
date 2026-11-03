@@ -16,11 +16,7 @@ const rawObservation = {
 
 describe('normalizeNwsObservation', () => {
   it('Use Case: converts a raw observation into canonical units', () => {
-    const observation = normalizeNwsObservation(
-      'KRDU',
-      rawObservation,
-      '2026-10-21T19:00:00.000Z'
-    );
+    const observation = normalizeNwsObservation('KRDU', rawObservation, '2026-10-21T19:00:00.000Z');
 
     expect(observation.source).toBe('NWS');
     expect(observation.stationId).toBe('KRDU');
@@ -34,11 +30,7 @@ describe('normalizeNwsObservation', () => {
   });
 
   it('Use Case: accepts observation timestamps that carry a UTC offset', () => {
-    const observation = normalizeNwsObservation(
-      'KRDU',
-      rawObservation,
-      '2026-10-21T19:00:00.000Z'
-    );
+    const observation = normalizeNwsObservation('KRDU', rawObservation, '2026-10-21T19:00:00.000Z');
 
     expect(observation.timestamp).toBe('2026-10-21T18:55:00+00:00');
     expect(observation.issuedAt).toBe('2026-10-21T18:55:00+00:00');

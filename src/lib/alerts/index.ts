@@ -26,12 +26,5 @@ export type {
   PolygonPreviewOptions,
 } from './geometry';
 
-export {
-  ALERT_MATCH_LABELS,
-  buildAlertCards,
-} from './cards';
-export type {
-  ActiveAlertsResponse,
-  AlertCardData,
-  BuildAlertCardsOptions,
-} from './cards';
+export { ALERT_MATCH_LABELS, buildAlertCards } from './cards';
+export type { ActiveAlertsResponse, AlertCardData, BuildAlertCardsOptions } from './cards';

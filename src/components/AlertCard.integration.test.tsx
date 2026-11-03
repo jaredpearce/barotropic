@@ -34,15 +34,13 @@ describe('AlertCard integration', () => {
 
     expect(screen.getByText('Heat Advisory')).toBeInTheDocument();
     expect(screen.getByText('Moderate')).toBeInTheDocument();
-    expect(
-      screen.getByText('Wake / Chatham / Durham counties')
-    ).toBeInTheDocument();
+    expect(screen.getByText('Wake / Chatham / Durham counties')).toBeInTheDocument();
     expect(screen.getByText('Heat advisory in effect')).toBeInTheDocument();
   });
 
   it('Use Case: exposes severity and geometry match as data attributes', () => {
     const { container } = renderWithProviders(
-      <AlertCard alert={makeCard({ severity: 'extreme' })} />
+      <AlertCard alert={makeCard({ severity: 'extreme' })} />,
     );
 
     const card = container.querySelector('.alert-card');
@@ -81,14 +79,12 @@ describe('AlertCard integration', () => {
             ],
           },
         })}
-      />
+      />,
     );
 
     expect(screen.getByText('Nearby area')).toBeInTheDocument();
     expect(screen.getByText('2 polygons')).toBeInTheDocument();
-    expect(
-      container.querySelectorAll('[data-contains-point="false"]')
-    ).toHaveLength(2);
+    expect(container.querySelectorAll('[data-contains-point="false"]')).toHaveLength(2);
   });
 
   it('Use Case: labels area-based alerts without drawing a polygon', () => {
@@ -98,13 +94,11 @@ describe('AlertCard integration', () => {
           match: 'area',
           geometry: { kind: 'area', polygonCount: 0, paths: [] },
         })}
-      />
+      />,
     );
 
     expect(
-      screen.getByText(
-        'Area-based alert. NWS did not publish a polygon for this alert.'
-      )
+      screen.getByText('Area-based alert. NWS did not publish a polygon for this alert.'),
     ).toBeInTheDocument();
     expect(screen.queryByRole('img')).not.toBeInTheDocument();
     expect(container.querySelector('.alert-card-preview')).toBeNull();
@@ -120,9 +114,7 @@ describe('AlertCard integration', () => {
     expect(screen.getByText('Source')).toBeInTheDocument();
     expect(screen.getByText('NWS Raleigh')).toBeInTheDocument();
     expect(screen.getByText('Safety instructions')).toBeInTheDocument();
-    expect(
-      screen.getByText('Drink water and limit outdoor activity.')
-    ).toBeInTheDocument();
+    expect(screen.getByText('Drink water and limit outdoor activity.')).toBeInTheDocument();
   });
 
   it('Use Case: omits optional details that NWS did not provide', () => {
@@ -136,7 +128,7 @@ describe('AlertCard integration', () => {
           effectiveLabel: undefined,
           expiresLabel: undefined,
         })}
-      />
+      />,
     );
 
     expect(container.querySelector('.alert-card-meta')).toBeNull();

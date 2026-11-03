@@ -7,7 +7,7 @@ test.beforeEach(async ({ page }) => {
         point: { latitude: 35.7915, longitude: -78.7811 },
         alerts: [],
       },
-    })
+    }),
   );
   await page.route('**/api/nws/point**', (route) =>
     route.fulfill({
@@ -16,7 +16,7 @@ test.beforeEach(async ({ page }) => {
         currentConditions: null,
         forecast: [],
       },
-    })
+    }),
   );
 });
 
@@ -24,7 +24,7 @@ test('Use Case: loads the home page and surfaces the primary app shell', async (
   await page.goto('/');
 
   await expect(page).toHaveTitle(/barotropic/i);
-  await expect(page.getByText('◉ Barotropic')).toBeVisible();
+  await expect(page.getByRole('img', { name: 'Barotropic' })).toBeVisible();
 });
 
 test('Use Case: uses granted browser geolocation to select the current city', async ({ page }) => {
@@ -35,7 +35,7 @@ test('Use Case: uses granted browser geolocation to select the current city', as
       json: {
         location: { latitude: 35.78, longitude: -78.64, city: 'Raleigh', state: 'NC' },
       },
-    })
+    }),
   );
 
   await page.goto('/');

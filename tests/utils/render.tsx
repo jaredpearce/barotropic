@@ -5,9 +5,6 @@ interface RenderWithProvidersOptions extends Omit<RenderOptions, 'wrapper'> {
   children?: ReactNode;
 }
 
-export function renderWithProviders(
-  ui: ReactElement,
-  options: RenderWithProvidersOptions = {},
-) {
+export function renderWithProviders(ui: ReactElement, options: RenderWithProvidersOptions = {}) {
   return render(ui, options);
 }

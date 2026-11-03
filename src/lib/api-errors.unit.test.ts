@@ -9,7 +9,7 @@ describe('upstreamErrorResponse', () => {
       'NWS',
       502,
       true,
-      503
+      503,
     );
 
     const response = upstreamErrorResponse(error);

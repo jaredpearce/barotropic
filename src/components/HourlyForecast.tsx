@@ -1,10 +1,7 @@
 'use client';
 
 import { useId } from 'react';
-import {
-  formatTemperatureDegrees,
-  formatWindSpeed,
-} from '@/lib/conditions/format';
+import { formatTemperatureDegrees, formatWindSpeed } from '@/lib/conditions/format';
 import { useHourlyForecast } from '@/lib/hooks/use-hourly-forecast';
 import HourlyRow, { type HourlyCondition } from './HourlyRow';
 
@@ -21,11 +18,7 @@ function getCondition(weatherCode: number | null | undefined): HourlyCondition {
   if (weatherCode !== null && weatherCode !== undefined) {
     if ([95, 96, 99].includes(weatherCode)) return 'storm';
     if ([71, 73, 75, 77, 85, 86].includes(weatherCode)) return 'snow';
-    if (
-      [51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82].includes(
-        weatherCode
-      )
-    ) {
+    if ([51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82].includes(weatherCode)) {
       return 'rain';
     }
   }
@@ -65,11 +58,7 @@ export function HourlyForecast({ latitude, longitude }: HourlyForecastProps) {
       {status === 'error' ? (
         <div className="current-conditions-error" role="alert">
           <p>{error ?? 'Unable to load the hourly forecast for this location.'}</p>
-          <button
-            className="current-conditions-retry"
-            onClick={refresh}
-            type="button"
-          >
+          <button className="current-conditions-retry" onClick={refresh} type="button">
             Try again
           </button>
         </div>

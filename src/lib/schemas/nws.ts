@@ -35,9 +35,7 @@ export const PointSchema = z
 
 export const ObservationStationsSchema = z
   .object({
-    features: z
-      .array(z.object({ id: z.string().url() }).passthrough())
-      .default([]),
+    features: z.array(z.object({ id: z.string().url() }).passthrough()).default([]),
   })
   .passthrough();
 

@@ -17,13 +17,11 @@ import {
 } from '@/lib/schemas';
 import { validateZoneId } from '@/lib/nws/utils';
 
-import { NextRequest } from 'next/server';
-
 export const dynamic = 'force-dynamic';
 
-export async function GET(request: NextRequest) {
+export async function GET(request: Request) {
   try {
-    const { searchParams } = request.nextUrl;
+    const { searchParams } = new URL(request.url);
     const zone = searchParams.get('zone');
 
     if (!zone) {
@@ -33,7 +31,7 @@ export async function GET(request: NextRequest) {
           details: 'zone query parameter is required',
           example: '/api/nws/alerts/zone?zone=COZ001',
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -47,7 +45,7 @@ export async function GET(request: NextRequest) {
           error: 'Invalid zone',
           details: error instanceof Error ? error.message : 'Validation failed',
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -93,7 +91,7 @@ export async function GET(request: NextRequest) {
           instruction: feature.properties.instruction ?? null,
           senderName: feature.properties.senderName ?? null,
           geometry: feature.geometry,
-        })
+        }),
       ),
     });
   } catch (error) {
@@ -103,9 +101,6 @@ export async function GET(request: NextRequest) {
     }
 
     console.error('Unexpected error in /api/nws/alerts/zone:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch alerts for zone' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch alerts for zone' }, { status: 500 });
   }
 }

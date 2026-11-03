@@ -27,8 +27,8 @@ describe('Open-Meteo forecast route', () => {
 
     const response = await GET(
       new NextRequest(
-        'http://localhost/api/open-meteo/forecast?lat=47.6062&lon=-122.3321&models=gfs'
-      )
+        'http://localhost/api/open-meteo/forecast?lat=47.6062&lon=-122.3321&models=gfs',
+      ),
     );
     const body = await response.json();
 
@@ -44,17 +44,13 @@ describe('Open-Meteo forecast route', () => {
 
   it('Use Case: rejects incomplete or invalid coordinate pairs', async () => {
     const incompleteResponse = await GET(
-      new NextRequest('http://localhost/api/open-meteo/forecast?lat=47.6062')
+      new NextRequest('http://localhost/api/open-meteo/forecast?lat=47.6062'),
     );
     const invalidResponse = await GET(
-      new NextRequest(
-        'http://localhost/api/open-meteo/forecast?lat=91&lon=-122.3321'
-      )
+      new NextRequest('http://localhost/api/open-meteo/forecast?lat=91&lon=-122.3321'),
     );
     const blankResponse = await GET(
-      new NextRequest(
-        'http://localhost/api/open-meteo/forecast?lat=&lon=-122.3321'
-      )
+      new NextRequest('http://localhost/api/open-meteo/forecast?lat=&lon=-122.3321'),
     );
 
     expect(incompleteResponse.status).toBe(400);
@@ -82,7 +78,7 @@ describe('Open-Meteo forecast route', () => {
     } as never);
 
     const response = await GET(
-      new Request('http://localhost/api/open-meteo/forecast?models=gfs,hrrr')
+      new Request('http://localhost/api/open-meteo/forecast?models=gfs,hrrr'),
     );
     const body = await response.json();
 

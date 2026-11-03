@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "description": "Weather intelligence platform - examining evidence, recognizing patterns, forming hypotheses",
-  "packageManager": "bun@1.4.2",
   "type": "module",
   "scripts": {
     "dev": "bun --bun next dev",
@@ -11,8 +10,8 @@
     "start": "bun --bun next dev",
     "start:prod": "bun --bun next start",
     "lint": "oxlint",
-    "format": "oxcformatter --write .",
-    "format:check": "oxcformatter --check .",
+    "format": "oxfmt --write .",
+    "format:check": "oxfmt --check .",
     "type-check": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest --watch",
@@ -26,15 +25,15 @@
     "e2e:docker": "docker compose -f docker-compose.test.yml up --abort-on-container-exit"
   },
   "dependencies": {
-    "react": "^19.3.0",
-    "react-dom": "^19.3.0",
-    "next": "^14.0.0",
-    "class-variance-authority": "^0.7.0",
-    "clsx": "^2.0.0",
-    "tailwind-merge": "^2.2.0",
     "@vercel/analytics": "^1.4.0",
     "@vercel/speed-insights": "^2.0.0",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.0.0",
+    "next": "^14.0.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
     "server-only": "^0.0.1",
+    "tailwind-merge": "^2.2.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
@@ -62,5 +61,6 @@
     "vite": "^8.0.0",
     "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^5.0.3"
-  }
+  },
+  "packageManager": "bun@1.4.2"
 }

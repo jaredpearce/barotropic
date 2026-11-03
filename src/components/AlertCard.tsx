@@ -1,8 +1,4 @@
-import {
-  ALERT_MATCH_LABELS,
-  type AlertCardData,
-  type AlertGeometryKind,
-} from '@/lib/alerts';
+import { ALERT_MATCH_LABELS, type AlertCardData, type AlertGeometryKind } from '@/lib/alerts';
 
 interface AlertCardProps {
   /** Display-ready alert produced by `buildAlertCards`. */
@@ -50,9 +46,7 @@ export function AlertCard({ alert, className }: AlertCardProps) {
       <div className="alert-card-heading">
         <div className="alert-card-heading-copy">
           <p className="alert-card-event">{alert.event}</p>
-          {alert.headline ? (
-            <p className="alert-card-headline">{alert.headline}</p>
-          ) : null}
+          {alert.headline ? <p className="alert-card-headline">{alert.headline}</p> : null}
           {alert.areaDescription ? (
             <p className="alert-card-area">{alert.areaDescription}</p>
           ) : null}
@@ -61,10 +55,7 @@ export function AlertCard({ alert, className }: AlertCardProps) {
       </div>
 
       {hasPreview ? (
-        <figure
-          className="alert-card-preview"
-          data-geometry-kind={alert.geometry.kind}
-        >
+        <figure className="alert-card-preview" data-geometry-kind={alert.geometry.kind}>
           <svg
             aria-label={previewLabel}
             className="alert-card-preview-svg"

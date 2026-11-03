@@ -1,6 +1,13 @@
 'use client';
 
 import React, { ReactNode, useEffect, useState } from 'react';
+import {
+  DEFAULT_LOCATION,
+  LOCATION_STORAGE_KEY,
+  locationLabel,
+  type LocationResult,
+  type SelectedLocation,
+} from '@/lib/location';
 import ActiveAlerts from './ActiveAlerts';
 import BarotropicLogo from './BarotropicLogo';
 import CurrentConditions from './CurrentConditions';
@@ -10,37 +17,9 @@ interface AppLayoutProps {
   children?: ReactNode;
 }
 
-interface LocationResult {
-  id: number;
-  name: string;
-  latitude: number;
-  longitude: number;
-  country: string;
-  admin1?: string;
-}
-
-interface SelectedLocation extends LocationResult {
-  label: string;
-}
-
-const defaultLocation: SelectedLocation = {
-  id: 0,
-  name: 'Cary',
-  admin1: 'North Carolina',
-  country: 'United States',
-  latitude: 35.7915,
-  longitude: -78.7811,
-  label: 'Cary, NC',
-};
-
-function locationLabel(location: LocationResult) {
-  const region = location.admin1 || location.country;
-  return region ? `${location.name}, ${region}` : location.name;
-}
-
 /** Main dark-mode application shell for Barotropic. */
 export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
-  const [location, setLocation] = useState(defaultLocation);
+  const [location, setLocation] = useState(DEFAULT_LOCATION);
   const [isLocationPickerOpen, setIsLocationPickerOpen] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [results, setResults] = useState<LocationResult[]>([]);
@@ -87,15 +66,19 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         label: state ? `${city}, ${state}` : city,
       };
       setLocation(selectedLocation);
-      window.localStorage.setItem('barotropic.location', JSON.stringify(selectedLocation));
+      window.localStorage.setItem(LOCATION_STORAGE_KEY, JSON.stringify(selectedLocation));
       setLocationState('idle');
       setIsLocationPickerOpen(false);
     } catch (error) {
       setLocationState('error');
       if (typeof error === 'object' && error !== null && 'code' in error && error.code === 1) {
-        setLocationMessage('Location permission was denied. Allow access in your browser settings to use this option.');
+        setLocationMessage(
+          'Location permission was denied. Allow access in your browser settings to use this option.',
+        );
       } else if (typeof error === 'object' && error !== null && 'code' in error) {
-        setLocationMessage('Your location could not be determined. Check your device settings and try again.');
+        setLocationMessage(
+          'Your location could not be determined. Check your device settings and try again.',
+        );
       } else {
         setLocationMessage('Could not look up your location. Please try again.');
       }
@@ -105,7 +88,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   useEffect(() => {
     let hasSavedLocation = false;
     try {
-      const savedLocation = window.localStorage.getItem('barotropic.location');
+      const savedLocation = window.localStorage.getItem(LOCATION_STORAGE_KEY);
       if (savedLocation) {
         const parsed = JSON.parse(savedLocation) as SelectedLocation;
         if (
@@ -119,7 +102,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         }
       }
     } catch {
-      window.localStorage.removeItem('barotropic.location');
+      window.localStorage.removeItem(LOCATION_STORAGE_KEY);
     }
 
     if (!hasSavedLocation && navigator.geolocation && navigator.permissions) {
@@ -160,7 +143,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   function selectLocation(result: LocationResult) {
     const selectedLocation = { ...result, label: locationLabel(result) };
     setLocation(selectedLocation);
-    window.localStorage.setItem('barotropic.location', JSON.stringify(selectedLocation));
+    window.localStorage.setItem(LOCATION_STORAGE_KEY, JSON.stringify(selectedLocation));
     setIsLocationPickerOpen(false);
     setSearchText('');
     setResults([]);
@@ -187,14 +170,19 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
           >
             ⌖ {location.label}⌄
           </button>
-          <button aria-label="Toggle theme" className="app-button">☼</button>
+          <button aria-label="Toggle theme" className="app-button">
+            ☼
+          </button>
         </div>
       </nav>
 
       {isLocationPickerOpen && (
-        <div className="location-picker-backdrop" onMouseDown={(event) => {
-          if (event.target === event.currentTarget) setIsLocationPickerOpen(false);
-        }}>
+        <div
+          className="location-picker-backdrop"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) setIsLocationPickerOpen(false);
+          }}
+        >
           <section
             aria-labelledby="location-picker-title"
             aria-modal="true"
@@ -224,7 +212,11 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
               >
                 {locationState === 'loading' ? 'Finding your location…' : 'Use my current location'}
               </button>
-              {locationMessage && <p aria-live="polite" className="location-permission-message">{locationMessage}</p>}
+              {locationMessage && (
+                <p aria-live="polite" className="location-permission-message">
+                  {locationMessage}
+                </p>
+              )}
               <label className="location-search-label" htmlFor="location-search">
                 City, state, or postal code
               </label>
@@ -238,7 +230,11 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                   type="search"
                   value={searchText}
                 />
-                <button className="location-search-submit" disabled={searchState === 'loading'} type="submit">
+                <button
+                  className="location-search-submit"
+                  disabled={searchState === 'loading'}
+                  type="submit"
+                >
                   {searchState === 'loading' ? 'Searching' : 'Search'}
                 </button>
               </div>
@@ -270,20 +266,11 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         </main>
 
         <aside className="app-sidebar">
-          <ActiveAlerts
-            latitude={location.latitude}
-            longitude={location.longitude}
-          />
+          <ActiveAlerts latitude={location.latitude} longitude={location.longitude} />
 
-          <CurrentConditions
-            latitude={location.latitude}
-            longitude={location.longitude}
-          />
+          <CurrentConditions latitude={location.latitude} longitude={location.longitude} />
 
-          <HourlyForecast
-            latitude={location.latitude}
-            longitude={location.longitude}
-          />
+          <HourlyForecast latitude={location.latitude} longitude={location.longitude} />
         </aside>
       </div>
     </div>

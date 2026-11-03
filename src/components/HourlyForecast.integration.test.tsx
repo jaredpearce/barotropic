@@ -9,7 +9,7 @@ const POINT = { latitude: 35.7915, longitude: -78.7811 };
 
 function forecastRecord(
   timestamp: string,
-  overrides: Partial<NormalizedWeatherRecord> = {}
+  overrides: Partial<NormalizedWeatherRecord> = {},
 ): NormalizedWeatherRecord {
   return {
     source: 'Open-Meteo',
@@ -39,15 +39,13 @@ describe('HourlyForecast integration', () => {
       .mockResolvedValue(forecastResponse([forecastRecord('2026-11-03T09:00')]));
     vi.stubGlobal('fetch', fetchMock);
 
-    renderWithProviders(
-      <HourlyForecast latitude={POINT.latitude} longitude={POINT.longitude} />
-    );
+    renderWithProviders(<HourlyForecast latitude={POINT.latitude} longitude={POINT.longitude} />);
 
     expect(screen.getByRole('status')).toHaveTextContent('Loading hourly forecast');
     expect(
       await screen.findByRole('listitem', {
         name: '9:00 AM forecast 68° rain',
-      })
+      }),
     ).toBeInTheDocument();
     expect(screen.getByText('35%')).toBeInTheDocument();
     expect(screen.getByText('10 kt')).toBeInTheDocument();
@@ -62,12 +60,10 @@ describe('HourlyForecast integration', () => {
   it('Use Case: shows an empty state when the forecast has no hours', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(forecastResponse([])));
 
-    renderWithProviders(
-      <HourlyForecast latitude={POINT.latitude} longitude={POINT.longitude} />
-    );
+    renderWithProviders(<HourlyForecast latitude={POINT.latitude} longitude={POINT.longitude} />);
 
     expect(
-      await screen.findByText('No hourly forecast available for this location.')
+      await screen.findByText('No hourly forecast available for this location.'),
     ).toBeInTheDocument();
   });
 
@@ -75,50 +71,40 @@ describe('HourlyForecast integration', () => {
     const user = userEvent.setup();
     const fetchMock = vi
       .fn()
-      .mockResolvedValueOnce(
-        Response.json({ error: 'Provider unavailable' }, { status: 502 })
-      )
-      .mockResolvedValueOnce(
-        forecastResponse([forecastRecord('2026-11-03T10:00')])
-      );
+      .mockResolvedValueOnce(Response.json({ error: 'Provider unavailable' }, { status: 502 }))
+      .mockResolvedValueOnce(forecastResponse([forecastRecord('2026-11-03T10:00')]));
     vi.stubGlobal('fetch', fetchMock);
 
-    renderWithProviders(
-      <HourlyForecast latitude={POINT.latitude} longitude={POINT.longitude} />
-    );
+    renderWithProviders(<HourlyForecast latitude={POINT.latitude} longitude={POINT.longitude} />);
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
-      'Unable to load the hourly forecast'
+      'Unable to load the hourly forecast',
     );
     await user.click(screen.getByRole('button', { name: 'Try again' }));
 
     expect(
       await screen.findByRole('listitem', {
         name: '10:00 AM forecast 68° rain',
-      })
+      }),
     ).toBeInTheDocument();
   });
 
   it('Use Case: updates hourly forecast when the selected location changes', async () => {
     const fetchMock = vi
       .fn()
+      .mockResolvedValueOnce(forecastResponse([forecastRecord('2026-11-03T09:00')]))
       .mockResolvedValueOnce(
-        forecastResponse([forecastRecord('2026-11-03T09:00')])
-      )
-      .mockResolvedValueOnce(
-        forecastResponse([
-          forecastRecord('2026-11-03T10:00', { temperatureC: 15 }),
-        ])
+        forecastResponse([forecastRecord('2026-11-03T10:00', { temperatureC: 15 })]),
       );
     vi.stubGlobal('fetch', fetchMock);
 
     const { rerender } = renderWithProviders(
-      <HourlyForecast latitude={POINT.latitude} longitude={POINT.longitude} />
+      <HourlyForecast latitude={POINT.latitude} longitude={POINT.longitude} />,
     );
     expect(
       await screen.findByRole('listitem', {
         name: '9:00 AM forecast 68° rain',
-      })
+      }),
     ).toBeInTheDocument();
 
     rerender(<HourlyForecast latitude={40.7128} longitude={-74.006} />);
@@ -126,7 +112,7 @@ describe('HourlyForecast integration', () => {
     expect(
       await screen.findByRole('listitem', {
         name: '10:00 AM forecast 59° rain',
-      })
+      }),
     ).toBeInTheDocument();
   });
 });

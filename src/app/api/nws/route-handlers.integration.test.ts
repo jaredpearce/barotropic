@@ -33,12 +33,12 @@ describe('NWS route upstream errors', () => {
         'National Weather Service request timed out',
         'NWS',
         504,
-        true
+        true,
       );
     });
 
     const response = await getPoint(
-      new Request('http://localhost/api/nws/point?lat=35.79&lon=-78.78')
+      new Request('http://localhost/api/nws/point?lat=35.79&lon=-78.78'),
     );
 
     expect(response.status).toBe(504);
@@ -49,11 +49,11 @@ describe('NWS route upstream errors', () => {
 
   it('Use Case: returns a typed error from the alert route', async () => {
     vi.mocked(fetchFromNws).mockRejectedValue(
-      new UpstreamApiError('UPSTREAM_UNAVAILABLE', 'NWS unavailable', 'NWS', 502, true)
+      new UpstreamApiError('UPSTREAM_UNAVAILABLE', 'NWS unavailable', 'NWS', 502, true),
     );
 
     const response = await getZoneAlerts(
-      new Request('http://localhost/api/nws/alerts/zone?zone=NCZ001')
+      new Request('http://localhost/api/nws/alerts/zone?zone=NCZ001'),
     );
 
     expect(response.status).toBe(502);
@@ -64,12 +64,12 @@ describe('NWS route upstream errors', () => {
 
   it('Use Case: returns a typed error from the station observations route', async () => {
     vi.mocked(fetchFromNws).mockRejectedValue(
-      new UpstreamApiError('UPSTREAM_HTTP_ERROR', 'NWS failed', 'NWS', 502, true, 503)
+      new UpstreamApiError('UPSTREAM_HTTP_ERROR', 'NWS failed', 'NWS', 502, true, 503),
     );
 
     const response = await getStationObservations(
       new Request('http://localhost/api/nws/stations/KRDU/observations'),
-      { params: { stationId: 'KRDU' } }
+      { params: { stationId: 'KRDU' } },
     );
 
     expect(response.status).toBe(502);

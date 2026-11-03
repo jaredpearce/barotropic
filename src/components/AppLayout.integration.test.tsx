@@ -15,11 +15,7 @@ interface StubAppFetchOptions {
  * geocodes only after a search, so a single fixed response would be consumed
  * twice.
  */
-function stubAppFetch({
-  results = [],
-  alerts = [],
-  conditions = null,
-}: StubAppFetchOptions = {}) {
+function stubAppFetch({ results = [], alerts = [], conditions = null }: StubAppFetchOptions = {}) {
   const fetchMock = vi.fn((input: RequestInfo | URL) => {
     const url = input instanceof Request ? input.url : input.toString();
 
@@ -28,7 +24,7 @@ function stubAppFetch({
         Response.json({
           point: { latitude: 35.7915, longitude: -78.7811 },
           alerts,
-        })
+        }),
       );
     }
 
@@ -38,7 +34,7 @@ function stubAppFetch({
           location: { latitude: 35.7915, longitude: -78.7811 },
           currentConditions: conditions,
           forecast: [],
-        })
+        }),
       );
     }
 
@@ -107,7 +103,7 @@ describe('AppLayout location selection', () => {
     renderWithProviders(<AppLayout />);
 
     expect(screen.getByRole('img', { name: 'Barotropic' })).toBeInTheDocument();
-    expect(screen.getByText('Barotropic')).toBeInTheDocument();
+    expect(screen.getByText('barotropic')).toBeInTheDocument();
   });
 
   it('Use Case: searches for a place and updates the selected navigation location', async () => {
@@ -116,7 +112,10 @@ describe('AppLayout location selection', () => {
 
     renderWithProviders(<AppLayout />);
     await user.click(screen.getByRole('button', { name: /Cary, NC/i }));
-    await user.type(screen.getByRole('searchbox', { name: 'City, state, or postal code' }), 'Seattle');
+    await user.type(
+      screen.getByRole('searchbox', { name: 'City, state, or postal code' }),
+      'Seattle',
+    );
     await user.click(screen.getByRole('button', { name: 'Search' }));
 
     await user.click(await screen.findByRole('button', { name: /Seattle, Washington/i }));
@@ -132,7 +131,10 @@ describe('AppLayout location selection', () => {
 
     renderWithProviders(<AppLayout />);
     await user.click(screen.getByRole('button', { name: /Cary, NC/i }));
-    await user.type(screen.getByRole('searchbox', { name: 'City, state, or postal code' }), 'Nowhere');
+    await user.type(
+      screen.getByRole('searchbox', { name: 'City, state, or postal code' }),
+      'Nowhere',
+    );
     await user.click(screen.getByRole('button', { name: 'Search' }));
 
     expect(await screen.findByText(/No locations found/i)).toBeInTheDocument();
@@ -143,9 +145,7 @@ describe('AppLayout location selection', () => {
 
     renderWithProviders(<AppLayout />);
 
-    expect(
-      await screen.findByRole('heading', { name: 'Active alerts (1)' })
-    ).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'Active alerts (1)' })).toBeInTheDocument();
     expect(screen.getByText('Heat Advisory')).toBeInTheDocument();
     expect(screen.getByText('Highest: Moderate')).toBeInTheDocument();
   });
@@ -158,7 +158,7 @@ describe('AppLayout location selection', () => {
     expect(
       await screen.findByRole('heading', {
         name: 'Current conditions · KRDU',
-      })
+      }),
     ).toBeInTheDocument();
     expect(screen.getByText('Partly Cloudy')).toBeInTheDocument();
     expect(screen.getByText('1012.4 mb')).toBeInTheDocument();

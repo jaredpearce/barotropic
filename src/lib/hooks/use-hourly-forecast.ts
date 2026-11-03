@@ -65,17 +65,10 @@ export function useHourlyForecast({
         const payload = (await response.json()) as HourlyForecastResponse;
         if (cancelled) return;
 
-        setHours(
-          Array.isArray(payload.models?.gfs?.hourly)
-            ? payload.models.gfs.hourly
-            : []
-        );
+        setHours(Array.isArray(payload.models?.gfs?.hourly) ? payload.models.gfs.hourly : []);
         setStatus('success');
       } catch (caught) {
-        if (
-          cancelled ||
-          (caught instanceof Error && caught.name === 'AbortError')
-        ) {
+        if (cancelled || (caught instanceof Error && caught.name === 'AbortError')) {
           return;
         }
 

@@ -7,9 +7,7 @@ export const GeoJsonPositionSchema = z.union([
 
 export const GeoJsonLinearRingSchema = z.array(GeoJsonPositionSchema).min(4);
 export const GeoJsonPolygonCoordinatesSchema = z.array(GeoJsonLinearRingSchema).min(1);
-export const GeoJsonMultiPolygonCoordinatesSchema = z
-  .array(GeoJsonPolygonCoordinatesSchema)
-  .min(1);
+export const GeoJsonMultiPolygonCoordinatesSchema = z.array(GeoJsonPolygonCoordinatesSchema).min(1);
 
 export const GeoJsonPolygonSchema = z.object({
   type: z.literal('Polygon'),
@@ -28,11 +26,8 @@ export const GeoJsonPolygonalGeometrySchema = z.union([
   GeoJsonMultiPolygonSchema,
 ]);
 
-export const GeoJsonPolygonalGeometryOrNullSchema =
-  GeoJsonPolygonalGeometrySchema.nullable();
+export const GeoJsonPolygonalGeometryOrNullSchema = GeoJsonPolygonalGeometrySchema.nullable();
 
 export type GeoJsonPolygon = z.infer<typeof GeoJsonPolygonSchema>;
 export type GeoJsonMultiPolygon = z.infer<typeof GeoJsonMultiPolygonSchema>;
-export type GeoJsonPolygonalGeometry = z.infer<
-  typeof GeoJsonPolygonalGeometrySchema
->;
+export type GeoJsonPolygonalGeometry = z.infer<typeof GeoJsonPolygonalGeometrySchema>;

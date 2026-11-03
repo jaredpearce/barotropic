@@ -23,7 +23,7 @@ export class UpstreamApiError extends Error {
     readonly upstream: UpstreamName,
     readonly httpStatus: number,
     readonly retryable: boolean,
-    readonly upstreamStatus?: number
+    readonly upstreamStatus?: number,
   ) {
     super(message);
     this.name = 'UpstreamApiError';
@@ -36,9 +36,7 @@ export class UpstreamApiError extends Error {
         message: this.message,
         upstream: this.upstream,
         retryable: this.retryable,
-        ...(this.upstreamStatus === undefined
-          ? {}
-          : { upstreamStatus: this.upstreamStatus }),
+        ...(this.upstreamStatus === undefined ? {} : { upstreamStatus: this.upstreamStatus }),
       },
     };
   }

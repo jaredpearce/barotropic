@@ -27,7 +27,7 @@ describe('Forecast dashboard integration', () => {
 
     expect(screen.getByRole('link', { name: 'Create New Forecast' })).toHaveAttribute(
       'href',
-      '/forecasts/new'
+      '/forecasts/new',
     );
   });
 });

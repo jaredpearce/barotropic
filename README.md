@@ -31,8 +31,7 @@ src/
 │   └── index.ts                # Component exports
 ├── lib/                        # Utility functions
 │   ├── forecast-utils.ts       # Forecast domain utilities
-│   ├── hooks.ts                # Custom React hooks
-│   └── index.ts                # Lib exports
+│   └── hooks.ts                # Custom React hooks
 ├── styles/                     # Global styles
 │   └── globals.css             # Tailwind directives
 └── types/                      # TypeScript type definitions

@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { useState } from "react";
+import Link from 'next/link';
+import { useState } from 'react';
 
 interface ForecastFormData {
   location: string;
@@ -13,16 +13,16 @@ interface ForecastFormData {
 
 export default function NewForecastPage() {
   const [formData, setFormData] = useState<ForecastFormData>({
-    location: "",
-    validTime: "",
-    hypothesis: "",
-    evidence: [""],
+    location: '',
+    validTime: '',
+    hypothesis: '',
+    evidence: [''],
     confidence: 50,
   });
 
-  const [currentTab, setCurrentTab] = useState<
-    "location" | "evidence" | "hypothesis" | "review"
-  >("location");
+  const [currentTab, setCurrentTab] = useState<'location' | 'evidence' | 'hypothesis' | 'review'>(
+    'location',
+  );
 
   const handleLocationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, location: e.target.value });
@@ -32,23 +32,18 @@ export default function NewForecastPage() {
     setFormData({ ...formData, validTime: e.target.value });
   };
 
-  const handleHypothesisChange = (
-    e: React.ChangeEvent<HTMLTextAreaElement>
-  ) => {
+  const handleHypothesisChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setFormData({ ...formData, hypothesis: e.target.value });
   };
 
-  const handleEvidenceChange = (
-    index: number,
-    e: React.ChangeEvent<HTMLTextAreaElement>
-  ) => {
+  const handleEvidenceChange = (index: number, e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newEvidence = [...formData.evidence];
     newEvidence[index] = e.target.value;
     setFormData({ ...formData, evidence: newEvidence });
   };
 
   const addEvidenceField = () => {
-    setFormData({ ...formData, evidence: [...formData.evidence, ""] });
+    setFormData({ ...formData, evidence: [...formData.evidence, ''] });
   };
 
   const removeEvidenceField = (index: number) => {
@@ -73,9 +68,7 @@ export default function NewForecastPage() {
         <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-sky-900">
-                Create New Forecast
-              </h1>
+              <h1 className="text-3xl font-bold text-sky-900">Create New Forecast</h1>
               <p className="mt-1 text-sm text-gray-600">
                 Evidence-based weather forecasting process
               </p>
@@ -95,44 +88,44 @@ export default function NewForecastPage() {
         {/* Tabs */}
         <div className="mb-8 flex border-b border-sky-200">
           <button
-            onClick={() => setCurrentTab("location")}
+            onClick={() => setCurrentTab('location')}
             className={`px-4 py-2 font-semibold ${
-              currentTab === "location"
-                ? "border-b-2 border-sky-600 text-sky-600"
-                : "text-gray-600 hover:text-sky-600"
+              currentTab === 'location'
+                ? 'border-b-2 border-sky-600 text-sky-600'
+                : 'text-gray-600 hover:text-sky-600'
             }`}
           >
             📍 Location & Time
             {isLocationComplete && <span className="ml-2">✓</span>}
           </button>
           <button
-            onClick={() => setCurrentTab("evidence")}
+            onClick={() => setCurrentTab('evidence')}
             className={`px-4 py-2 font-semibold ${
-              currentTab === "evidence"
-                ? "border-b-2 border-sky-600 text-sky-600"
-                : "text-gray-600 hover:text-sky-600"
+              currentTab === 'evidence'
+                ? 'border-b-2 border-sky-600 text-sky-600'
+                : 'text-gray-600 hover:text-sky-600'
             }`}
           >
             🔍 Evidence Panel
             {isEvidenceComplete && <span className="ml-2">✓</span>}
           </button>
           <button
-            onClick={() => setCurrentTab("hypothesis")}
+            onClick={() => setCurrentTab('hypothesis')}
             className={`px-4 py-2 font-semibold ${
-              currentTab === "hypothesis"
-                ? "border-b-2 border-sky-600 text-sky-600"
-                : "text-gray-600 hover:text-sky-600"
+              currentTab === 'hypothesis'
+                ? 'border-b-2 border-sky-600 text-sky-600'
+                : 'text-gray-600 hover:text-sky-600'
             }`}
           >
             💭 Hypothesis
             {isHypothesisComplete && <span className="ml-2">✓</span>}
           </button>
           <button
-            onClick={() => setCurrentTab("review")}
+            onClick={() => setCurrentTab('review')}
             className={`px-4 py-2 font-semibold ${
-              currentTab === "review"
-                ? "border-b-2 border-sky-600 text-sky-600"
-                : "text-gray-600 hover:text-sky-600"
+              currentTab === 'review'
+                ? 'border-b-2 border-sky-600 text-sky-600'
+                : 'text-gray-600 hover:text-sky-600'
             }`}
           >
             📊 Review & Publish
@@ -140,12 +133,10 @@ export default function NewForecastPage() {
         </div>
 
         {/* Location & Time Tab */}
-        {currentTab === "location" && (
+        {currentTab === 'location' && (
           <div className="space-y-6 rounded-lg border border-sky-200 bg-white p-6 shadow-sm">
             <div>
-              <label className="block text-sm font-semibold text-sky-900">
-                Forecast Location
-              </label>
+              <label className="block text-sm font-semibold text-sky-900">Forecast Location</label>
               <input
                 type="text"
                 placeholder="e.g., Northeast United States, Pacific Northwest"
@@ -156,9 +147,7 @@ export default function NewForecastPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-sky-900">
-                Valid Time Period
-              </label>
+              <label className="block text-sm font-semibold text-sky-900">Valid Time Period</label>
               <input
                 type="datetime-local"
                 value={formData.validTime}
@@ -169,14 +158,13 @@ export default function NewForecastPage() {
 
             <div className="rounded-lg bg-sky-50 p-4">
               <p className="text-sm text-gray-700">
-                ℹ️ Specify the location and time period for which this forecast
-                is valid.
+                ℹ️ Specify the location and time period for which this forecast is valid.
               </p>
             </div>
 
             <div className="flex justify-end gap-4">
               <button
-                onClick={() => setCurrentTab("evidence")}
+                onClick={() => setCurrentTab('evidence')}
                 disabled={!isLocationComplete}
                 className="rounded-lg bg-sky-600 px-6 py-2 font-semibold text-white disabled:bg-gray-400 hover:bg-sky-700"
               >
@@ -187,7 +175,7 @@ export default function NewForecastPage() {
         )}
 
         {/* Evidence Panel Tab */}
-        {currentTab === "evidence" && (
+        {currentTab === 'evidence' && (
           <div className="space-y-6 rounded-lg border border-sky-200 bg-white p-6 shadow-sm">
             <div>
               <label className="block text-sm font-semibold text-sky-900">
@@ -229,13 +217,13 @@ export default function NewForecastPage() {
 
             <div className="flex justify-between gap-4">
               <button
-                onClick={() => setCurrentTab("location")}
+                onClick={() => setCurrentTab('location')}
                 className="rounded-lg border border-sky-300 px-6 py-2 font-semibold text-sky-700 hover:bg-sky-50"
               >
                 ← Back
               </button>
               <button
-                onClick={() => setCurrentTab("hypothesis")}
+                onClick={() => setCurrentTab('hypothesis')}
                 disabled={!isEvidenceComplete}
                 className="rounded-lg bg-sky-600 px-6 py-2 font-semibold text-white disabled:bg-gray-400 hover:bg-sky-700"
               >
@@ -246,15 +234,14 @@ export default function NewForecastPage() {
         )}
 
         {/* Hypothesis Tab */}
-        {currentTab === "hypothesis" && (
+        {currentTab === 'hypothesis' && (
           <div className="space-y-6 rounded-lg border border-sky-200 bg-white p-6 shadow-sm">
             <div>
               <label className="block text-sm font-semibold text-sky-900">
                 Forecast Hypothesis
               </label>
               <p className="mt-1 text-sm text-gray-600">
-                State your weather hypothesis based on the evidence you've
-                gathered.
+                State your weather hypothesis based on the evidence you've gathered.
               </p>
             </div>
 
@@ -282,13 +269,13 @@ export default function NewForecastPage() {
 
             <div className="flex justify-between gap-4">
               <button
-                onClick={() => setCurrentTab("evidence")}
+                onClick={() => setCurrentTab('evidence')}
                 className="rounded-lg border border-sky-300 px-6 py-2 font-semibold text-sky-700 hover:bg-sky-50"
               >
                 ← Back
               </button>
               <button
-                onClick={() => setCurrentTab("review")}
+                onClick={() => setCurrentTab('review')}
                 disabled={!isHypothesisComplete}
                 className="rounded-lg bg-sky-600 px-6 py-2 font-semibold text-white disabled:bg-gray-400 hover:bg-sky-700"
               >
@@ -299,7 +286,7 @@ export default function NewForecastPage() {
         )}
 
         {/* Review & Publish Tab */}
-        {currentTab === "review" && (
+        {currentTab === 'review' && (
           <div className="space-y-6 rounded-lg border border-sky-200 bg-white p-6 shadow-sm">
             <div>
               <h2 className="text-xl font-bold text-sky-900">Review Forecast</h2>
@@ -312,10 +299,10 @@ export default function NewForecastPage() {
             <div className="rounded-lg bg-sky-50 p-4">
               <h3 className="font-semibold text-sky-900">📍 Location & Time</h3>
               <p className="mt-2 text-gray-700">
-                <strong>Location:</strong> {formData.location || "Not specified"}
+                <strong>Location:</strong> {formData.location || 'Not specified'}
               </p>
               <p className="text-gray-700">
-                <strong>Valid Time:</strong> {formData.validTime || "Not specified"}
+                <strong>Valid Time:</strong> {formData.validTime || 'Not specified'}
               </p>
             </div>
 
@@ -329,7 +316,7 @@ export default function NewForecastPage() {
                       <li key={index} className="text-gray-700">
                         <strong>{index + 1}.</strong> {evidence}
                       </li>
-                    )
+                    ),
                 )}
               </ul>
             </div>
@@ -345,7 +332,7 @@ export default function NewForecastPage() {
 
             <div className="flex justify-between gap-4">
               <button
-                onClick={() => setCurrentTab("hypothesis")}
+                onClick={() => setCurrentTab('hypothesis')}
                 className="rounded-lg border border-sky-300 px-6 py-2 font-semibold text-sky-700 hover:bg-sky-50"
               >
                 ← Back

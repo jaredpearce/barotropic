@@ -7,7 +7,7 @@
  * with Forecast API and latest observations.
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { fetchFromNws } from '@/lib/nws/client';
 import { normalizeNwsObservation } from '@/lib/nws/normalize-observation';
 import { upstreamErrorResponse } from '@/lib/api-errors';
@@ -23,17 +23,13 @@ import {
   normalizeNwsWindDirection,
   normalizeNwsWindSpeedText,
 } from '@/lib/weather-normalizers';
-import {
-  validateLatitudeLongitude,
-  extractStationId,
-  toNwsPath,
-} from '@/lib/nws/utils';
+import { validateLatitudeLongitude, extractStationId, toNwsPath } from '@/lib/nws/utils';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(request: NextRequest) {
+export async function GET(request: Request) {
   try {
-    const { searchParams } = request.nextUrl;
+    const { searchParams } = new URL(request.url);
     const lat = searchParams.get('lat');
     const lon = searchParams.get('lon');
 
@@ -44,7 +40,7 @@ export async function GET(request: NextRequest) {
           details: 'Both lat and lon query parameters are required',
           example: '/api/nws/point?lat=39.7392&lon=-104.9903',
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -58,15 +54,12 @@ export async function GET(request: NextRequest) {
           error: 'Invalid coordinates',
           details: error instanceof Error ? error.message : 'Validation failed',
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Fetch point metadata and observation stations
-    const point = await fetchFromNws(
-      `/points/${latitude},${longitude}`,
-      PointSchema
-    );
+    const point = await fetchFromNws(`/points/${latitude},${longitude}`, PointSchema);
 
     const forecastUrl = point.properties.forecast;
     const stationsUrl = point.properties.observationStations;
@@ -79,7 +72,7 @@ export async function GET(request: NextRequest) {
           details: 'The requested location does not have forecast data available',
           coordinates: { latitude, longitude },
         },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -88,17 +81,12 @@ export async function GET(request: NextRequest) {
     const stationsPath = stationsUrl ? toNwsPath(stationsUrl) : null;
     const [forecast, stations] = await Promise.all([
       fetchFromNws(forecastPath, ForecastSchema),
-      stationsPath
-        ? fetchFromNws(stationsPath, ObservationStationsSchema)
-        : Promise.resolve(null),
+      stationsPath ? fetchFromNws(stationsPath, ObservationStationsSchema) : Promise.resolve(null),
     ]);
     const stationUrl = stations?.features[0]?.id;
     const stationId = stationUrl ? extractStationId(stationUrl) : null;
     const currentConditions = stationId
-      ? await fetchFromNws(
-          `/stations/${stationId}/observations/latest`,
-          LatestObservationSchema
-        )
+      ? await fetchFromNws(`/stations/${stationId}/observations/latest`, LatestObservationSchema)
       : null;
 
     const retrievedAt = new Date().toISOString();
@@ -129,12 +117,12 @@ export async function GET(request: NextRequest) {
           windSpeedMps: normalizeNwsWindSpeedText(period.windSpeed),
           windDirectionDegrees: normalizeNwsWindDirection(period.windDirection),
           precipitationProbabilityPercent: normalizeNwsQuantityValue(
-            period.probabilityOfPrecipitation
+            period.probabilityOfPrecipitation,
           ),
           condition: period.shortForecast,
           periodName: period.name,
           isDaytime: period.isDaytime,
-        })
+        }),
       ),
     });
   } catch (error) {
@@ -144,9 +132,6 @@ export async function GET(request: NextRequest) {
     }
 
     console.error('Unexpected error in /api/nws/point:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch weather data' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch weather data' }, { status: 500 });
   }
 }

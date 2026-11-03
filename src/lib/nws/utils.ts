@@ -38,7 +38,7 @@ export function toNwsPath(url: string): string {
  */
 export function validateLatitudeLongitude(
   lat: string,
-  lon: string
+  lon: string,
 ): { latitude: number; longitude: number } {
   const latitude = Number(lat);
   const longitude = Number(lon);

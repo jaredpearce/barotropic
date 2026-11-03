@@ -71,7 +71,7 @@ export function metersPerSecondToKnots(metersPerSecond: number): number {
  */
 export function formatTemperature(
   celsius: number | null | undefined,
-  units: ConditionUnits = 'imperial'
+  units: ConditionUnits = 'imperial',
 ): string {
   if (!isReading(celsius)) return MISSING_VALUE;
   if (units === 'metric') return `${Math.round(celsius)}°C`;
@@ -83,7 +83,7 @@ export function formatTemperature(
  */
 export function formatTemperatureDegrees(
   celsius: number | null | undefined,
-  units: ConditionUnits = 'imperial'
+  units: ConditionUnits = 'imperial',
 ): string {
   if (!isReading(celsius)) return MISSING_VALUE;
   if (units === 'metric') return `${Math.round(celsius)}°`;
@@ -115,7 +115,7 @@ export function directionArrow(degrees: number | null | undefined): string | nul
  */
 export function formatWindSpeed(
   metersPerSecond: number | null | undefined,
-  units: ConditionUnits = 'imperial'
+  units: ConditionUnits = 'imperial',
 ): string {
   if (!isReading(metersPerSecond)) return MISSING_VALUE;
   if (units === 'metric') return `${Math.round(metersPerSecond)} m/s`;
@@ -128,7 +128,7 @@ export function formatWindSpeed(
 export function formatWind(
   metersPerSecond: number | null | undefined,
   directionDegrees: number | null | undefined,
-  units: ConditionUnits = 'imperial'
+  units: ConditionUnits = 'imperial',
 ): string {
   const speed = formatWindSpeed(metersPerSecond, units);
   if (speed === MISSING_VALUE) return MISSING_VALUE;
@@ -145,7 +145,7 @@ export function formatWind(
  */
 export function formatPressure(
   hectopascals: number | null | undefined,
-  units: ConditionUnits = 'imperial'
+  units: ConditionUnits = 'imperial',
 ): string {
   if (!isReading(hectopascals)) return MISSING_VALUE;
   if (units === 'metric') return `${hectopascals.toFixed(1)} hPa`;

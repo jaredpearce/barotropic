@@ -7,19 +7,16 @@
  * distinguish polygon-based alerts from area-based alerts.
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { upstreamErrorResponse } from '@/lib/api-errors';
 import { fetchFromNws } from '@/lib/nws/client';
 import { validateLatitudeLongitude } from '@/lib/nws/utils';
-import {
-  AlertsResponseSchema,
-  NormalizedAlertSchema,
-} from '@/lib/schemas';
+import { AlertsResponseSchema, NormalizedAlertSchema } from '@/lib/schemas';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(request: NextRequest) {
-  const { searchParams } = request.nextUrl;
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
   const lat = searchParams.get('lat');
   const lon = searchParams.get('lon');
 
@@ -30,7 +27,7 @@ export async function GET(request: NextRequest) {
         details: 'Both lat and lon query parameters are required',
         example: '/api/nws/alerts/point?lat=35.7915&lon=-78.7811',
       },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -44,7 +41,7 @@ export async function GET(request: NextRequest) {
         error: 'Invalid coordinates',
         details: error instanceof Error ? error.message : 'Validation failed',
       },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -52,7 +49,7 @@ export async function GET(request: NextRequest) {
     const alertsResponse = await fetchFromNws(
       `/alerts/active?point=${latitude},${longitude}`,
       AlertsResponseSchema,
-      { revalidate: 30 }
+      { revalidate: 30 },
     );
     const retrievedAt = new Date().toISOString();
 
@@ -82,19 +79,16 @@ export async function GET(request: NextRequest) {
             instruction: feature.properties.instruction ?? null,
             senderName: feature.properties.senderName ?? null,
             geometry: feature.geometry,
-          })
+          }),
         ),
       },
-      { headers: { 'Cache-Control': 'no-store' } }
+      { headers: { 'Cache-Control': 'no-store' } },
     );
   } catch (error) {
     const upstreamResponse = upstreamErrorResponse(error);
     if (upstreamResponse) return upstreamResponse;
 
     console.error('Unexpected error in /api/nws/alerts/point:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch alerts for point' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch alerts for point' }, { status: 500 });
   }
 }

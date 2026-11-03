@@ -39,13 +39,7 @@ export const WeatherDataSchema: z.ZodType<WeatherData> = z.object({
   visibility: z.number().min(0),
 });
 
-export const EvidenceTypeEnum = z.enum([
-  'satellite',
-  'surface',
-  'model',
-  'observation',
-  'other',
-]);
+export const EvidenceTypeEnum = z.enum(['satellite', 'surface', 'model', 'observation', 'other']);
 
 export const ConfidenceLevelEnum = z.enum(['low', 'medium', 'high']);
 
@@ -59,12 +53,7 @@ export const EvidenceSchema: z.ZodType<Evidence> = z.object({
   notes: z.string().optional(),
 });
 
-export const PatternScaleEnum = z.enum([
-  'local',
-  'regional',
-  'continental',
-  'global',
-]);
+export const PatternScaleEnum = z.enum(['local', 'regional', 'continental', 'global']);
 
 export const AtmosphericPatternSchema: z.ZodType<AtmosphericPattern> = z.object({
   id: z.string().uuid(),

@@ -71,10 +71,7 @@ export function useCurrentConditions({
         setConditions(toCurrentConditions(payload.currentConditions));
         setStatus('success');
       } catch (caught) {
-        if (
-          cancelled ||
-          (caught instanceof Error && caught.name === 'AbortError')
-        ) {
+        if (cancelled || (caught instanceof Error && caught.name === 'AbortError')) {
           return;
         }
 

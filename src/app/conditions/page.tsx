@@ -1,20 +1,15 @@
 import { AppLayout } from '@/components/AppLayout';
 import ConditionTile from '@/components/ConditionTile';
 import { buildConditionTiles } from '@/lib/conditions';
+import { DEFAULT_LOCATION } from '@/lib/location';
 import { fetchCurrentConditions } from '@/lib/nws/current-conditions';
 
 export const dynamic = 'force-dynamic';
 
-const DEFAULT_LOCATION = {
-  latitude: 35.7915,
-  longitude: -78.7811,
-  label: 'Cary, NC',
-};
-
 export default async function ConditionsPage() {
   const conditions = await fetchCurrentConditions(
     DEFAULT_LOCATION.latitude,
-    DEFAULT_LOCATION.longitude
+    DEFAULT_LOCATION.longitude,
   );
   const tiles = buildConditionTiles(conditions);
 

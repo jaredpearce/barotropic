@@ -1,9 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-  buildOpenMeteoForecastQuery,
-  normalizeOpenMeteoModels,
-  OPEN_METEO_MODELS,
-} from './utils';
+import { buildOpenMeteoForecastQuery, normalizeOpenMeteoModels, OPEN_METEO_MODELS } from './utils';
 
 describe('Open-Meteo model configuration', () => {
   it('Use Case: selects two named models by default and maps them to provider IDs', () => {
@@ -13,22 +9,19 @@ describe('Open-Meteo model configuration', () => {
   });
 
   it('Use Case: accepts display aliases and exact provider model IDs', () => {
-    expect(normalizeOpenMeteoModels('GFS,hrr,ncep_hrrr_conus')).toEqual([
-      'gfs',
-      'hrrr',
-    ]);
+    expect(normalizeOpenMeteoModels('GFS,hrr,ncep_hrrr_conus')).toEqual(['gfs', 'hrrr']);
   });
 
   it('Use Case: rejects a selection without a supported model', () => {
     expect(() => normalizeOpenMeteoModels('ecmwf,unknown')).toThrow(
-      'models must include gfs or hrrr'
+      'models must include gfs or hrrr',
     );
   });
 
   it('Use Case: builds a provider query with the selected model and canonical units', () => {
     const query = new URL(
       buildOpenMeteoForecastQuery(35.7915, -78.7811, 'ncep_gfs_seamless'),
-      'https://api.open-meteo.com'
+      'https://api.open-meteo.com',
     );
 
     expect(query.searchParams.get('models')).toBe('ncep_gfs_seamless');
