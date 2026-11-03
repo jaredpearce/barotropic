@@ -44,6 +44,7 @@ export function buildOpenMeteoForecastQuery(
       'precipitation_probability',
       'weather_code',
       'wind_speed_10m',
+      'is_day',
     ].join(','),
     daily: ['weather_code', 'temperature_2m_max', 'temperature_2m_min'].join(','),
     timezone: 'auto',

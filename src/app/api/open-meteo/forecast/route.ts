@@ -30,6 +30,13 @@ const CARY_LOCATION = {
 
 const RADAR_WMS_URL = 'https://opengeo.ncep.noaa.gov/geoserver/conus/conus_bref_qcd/ows';
 
+/** Open-Meteo publishes `is_day` as 1 for daytime and 0 for night. */
+function toIsDaytime(value: number | null | undefined): boolean | undefined {
+  if (value === 1) return true;
+  if (value === 0) return false;
+  return undefined;
+}
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -118,6 +125,7 @@ export async function GET(request: Request) {
               forecast.hourly?.precipitation_probability[index] ?? null,
             weatherCode: forecast.hourly?.weather_code[index] ?? null,
             windSpeedMps: forecast.hourly?.wind_speed_10m[index] ?? null,
+            isDaytime: toIsDaytime(forecast.hourly?.is_day[index]),
           }),
         );
         const daily = (forecast.daily?.time ?? []).map((timestamp, index) =>
@@ -140,6 +148,9 @@ export async function GET(request: Request) {
           name: model.name,
           hourly,
           daily,
+          timezone: forecast.timezone ?? null,
+          timezoneAbbreviation: forecast.timezone_abbreviation ?? null,
+          utcOffsetSeconds: forecast.utc_offset_seconds ?? 0,
         };
       }),
     );

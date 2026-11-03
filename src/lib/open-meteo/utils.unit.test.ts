@@ -29,5 +29,6 @@ describe('Open-Meteo model configuration', () => {
     expect(query.searchParams.get('longitude')).toBe('-78.7811');
     expect(query.searchParams.get('temperature_unit')).toBe('celsius');
     expect(query.searchParams.get('wind_speed_unit')).toBe('ms');
+    expect(query.searchParams.get('hourly')).toContain('is_day');
   });
 });

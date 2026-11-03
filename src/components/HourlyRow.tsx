@@ -1,11 +1,4 @@
-export type HourlyCondition =
-  | 'clear'
-  | 'partly-cloudy'
-  | 'cloudy'
-  | 'rain'
-  | 'storm'
-  | 'snow'
-  | 'fog';
+import type { HourlyCondition } from '@/lib/forecast/weather-code';
 
 interface HourlyRowProps {
   timeLabel: string;

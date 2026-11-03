@@ -12,6 +12,8 @@ export interface UseHourlyForecastOptions {
 
 export interface UseHourlyForecastResult {
   hours: NormalizedWeatherRecord[];
+  /** Offset applied by the provider for the selected location's local time. */
+  utcOffsetSeconds: number;
   status: HourlyForecastStatus;
   error: string | null;
   refresh: () => void;
@@ -21,6 +23,7 @@ interface HourlyForecastResponse {
   models?: {
     gfs?: {
       hourly?: NormalizedWeatherRecord[];
+      utcOffsetSeconds?: number;
     };
   };
 }
@@ -32,6 +35,7 @@ export function useHourlyForecast({
   longitude,
 }: UseHourlyForecastOptions): UseHourlyForecastResult {
   const [hours, setHours] = useState<NormalizedWeatherRecord[]>([]);
+  const [utcOffsetSeconds, setUtcOffsetSeconds] = useState(0);
   const [status, setStatus] = useState<HourlyForecastStatus>('idle');
   const [error, setError] = useState<string | null>(null);
   const [requestId, setRequestId] = useState(0);
@@ -47,6 +51,7 @@ export function useHourlyForecast({
     setStatus('loading');
     setError(null);
     setHours([]);
+    setUtcOffsetSeconds(0);
 
     async function loadForecast() {
       try {
@@ -66,6 +71,7 @@ export function useHourlyForecast({
         if (cancelled) return;
 
         setHours(Array.isArray(payload.models?.gfs?.hourly) ? payload.models.gfs.hourly : []);
+        setUtcOffsetSeconds(payload.models?.gfs?.utcOffsetSeconds ?? 0);
         setStatus('success');
       } catch (caught) {
         if (cancelled || (caught instanceof Error && caught.name === 'AbortError')) {
@@ -85,5 +91,5 @@ export function useHourlyForecast({
     };
   }, [latitude, longitude, requestId]);
 
-  return { hours, status, error, refresh };
+  return { hours, utcOffsetSeconds, status, error, refresh };
 }
