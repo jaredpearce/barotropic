@@ -135,15 +135,14 @@ Manage all forecasts:
 - List view of forecasts
 - Filter and search
 - Create new forecast
+- Edit structured forecasts with official/model guidance and free-text reasoning
+- Browser-local autosave with append-only revision history using IndexedDB
 
-### New Forecast (`/forecasts/new`)
+### Forecast Editor (`/forecasts/new`, `/forecasts/[forecastId]`)
 
-Wizard for creating forecasts:
-
-1. **Location & Time** - Set forecast scope
-2. **Evidence Panel** - Gather supporting data
-3. **Hypothesis** - Form forecast hypothesis
-4. **Review & Publish** - Review and publish
+Create or edit a forecast with location and valid time, structured weather
+fields, official/model guidance, and free-text reasoning. Changes are saved to
+the browser's IndexedDB database and preserved as append-only revisions.
 
 ## Code Quality
 
