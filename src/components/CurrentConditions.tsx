@@ -5,6 +5,7 @@ import { buildConditionTiles } from '@/lib/conditions';
 import { formatTemperatureDegrees } from '@/lib/conditions/format';
 import { useCurrentConditions } from '@/lib/hooks/use-current-conditions';
 import ConditionTile from './ConditionTile';
+import StatusPill from './StatusPill';
 
 interface CurrentConditionsProps {
   /** Latitude used to fetch the nearest observation. */
@@ -47,6 +48,7 @@ export function CurrentConditions({ latitude, longitude, className }: CurrentCon
         <h2 className="app-section-title" id={headingId}>
           {heading}
         </h2>
+        {hasObservation ? <StatusPill retrievedAt={conditions?.retrievedAt} /> : null}
       </div>
 
       {isLoading ? (

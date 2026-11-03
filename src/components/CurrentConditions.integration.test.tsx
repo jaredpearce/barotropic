@@ -12,7 +12,7 @@ const OBSERVATION: NormalizedObservation = {
   id: 'KRDU:2026-10-26T16:53:00Z',
   stationId: 'KRDU',
   timestamp: '2026-10-26T16:53:00Z',
-  retrievedAt: '2026-10-26T17:00:00Z',
+  retrievedAt: new Date().toISOString(),
   issuedAt: '2026-10-26T16:53:00Z',
   description: 'Partly Cloudy',
   temperatureC: 28.9,
@@ -53,6 +53,7 @@ describe('CurrentConditions integration', () => {
       }),
     ).toBeInTheDocument();
     expect(screen.getByText('Partly Cloudy')).toBeInTheDocument();
+    expect(screen.getByText('LIVE')).toBeInTheDocument();
     expect(screen.getByText('1012.4 mb')).toBeInTheDocument();
     expect(screen.getByText('RH 64%')).toBeInTheDocument();
     expect(screen.getByText('Feels like')).toBeInTheDocument();

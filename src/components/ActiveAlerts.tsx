@@ -4,6 +4,7 @@ import { useId } from 'react';
 import { ALERT_SEVERITY_META } from '@/lib/alerts';
 import { useActiveAlerts } from '@/lib/hooks/use-active-alerts';
 import AlertCard from './AlertCard';
+import StatusPill from './StatusPill';
 
 interface ActiveAlertsProps {
   /** Latitude used to fetch and classify alerts. */
@@ -34,6 +35,7 @@ export function ActiveAlerts({ latitude, longitude, className }: ActiveAlertsPro
   const isLoading = status === 'idle' || status === 'loading';
   const hasAlerts = status === 'success' && alerts.length > 0;
   const heading = hasAlerts ? `Active alerts (${alerts.length})` : 'Active alerts';
+  const retrievedAt = alerts[0]?.retrievedAt;
 
   return (
     <section aria-labelledby={headingId} className={classes.join(' ')}>
@@ -42,9 +44,12 @@ export function ActiveAlerts({ latitude, longitude, className }: ActiveAlertsPro
           {heading}
         </h2>
         {hasAlerts ? (
-          <span className="active-alerts-highest" data-severity={highestSeverity}>
-            Highest: {ALERT_SEVERITY_META[highestSeverity].label}
-          </span>
+          <div className="app-section-meta">
+            <StatusPill retrievedAt={retrievedAt} />
+            <span className="active-alerts-highest" data-severity={highestSeverity}>
+              Highest: {ALERT_SEVERITY_META[highestSeverity].label}
+            </span>
+          </div>
         ) : null}
       </div>
 

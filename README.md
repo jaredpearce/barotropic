@@ -189,6 +189,10 @@ cp .env.example .env.local
 - Open-Meteo's forecast API accepts optional `lat`/`lon` coordinates and falls back to Cary, NC when they are omitted. Requests use `timezone=auto`; hourly records carry `isDaytime` from the provider's `is_day` flag, and each model response exposes `utcOffsetSeconds` so the UI can start its 24-hour list at the current local hour. The named GFS and HRRR products use the provider IDs `ncep_gfs_seamless` and `ncep_hrrr_conus`, respectively. The generic endpoint does not expose a model initialization time; per-record `runTime` is therefore `null`, while `retrievedAt` and the valid timestamp are populated.
 - Review [Open-Meteo API documentation](https://open-meteo.com/en/docs/gfs-api) and [terms](https://open-meteo.com/en/terms) before deployment. The public API currently describes free access for non-commercial use; commercial use requires the applicable paid API access.
 
+## Data Freshness
+
+Panels derive their `LIVE`/`STALE` indicator from `retrievedAt` (transport time) using a 15-minute threshold defined by `FRESHNESS_THRESHOLD_MS` in `src/lib/freshness.ts`. Missing or invalid timestamps are treated as stale, and future timestamps are clamped to zero age so small clock skew does not produce a false stale state.
+
 ## Deployment
 
 This project is optimized for deployment on [Vercel](https://vercel.com/):

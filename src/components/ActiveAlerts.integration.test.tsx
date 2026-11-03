@@ -82,6 +82,7 @@ describe('ActiveAlerts integration', () => {
     expect(screen.getByText('Heat Advisory')).toBeInTheDocument();
     expect(screen.getByText('Flood Watch')).toBeInTheDocument();
     expect(screen.getByText('Highest: Extreme')).toBeInTheDocument();
+    expect(screen.getByText('STALE')).toBeInTheDocument();
     expect(container.querySelector('.active-alerts-highest')).toHaveAttribute(
       'data-severity',
       'extreme',

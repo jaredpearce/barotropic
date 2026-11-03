@@ -208,6 +208,12 @@ describe('alert cards', () => {
     expect(card.expiresLabel).toContain('UTC');
   });
 
+  it('Use Case: carries the retrieval time for the freshness indicator', () => {
+    const [card] = buildAlertCards([makeAlert()], { now: NOW, point: POINT });
+
+    expect(card.retrievedAt).toBe('2026-10-26T12:00:00Z');
+  });
+
   it('Use Case: falls back to a generic event name when NWS omits one', () => {
     const [card] = buildAlertCards(
       [

@@ -65,6 +65,8 @@ export interface CurrentConditions {
   stationId?: string;
   /** Time the observation was issued. */
   observedAt?: Date;
+  /** Time the observation was retrieved from the upstream API. */
+  retrievedAt?: Date;
 }
 
 /**

@@ -30,5 +30,6 @@ export function toCurrentConditions(
     condition: observation.description ?? undefined,
     stationId: observation.stationId,
     observedAt: observation.timestamp ? new Date(observation.timestamp) : undefined,
+    retrievedAt: new Date(observation.retrievedAt),
   };
 }

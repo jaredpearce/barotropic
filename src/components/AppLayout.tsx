@@ -155,9 +155,6 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
       <nav className="app-header">
         <div className="flex items-center gap-4">
           <BarotropicLogo />
-          <span className="app-header-status">
-            <span className="app-header-status-indicator" /> Live · 4 min ago
-          </span>
         </div>
         <div className="app-header-actions">
           <button className="app-button">ⓘ Ask Barotropic</button>

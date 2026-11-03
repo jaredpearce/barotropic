@@ -41,6 +41,8 @@ export interface AlertCardData {
   expiresLabel?: string;
   match: AlertGeometryMatch;
   geometry: AlertGeometryPreview;
+  /** Transport timestamp used to derive LIVE/STALE status. */
+  retrievedAt?: string;
 }
 
 export interface BuildAlertCardsOptions {
@@ -126,6 +128,7 @@ function toCard(
     expiresLabel: expires?.label,
     match: classifyAlertGeometry(alert.geometry, options.point),
     geometry: buildGeometryPreview(alert.geometry, options.point),
+    retrievedAt: alert.retrievedAt,
   };
 }
 

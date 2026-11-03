@@ -150,7 +150,7 @@ describe('AppLayout location selection', () => {
     expect(screen.getByText('Highest: Moderate')).toBeInTheDocument();
   });
 
-  it('Use Case: shows the live current conditions for the selected location', async () => {
+  it('Use Case: shows the current conditions for the selected location', async () => {
     stubAppFetch({ conditions: CURRENT_OBSERVATION });
 
     renderWithProviders(<AppLayout />);

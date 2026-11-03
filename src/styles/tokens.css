@@ -104,17 +104,25 @@
     letter-spacing: var(--tracking-wide);
   }
 
-  .app-header-status {
-    @apply flex items-center gap-2;
+  .status-pill {
+    @apply inline-flex shrink-0 items-center gap-2;
     font-size: var(--text-size-xs);
     letter-spacing: var(--tracking-normal);
     color: var(--color-text-secondary);
     text-transform: uppercase;
   }
 
-  .app-header-status-indicator {
+  .status-pill-indicator {
     @apply h-2 w-2 rounded-full;
     background-color: var(--color-accent-emerald);
+  }
+
+  .status-pill[data-state='stale'] {
+    color: var(--color-accent-amber-light);
+  }
+
+  .status-pill[data-state='stale'] .status-pill-indicator {
+    background-color: var(--color-accent-amber);
   }
 
   .app-header-actions {
@@ -324,6 +332,10 @@
   .current-conditions-heading {
     @apply flex items-start justify-between gap-2;
     margin-bottom: var(--spacing-sm);
+  }
+
+  .app-section-meta {
+    @apply flex shrink-0 items-center gap-2;
   }
 
   .active-alerts-heading .app-section-title,
