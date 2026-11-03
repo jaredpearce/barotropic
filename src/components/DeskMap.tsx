@@ -93,6 +93,9 @@ export function DeskMap({
   const labelRef = useRef(label);
   const [status, setStatus] = useState<MapStatus>('loading');
   const [attempt, setAttempt] = useState(0);
+  const [showRadar, setShowRadar] = useState(true);
+  const [showAlerts, setShowAlerts] = useState(true);
+  const [showStations, setShowStations] = useState(true);
 
   useEffect(() => {
     positionRef.current = { latitude, longitude };
@@ -203,6 +206,26 @@ export function DeskMap({
       });
     }
   }, [latitude, longitude, label]);
+
+  useEffect(() => {
+    if (status !== 'ready') return;
+
+    const map = mapRef.current;
+    if (!map) return;
+
+    if (map.getLayer(MAP_RADAR_LAYER_ID)) {
+      map.setLayoutProperty(MAP_RADAR_LAYER_ID, 'visibility', showRadar ? 'visible' : 'none');
+    }
+    if (map.getLayer(MAP_ALERT_FILL_LAYER_ID)) {
+      map.setLayoutProperty(MAP_ALERT_FILL_LAYER_ID, 'visibility', showAlerts ? 'visible' : 'none');
+    }
+    if (map.getLayer(MAP_ALERT_LINE_LAYER_ID)) {
+      map.setLayoutProperty(MAP_ALERT_LINE_LAYER_ID, 'visibility', showAlerts ? 'visible' : 'none');
+    }
+    if (map.getLayer(MAP_STATION_LAYER_ID)) {
+      map.setLayoutProperty(MAP_STATION_LAYER_ID, 'visibility', showStations ? 'visible' : 'none');
+    }
+  }, [showAlerts, showRadar, showStations, status]);
 
   useEffect(() => {
     if (status !== 'ready') return;
@@ -339,6 +362,35 @@ export function DeskMap({
           {stations.length > 0 ? (
             <span>{stations.length === 1 ? '1 station' : `${stations.length} stations`}</span>
           ) : null}
+        </div>
+      ) : null}
+
+      {status === 'ready' ? (
+        <div aria-label="Map layers" className="desk-map-layers" role="group">
+          <label className="desk-map-layer-toggle">
+            <input
+              checked={showRadar}
+              onChange={(event) => setShowRadar(event.target.checked)}
+              type="checkbox"
+            />
+            Radar
+          </label>
+          <label className="desk-map-layer-toggle">
+            <input
+              checked={showAlerts}
+              onChange={(event) => setShowAlerts(event.target.checked)}
+              type="checkbox"
+            />
+            Alerts
+          </label>
+          <label className="desk-map-layer-toggle">
+            <input
+              checked={showStations}
+              onChange={(event) => setShowStations(event.target.checked)}
+              type="checkbox"
+            />
+            Stations
+          </label>
         </div>
       ) : null}
 
