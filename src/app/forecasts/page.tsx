@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from 'next/link';
 
 export default function ForecastsPage() {
   return (
@@ -9,9 +9,7 @@ export default function ForecastsPage() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-sky-900">Forecasts</h1>
-              <p className="mt-1 text-sm text-gray-600">
-                Browse and manage all weather forecasts
-              </p>
+              <p className="mt-1 text-sm text-gray-600">Browse and manage all weather forecasts</p>
             </div>
             <Link
               href="/forecasts/new"
@@ -30,8 +28,8 @@ export default function ForecastsPage() {
           <div className="mx-auto max-w-md">
             <h2 className="text-2xl font-bold text-sky-900">No Forecasts Yet</h2>
             <p className="mt-2 text-gray-600">
-              Start by creating your first forecast to begin the process of
-              examining evidence, recognizing patterns, and forming hypotheses.
+              Start by creating your first forecast to begin the process of examining evidence,
+              recognizing patterns, and forming hypotheses.
             </p>
             <Link
               href="/forecasts/new"

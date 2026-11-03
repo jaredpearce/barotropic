@@ -65,6 +65,8 @@ export interface CurrentConditions {
   stationId?: string;
   /** Time the observation was issued. */
   observedAt?: Date;
+  /** Time the observation was retrieved from the upstream API. */
+  retrievedAt?: Date;
 }
 
 /**
@@ -74,8 +76,8 @@ export interface Evidence {
   id: string;
   createdAt: Date;
   description: string;
-  type: "satellite" | "surface" | "model" | "observation" | "other";
-  confidence: "high" | "medium" | "low";
+  type: 'satellite' | 'surface' | 'model' | 'observation' | 'other';
+  confidence: 'high' | 'medium' | 'low';
   source?: string;
   notes?: string;
 }
@@ -87,7 +89,7 @@ export interface AtmosphericPattern {
   id: string;
   name: string;
   description: string;
-  scale: "local" | "regional" | "continental" | "global";
+  scale: 'local' | 'regional' | 'continental' | 'global';
   systems: string[]; // e.g., ["high pressure", "cold front"]
   expectedDuration: number; // hours
   confidence: number; // 0-100

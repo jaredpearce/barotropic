@@ -50,46 +50,36 @@ test.beforeEach(async ({ page }) => {
         currentConditions: null,
         forecast: [],
       },
-    })
+    }),
   );
 });
 
-test('Use Case: renders polygon and area-based active alerts in the sidebar', async ({
-  page,
-}) => {
+test('Use Case: renders polygon and area-based active alerts in the sidebar', async ({ page }) => {
   await page.route('**/api/nws/alerts/point**', (route) =>
-    route.fulfill({ json: { point: POINT, alerts: [POLYGON_ALERT, AREA_ALERT] } })
+    route.fulfill({ json: { point: POINT, alerts: [POLYGON_ALERT, AREA_ALERT] } }),
   );
 
   await page.goto('/');
 
+  await expect(page.getByRole('heading', { name: 'Active alerts (2)' })).toBeVisible();
   await expect(
-    page.getByRole('heading', { name: 'Active alerts (2)' })
-  ).toBeVisible();
-  await expect(
-    page.getByRole('article', { name: 'Heat Advisory, Moderate severity' })
+    page.getByRole('article', { name: 'Heat Advisory, Moderate severity' }),
   ).toBeVisible();
   await expect(page.getByText('Affects this location')).toBeVisible();
+  await expect(page.getByRole('img', { name: 'Polygon preview for Heat Advisory' })).toBeVisible();
   await expect(
-    page.getByRole('img', { name: 'Polygon preview for Heat Advisory' })
-  ).toBeVisible();
-  await expect(
-    page.getByText(
-      'Area-based alert. NWS did not publish a polygon for this alert.'
-    )
+    page.getByText('Area-based alert. NWS did not publish a polygon for this alert.'),
   ).toBeVisible();
   await expect(page.getByText('Highest: Moderate')).toBeVisible();
 });
 
 test('Use Case: reports when active alerts cannot be loaded', async ({ page }) => {
   await page.route('**/api/nws/alerts/point**', (route) =>
-    route.fulfill({ status: 502, json: { error: 'NWS unavailable' } })
+    route.fulfill({ status: 502, json: { error: 'NWS unavailable' } }),
   );
 
   await page.goto('/');
 
-  await expect(
-    page.getByText('Unable to load alerts for this location.')
-  ).toBeVisible();
+  await expect(page.getByText('Unable to load alerts for this location.')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Try again' })).toBeVisible();
 });

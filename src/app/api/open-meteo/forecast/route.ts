@@ -28,8 +28,14 @@ const CARY_LOCATION = {
   state: 'NC',
 };
 
-const RADAR_WMS_URL =
-  'https://opengeo.ncep.noaa.gov/geoserver/conus/conus_bref_qcd/ows';
+const RADAR_WMS_URL = 'https://opengeo.ncep.noaa.gov/geoserver/conus/conus_bref_qcd/ows';
+
+/** Open-Meteo publishes `is_day` as 1 for daytime and 0 for night. */
+function toIsDaytime(value: number | null | undefined): boolean | undefined {
+  if (value === 1) return true;
+  if (value === 0) return false;
+  return undefined;
+}
 
 export async function GET(request: Request) {
   try {
@@ -45,11 +51,10 @@ export async function GET(request: Request) {
       return NextResponse.json(
         {
           error: 'Invalid model selection',
-          details:
-            error instanceof Error ? error.message : 'A valid Open-Meteo model is required',
+          details: error instanceof Error ? error.message : 'A valid Open-Meteo model is required',
           example: '/api/open-meteo/forecast?models=gfs,hrrr',
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -67,7 +72,7 @@ export async function GET(request: Request) {
             details: 'Both lat and lon query parameters are required',
             example: '/api/open-meteo/forecast?lat=35.7915&lon=-78.7811',
           },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
@@ -77,24 +82,20 @@ export async function GET(request: Request) {
             error: 'Invalid coordinates',
             details: 'lat and lon must be valid numbers',
           },
-          { status: 400 }
+          { status: 400 },
         );
       }
 
       try {
-        const coordinates = validateLatitudeLongitude(
-          latitudeParam,
-          longitudeParam
-        );
+        const coordinates = validateLatitudeLongitude(latitudeParam, longitudeParam);
         location = coordinates;
       } catch (error) {
         return NextResponse.json(
           {
             error: 'Invalid coordinates',
-            details:
-              error instanceof Error ? error.message : 'Validation failed',
+            details: error instanceof Error ? error.message : 'Validation failed',
           },
-          { status: 400 }
+          { status: 400 },
         );
       }
     }
@@ -106,12 +107,9 @@ export async function GET(request: Request) {
           location.latitude,
           location.longitude,
           model.id,
-          7
+          7,
         );
-        const forecast = await fetchFromOpenMeteo(
-          endpoint,
-          OpenMeteoForecastSchema
-        );
+        const forecast = await fetchFromOpenMeteo(endpoint, OpenMeteoForecastSchema);
         const retrievedAt = new Date().toISOString();
         const hourly = (forecast.hourly?.time ?? []).map((timestamp, index) =>
           NormalizedWeatherRecordSchema.parse({
@@ -127,7 +125,8 @@ export async function GET(request: Request) {
               forecast.hourly?.precipitation_probability[index] ?? null,
             weatherCode: forecast.hourly?.weather_code[index] ?? null,
             windSpeedMps: forecast.hourly?.wind_speed_10m[index] ?? null,
-          })
+            isDaytime: toIsDaytime(forecast.hourly?.is_day[index]),
+          }),
         );
         const daily = (forecast.daily?.time ?? []).map((timestamp, index) =>
           NormalizedWeatherRecordSchema.parse({
@@ -140,7 +139,7 @@ export async function GET(request: Request) {
             weatherCode: forecast.daily?.weather_code[index] ?? null,
             minimumTemperatureC: forecast.daily?.temperature_2m_min[index] ?? null,
             maximumTemperatureC: forecast.daily?.temperature_2m_max[index] ?? null,
-          })
+          }),
         );
 
         return {
@@ -149,12 +148,15 @@ export async function GET(request: Request) {
           name: model.name,
           hourly,
           daily,
+          timezone: forecast.timezone ?? null,
+          timezoneAbbreviation: forecast.timezone_abbreviation ?? null,
+          utcOffsetSeconds: forecast.utc_offset_seconds ?? 0,
         };
-      })
+      }),
     );
 
     const modelResults = Object.fromEntries(
-      forecasts.map(({ modelName, ...forecast }) => [modelName, forecast])
+      forecasts.map(({ modelName, ...forecast }) => [modelName, forecast]),
     );
 
     return NextResponse.json({
@@ -183,7 +185,7 @@ export async function GET(request: Request) {
     console.error('Unexpected error in /api/open-meteo/forecast:', error);
     return NextResponse.json(
       { error: 'Failed to fetch Open-Meteo forecast data' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

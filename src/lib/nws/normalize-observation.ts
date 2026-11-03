@@ -27,7 +27,7 @@ import {
 export function normalizeNwsObservation(
   stationId: string,
   observation: LatestObservation,
-  retrievedAt: string = new Date().toISOString()
+  retrievedAt: string = new Date().toISOString(),
 ): NormalizedObservation {
   const { properties } = observation;
 

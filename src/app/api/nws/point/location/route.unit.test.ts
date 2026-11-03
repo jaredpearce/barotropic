@@ -14,7 +14,7 @@ beforeEach(() => {
 describe('NWS reverse location route', () => {
   it('Use Case: rejects invalid coordinates before calling NWS', async () => {
     const response = await GET(
-      new Request('http://localhost/api/nws/point/location?lat=91&lon=-78')
+      new Request('http://localhost/api/nws/point/location?lat=91&lon=-78'),
     );
 
     expect(response.status).toBe(400);
@@ -31,7 +31,7 @@ describe('NWS reverse location route', () => {
     } as never);
 
     const response = await GET(
-      new Request('http://localhost/api/nws/point/location?lat=35.78&lon=-78.64')
+      new Request('http://localhost/api/nws/point/location?lat=35.78&lon=-78.64'),
     );
 
     expect(response.status).toBe(200);

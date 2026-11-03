@@ -6,12 +6,7 @@
  * assigns their display rank, so cards and future map overlays cannot disagree.
  */
 
-export type AlertSeverity =
-  | 'extreme'
-  | 'severe'
-  | 'moderate'
-  | 'minor'
-  | 'unknown';
+export type AlertSeverity = 'extreme' | 'severe' | 'moderate' | 'minor' | 'unknown';
 
 export interface AlertSeverityMeta {
   label: string;
@@ -44,9 +39,7 @@ function isAlertSeverity(value: string): value is AlertSeverity {
  * Missing, blank, or unexpected values become `unknown` rather than being
  * inferred from the alert event name.
  */
-export function normalizeAlertSeverity(
-  value: string | null | undefined
-): AlertSeverity {
+export function normalizeAlertSeverity(value: string | null | undefined): AlertSeverity {
   if (typeof value !== 'string') return 'unknown';
 
   const normalized = value.trim().toLowerCase();
@@ -56,10 +49,7 @@ export function normalizeAlertSeverity(
 /**
  * Compare two severities so the highest severity sorts first.
  */
-export function compareAlertSeverity(
-  left: AlertSeverity,
-  right: AlertSeverity
-): number {
+export function compareAlertSeverity(left: AlertSeverity, right: AlertSeverity): number {
   return ALERT_SEVERITY_META[right].rank - ALERT_SEVERITY_META[left].rank;
 }
 
@@ -67,14 +57,13 @@ export function compareAlertSeverity(
  * Return the highest severity present in a collection.
  */
 export function getHighestAlertSeverity(
-  alerts: ReadonlyArray<{ severity: AlertSeverity }>
+  alerts: ReadonlyArray<{ severity: AlertSeverity }>,
 ): AlertSeverity {
   return alerts.reduce<AlertSeverity>(
     (highest, alert) =>
-      ALERT_SEVERITY_META[alert.severity].rank >
-      ALERT_SEVERITY_META[highest].rank
+      ALERT_SEVERITY_META[alert.severity].rank > ALERT_SEVERITY_META[highest].rank
         ? alert.severity
         : highest,
-    'unknown'
+    'unknown',
   );
 }

@@ -15,9 +15,7 @@ const OPEN_METEO_MODEL_ALIASES: Record<string, OpenMeteoModelName> = {
   ncep_hrrr_conus: 'hrrr',
 };
 
-export function normalizeOpenMeteoModels(
-  rawModels: string | null
-): OpenMeteoModelName[] {
+export function normalizeOpenMeteoModels(rawModels: string | null): OpenMeteoModelName[] {
   const requested = rawModels?.trim() || DEFAULT_OPEN_METEO_MODELS.join(',');
   const normalized = requested
     .split(',')
@@ -35,7 +33,7 @@ export function buildOpenMeteoForecastQuery(
   latitude: number,
   longitude: number,
   modelId: string,
-  forecastDays = 7
+  forecastDays = 7,
 ) {
   const params = new URLSearchParams({
     latitude: String(latitude),
@@ -46,6 +44,7 @@ export function buildOpenMeteoForecastQuery(
       'precipitation_probability',
       'weather_code',
       'wind_speed_10m',
+      'is_day',
     ].join(','),
     daily: ['weather_code', 'temperature_2m_max', 'temperature_2m_min'].join(','),
     timezone: 'auto',

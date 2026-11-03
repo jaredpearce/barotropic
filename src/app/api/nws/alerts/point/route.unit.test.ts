@@ -27,9 +27,7 @@ beforeEach(() => {
 
 describe('NWS point alerts route', () => {
   it('Use Case: rejects requests missing coordinates before calling NWS', async () => {
-    const response = await GET(
-      new Request('http://localhost/api/nws/alerts/point?lat=35.79')
-    );
+    const response = await GET(new Request('http://localhost/api/nws/alerts/point?lat=35.79'));
 
     expect(response.status).toBe(400);
     expect(fetchFromNws).not.toHaveBeenCalled();
@@ -37,7 +35,7 @@ describe('NWS point alerts route', () => {
 
   it('Use Case: rejects out-of-range coordinates before calling NWS', async () => {
     const response = await GET(
-      new Request('http://localhost/api/nws/alerts/point?lat=95&lon=-78.78')
+      new Request('http://localhost/api/nws/alerts/point?lat=95&lon=-78.78'),
     );
 
     expect(response.status).toBe(400);
@@ -91,9 +89,7 @@ describe('NWS point alerts route', () => {
     } as never);
 
     const response = await GET(
-      new Request(
-        'http://localhost/api/nws/alerts/point?lat=35.7915&lon=-78.7811'
-      )
+      new Request('http://localhost/api/nws/alerts/point?lat=35.7915&lon=-78.7811'),
     );
 
     expect(response.status).toBe(200);
@@ -121,7 +117,7 @@ describe('NWS point alerts route', () => {
     expect(fetchFromNws).toHaveBeenCalledWith(
       '/alerts/active?point=35.7915,-78.7811',
       expect.anything(),
-      { revalidate: 30 }
+      { revalidate: 30 },
     );
   });
 
@@ -132,14 +128,12 @@ describe('NWS point alerts route', () => {
         'National Weather Service request timed out',
         'NWS',
         504,
-        true
-      )
+        true,
+      ),
     );
 
     const response = await GET(
-      new Request(
-        'http://localhost/api/nws/alerts/point?lat=35.7915&lon=-78.7811'
-      )
+      new Request('http://localhost/api/nws/alerts/point?lat=35.7915&lon=-78.7811'),
     );
 
     expect(response.status).toBe(504);

@@ -29,7 +29,7 @@ describe('Geocoding route', () => {
             admin1: 'Washington',
           },
         ],
-      })
+      }),
     );
     vi.stubGlobal('fetch', fetchMock);
 
@@ -40,7 +40,7 @@ describe('Geocoding route', () => {
       results: [{ name: 'Seattle', latitude: 47.6062, longitude: -122.3321 }],
     });
     expect(fetchMock.mock.calls[0][0].toString()).toContain(
-      'https://geocoding-api.open-meteo.com/v1/search?name=Seattle&count=8&countryCode=US'
+      'https://geocoding-api.open-meteo.com/v1/search?name=Seattle&count=8&countryCode=US',
     );
   });
 });

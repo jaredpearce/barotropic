@@ -22,13 +22,14 @@ describe('Open-Meteo forecast route', () => {
         precipitation_probability: [20],
         weather_code: [2],
         wind_speed_10m: [4],
+        is_day: [1],
       },
     } as never);
 
     const response = await GET(
       new NextRequest(
-        'http://localhost/api/open-meteo/forecast?lat=47.6062&lon=-122.3321&models=gfs'
-      )
+        'http://localhost/api/open-meteo/forecast?lat=47.6062&lon=-122.3321&models=gfs',
+      ),
     );
     const body = await response.json();
 
@@ -37,24 +38,22 @@ describe('Open-Meteo forecast route', () => {
       latitude: 47.6062,
       longitude: -122.3321,
     });
+    expect(body.models.gfs.hourly[0].isDaytime).toBe(true);
     const endpoint = vi.mocked(fetchFromOpenMeteo).mock.calls[0][0];
     expect(endpoint).toContain('latitude=47.6062');
     expect(endpoint).toContain('longitude=-122.3321');
+    expect(endpoint).toContain('is_day');
   });
 
   it('Use Case: rejects incomplete or invalid coordinate pairs', async () => {
     const incompleteResponse = await GET(
-      new NextRequest('http://localhost/api/open-meteo/forecast?lat=47.6062')
+      new NextRequest('http://localhost/api/open-meteo/forecast?lat=47.6062'),
     );
     const invalidResponse = await GET(
-      new NextRequest(
-        'http://localhost/api/open-meteo/forecast?lat=91&lon=-122.3321'
-      )
+      new NextRequest('http://localhost/api/open-meteo/forecast?lat=91&lon=-122.3321'),
     );
     const blankResponse = await GET(
-      new NextRequest(
-        'http://localhost/api/open-meteo/forecast?lat=&lon=-122.3321'
-      )
+      new NextRequest('http://localhost/api/open-meteo/forecast?lat=&lon=-122.3321'),
     );
 
     expect(incompleteResponse.status).toBe(400);
@@ -72,6 +71,7 @@ describe('Open-Meteo forecast route', () => {
         precipitation_probability: [20],
         weather_code: [2],
         wind_speed_10m: [4],
+        is_day: [0],
       },
       daily: {
         time: ['2026-10-12'],
@@ -79,10 +79,13 @@ describe('Open-Meteo forecast route', () => {
         temperature_2m_max: [25],
         temperature_2m_min: [14],
       },
+      utc_offset_seconds: -18000,
+      timezone: 'America/New_York',
+      timezone_abbreviation: 'EST',
     } as never);
 
     const response = await GET(
-      new Request('http://localhost/api/open-meteo/forecast?models=gfs,hrrr')
+      new Request('http://localhost/api/open-meteo/forecast?models=gfs,hrrr'),
     );
     const body = await response.json();
 
@@ -90,12 +93,15 @@ describe('Open-Meteo forecast route', () => {
     expect(body.location).toMatchObject({ city: 'Cary', state: 'NC' });
     expect(body.models.gfs.modelId).toBe('ncep_gfs_seamless');
     expect(body.models.hrrr.modelId).toBe('ncep_hrrr_conus');
+    expect(body.models.gfs.utcOffsetSeconds).toBe(-18000);
+    expect(body.models.gfs.timezone).toBe('America/New_York');
     expect(body.models.gfs.hourly[0]).toMatchObject({
       source: 'Open-Meteo',
       timestamp: '2026-10-12T12:00',
       temperatureC: 22,
       humidityPercent: 55,
       windSpeedMps: 4,
+      isDaytime: false,
       runTime: null,
     });
     expect(body.models.gfs.daily[0]).toMatchObject({

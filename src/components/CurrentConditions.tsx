@@ -3,35 +3,39 @@
 import { useId } from 'react';
 import { buildConditionTiles } from '@/lib/conditions';
 import { formatTemperatureDegrees } from '@/lib/conditions/format';
-import { useCurrentConditions } from '@/lib/hooks/use-current-conditions';
+import type { CurrentConditionsStatus } from '@/lib/hooks/use-current-conditions';
+import type { CurrentConditions as CurrentConditionsData } from '@/types/domain';
 import ConditionTile from './ConditionTile';
+import StatusPill from './StatusPill';
 
 interface CurrentConditionsProps {
-  /** Latitude used to fetch the nearest observation. */
-  latitude: number;
-  /** Longitude used to fetch the nearest observation. */
-  longitude: number;
+  /** Latest observation, or null when the station has no observation. */
+  conditions: CurrentConditionsData | null;
+  /** Request state owned by the application shell. */
+  status: CurrentConditionsStatus;
+  /** Request error message, when the last request failed. */
+  error: string | null;
+  /** Retry the observation request. */
+  refresh: () => void;
   /** Additional classes for the section wrapper. */
   className?: string;
 }
 
 /**
- * Sidebar section that loads the latest NWS observation for the selected
+ * Sidebar section that renders the latest NWS observation for the selected
  * coordinate.
  *
- * The component owns request state (loading, empty, error, retry) while the
- * existing condition builders and tiles stay presentational.
+ * Request state is owned by `AppLayout` so the header freshness pill and the
+ * map station overlay share one fetch. This component stays presentational.
  */
 export function CurrentConditions({
-  latitude,
-  longitude,
+  conditions,
+  status,
+  error,
+  refresh,
   className,
 }: CurrentConditionsProps) {
   const headingId = useId();
-  const { conditions, status, error, refresh } = useCurrentConditions({
-    latitude,
-    longitude,
-  });
 
   const classes = ['app-section', 'current-conditions'];
   if (className) classes.push(className);
@@ -51,6 +55,7 @@ export function CurrentConditions({
         <h2 className="app-section-title" id={headingId}>
           {heading}
         </h2>
+        {hasObservation ? <StatusPill retrievedAt={conditions?.retrievedAt} /> : null}
       </div>
 
       {isLoading ? (
@@ -62,11 +67,7 @@ export function CurrentConditions({
       {status === 'error' ? (
         <div className="current-conditions-error" role="alert">
           <p>{error ?? 'Unable to load current conditions for this location.'}</p>
-          <button
-            className="current-conditions-retry"
-            onClick={refresh}
-            type="button"
-          >
+          <button className="current-conditions-retry" onClick={refresh} type="button">
             Try again
           </button>
         </div>

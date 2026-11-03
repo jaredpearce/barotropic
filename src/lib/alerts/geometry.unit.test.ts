@@ -67,29 +67,21 @@ describe('alert geometry', () => {
   });
 
   it('Use Case: treats a point on the polygon boundary as inside', () => {
-    expect(pointInRing({ latitude: 35, longitude: -78.5 }, SQUARE_RING)).toBe(
-      true
-    );
+    expect(pointInRing({ latitude: 35, longitude: -78.5 }, SQUARE_RING)).toBe(true);
   });
 
   it('Use Case: excludes holes from a polygon', () => {
     const withHole = polygon([OUTER_RING, HOLE_RING]);
 
     expect(pointInPolygon(INSIDE, [OUTER_RING])).toBe(true);
-    expect(
-      pointInPolygon({ latitude: 35.5, longitude: -78.5 }, withHole.coordinates)
-    ).toBe(false);
+    expect(pointInPolygon({ latitude: 35.5, longitude: -78.5 }, withHole.coordinates)).toBe(false);
   });
 
   it('Use Case: matches a point against any MultiPolygon part', () => {
     const parts = [[OUTER_RING], [SECOND_RING]];
 
-    expect(
-      pointInMultiPolygon({ latitude: 35.5, longitude: -76.5 }, parts)
-    ).toBe(true);
-    expect(pointInMultiPolygon({ latitude: 34.5, longitude: -76.5 }, parts)).toBe(
-      false
-    );
+    expect(pointInMultiPolygon({ latitude: 35.5, longitude: -76.5 }, parts)).toBe(true);
+    expect(pointInMultiPolygon({ latitude: 34.5, longitude: -76.5 }, parts)).toBe(false);
   });
 
   it('Use Case: distinguishes polygon, outside, and area-based alerts', () => {
@@ -101,10 +93,7 @@ describe('alert geometry', () => {
   });
 
   it('Use Case: reports the polygon count and coordinate bounds', () => {
-    const geometry = multiPolygon([
-      [OUTER_RING],
-      [SECOND_RING],
-    ]);
+    const geometry = multiPolygon([[OUTER_RING], [SECOND_RING]]);
 
     expect(getPolygonCount(geometry)).toBe(2);
     expect(getPolygonCount(polygon([SQUARE_RING]))).toBe(1);
@@ -128,10 +117,10 @@ describe('alert geometry', () => {
   });
 
   it('Use Case: highlights the MultiPolygon part containing the point', () => {
-    const preview = buildGeometryPreview(
-      multiPolygon([[OUTER_RING], [SECOND_RING]]),
-      { latitude: 35.5, longitude: -76.5 }
-    );
+    const preview = buildGeometryPreview(multiPolygon([[OUTER_RING], [SECOND_RING]]), {
+      latitude: 35.5,
+      longitude: -76.5,
+    });
 
     expect(preview.kind).toBe('multi-polygon');
     expect(preview.polygonCount).toBe(2);

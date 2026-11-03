@@ -12,11 +12,7 @@
 
 import { celsiusToFahrenheit, fahrenheitToCelsius } from './format';
 
-export type FeelsLikeBasis =
-  | 'heat-index'
-  | 'wind-chill'
-  | 'apparent-temperature'
-  | 'temperature';
+export type FeelsLikeBasis = 'heat-index' | 'wind-chill' | 'apparent-temperature' | 'temperature';
 
 /** Human readable name for the formula that produced an apparent temperature. */
 export const FEELS_LIKE_BASIS_LABELS: Record<FeelsLikeBasis, string | undefined> = {
@@ -61,8 +57,7 @@ function heatIndexFahrenheit(fahrenheit: number, humidityPercent: number): numbe
     0.00000199 * t * t * humidityPercent * humidityPercent;
 
   if (humidityPercent < 13 && t >= 80 && t <= 112) {
-    index -=
-      ((13 - humidityPercent) / 4) * Math.sqrt((17 - Math.abs(t - 85) / 5) / 5);
+    index -= ((13 - humidityPercent) / 4) * Math.sqrt((17 - Math.abs(t - 85) / 5) / 5);
   } else if (humidityPercent > 85 && t >= 80 && t <= 87) {
     index += ((humidityPercent - 85) / 10) * ((87 - t) / 5);
   } else if (t >= 77 && t <= 80 && humidityPercent > 50) {
@@ -77,12 +72,7 @@ function heatIndexFahrenheit(fahrenheit: number, humidityPercent: number): numbe
  */
 function windChillFahrenheit(fahrenheit: number, milesPerHour: number): number {
   const velocity = Math.pow(milesPerHour, 0.16);
-  return (
-    35.74 +
-    0.6215 * fahrenheit -
-    35.75 * velocity +
-    0.4275 * fahrenheit * velocity
-  );
+  return 35.74 + 0.6215 * fahrenheit - 35.75 * velocity + 0.4275 * fahrenheit * velocity;
 }
 
 /**
@@ -91,7 +81,7 @@ function windChillFahrenheit(fahrenheit: number, milesPerHour: number): number {
 function apparentTemperatureCelsius(
   celsius: number,
   humidityPercent: number,
-  metersPerSecond: number
+  metersPerSecond: number,
 ): number {
   const vaporPressure =
     (humidityPercent / 100) * 6.105 * Math.exp((17.27 * celsius) / (237.7 + celsius));
@@ -109,11 +99,10 @@ function apparentTemperatureCelsius(
 export function computeFeelsLike(
   temperatureCelsius: number,
   humidityPercent?: number | null,
-  windSpeedMetersPerSecond?: number | null
+  windSpeedMetersPerSecond?: number | null,
 ): FeelsLikeResult {
   const fahrenheit = celsiusToFahrenheit(temperatureCelsius);
-  const milesPerHour =
-    (windSpeedMetersPerSecond ?? 0) * METERS_PER_SECOND_TO_MILES_PER_HOUR;
+  const milesPerHour = (windSpeedMetersPerSecond ?? 0) * METERS_PER_SECOND_TO_MILES_PER_HOUR;
 
   if (
     typeof humidityPercent === 'number' &&
@@ -126,10 +115,7 @@ export function computeFeelsLike(
     };
   }
 
-  if (
-    fahrenheit <= WIND_CHILL_MAX_FAHRENHEIT &&
-    milesPerHour >= WIND_CHILL_MIN_MILES_PER_HOUR
-  ) {
+  if (fahrenheit <= WIND_CHILL_MAX_FAHRENHEIT && milesPerHour >= WIND_CHILL_MIN_MILES_PER_HOUR) {
     return {
       celsius: fahrenheitToCelsius(windChillFahrenheit(fahrenheit, milesPerHour)),
       basis: 'wind-chill',
@@ -141,7 +127,7 @@ export function computeFeelsLike(
       celsius: apparentTemperatureCelsius(
         temperatureCelsius,
         humidityPercent,
-        windSpeedMetersPerSecond ?? 0
+        windSpeedMetersPerSecond ?? 0,
       ),
       basis: 'apparent-temperature',
     };

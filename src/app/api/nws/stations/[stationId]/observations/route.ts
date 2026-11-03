@@ -16,10 +16,7 @@ import {
   normalizeNwsWindSpeed,
 } from '@/lib/weather-normalizers';
 
-export async function GET(
-  _request: Request,
-  { params }: { params: { stationId: string } }
-) {
+export async function GET(_request: Request, { params }: { params: { stationId: string } }) {
   try {
     const stationId = params.stationId?.trim().toUpperCase();
 
@@ -30,14 +27,14 @@ export async function GET(
           details: 'stationId must be a valid ICAO identifier (e.g., KDEN)',
           example: '/api/nws/stations/KDEN/observations',
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Fetch observations with a limit of 20 most recent
     const observations = await fetchFromNws(
       `/stations/${stationId}/observations?limit=20`,
-      StationObservationsSchema
+      StationObservationsSchema,
     );
 
     const retrievedAt = new Date().toISOString();
@@ -55,14 +52,10 @@ export async function GET(
           description: feature.properties.textDescription ?? null,
           temperatureC: normalizeNwsTemperature(feature.properties.temperature),
           dewpointC: normalizeNwsTemperature(feature.properties.dewpoint),
-          humidityPercent: normalizeNwsQuantityValue(
-            feature.properties.relativeHumidity
-          ),
+          humidityPercent: normalizeNwsQuantityValue(feature.properties.relativeHumidity),
           windSpeedMps: normalizeNwsWindSpeed(feature.properties.windSpeed),
-          windDirectionDegrees: normalizeNwsQuantityValue(
-            feature.properties.windDirection
-          ),
-        })
+          windDirectionDegrees: normalizeNwsQuantityValue(feature.properties.windDirection),
+        }),
       ),
     });
   } catch (error) {
@@ -71,13 +64,7 @@ export async function GET(
       return upstreamResponse;
     }
 
-    console.error(
-      `Unexpected error in /api/nws/stations/[stationId]/observations:`,
-      error
-    );
-    return NextResponse.json(
-      { error: 'Failed to fetch station observations' },
-      { status: 500 }
-    );
+    console.error(`Unexpected error in /api/nws/stations/[stationId]/observations:`, error);
+    return NextResponse.json({ error: 'Failed to fetch station observations' }, { status: 500 });
   }
 }

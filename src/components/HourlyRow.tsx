@@ -1,4 +1,4 @@
-export type HourlyCondition = 'clear' | 'partly-cloudy' | 'cloudy' | 'rain' | 'storm' | 'snow' | 'fog';
+import type { HourlyCondition } from '@/lib/forecast/weather-code';
 
 interface HourlyRowProps {
   timeLabel: string;
@@ -47,7 +47,11 @@ export function HourlyRow({
       role="listitem"
     >
       <span className="app-forecast-time">{timeLabel}</span>
-      <span aria-label={isNight ? 'Night conditions' : 'Day conditions'} className="app-forecast-icon" role="img">
+      <span
+        aria-label={isNight ? 'Night conditions' : 'Day conditions'}
+        className="app-forecast-icon"
+        role="img"
+      >
         {icon}
       </span>
       <span>{temperature}</span>

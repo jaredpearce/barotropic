@@ -17,11 +17,11 @@ describe('fetchFromOpenMeteo', () => {
     vi.stubGlobal('fetch', fetchMock);
 
     await expect(
-      fetchFromOpenMeteo('/forecast?latitude=40&longitude=-105', responseSchema)
+      fetchFromOpenMeteo('/forecast?latitude=40&longitude=-105', responseSchema),
     ).resolves.toEqual({ value: 'forecast' });
     expect(fetchMock).toHaveBeenCalledWith(
       new URL('https://api.open-meteo.com/v1/forecast?latitude=40&longitude=-105'),
-      expect.objectContaining({ next: { revalidate: 60 } })
+      expect.objectContaining({ next: { revalidate: 60 } }),
     );
   });
 
@@ -29,7 +29,7 @@ describe('fetchFromOpenMeteo', () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(null, { status: 503 })));
 
     await expect(
-      fetchFromOpenMeteo('/forecast?latitude=40&longitude=-105', responseSchema)
+      fetchFromOpenMeteo('/forecast?latitude=40&longitude=-105', responseSchema),
     ).rejects.toMatchObject({
       code: 'UPSTREAM_HTTP_ERROR',
       httpStatus: 502,
@@ -42,7 +42,7 @@ describe('fetchFromOpenMeteo', () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response('{')));
 
     await expect(
-      fetchFromOpenMeteo('/forecast?latitude=40&longitude=-105', responseSchema)
+      fetchFromOpenMeteo('/forecast?latitude=40&longitude=-105', responseSchema),
     ).rejects.toMatchObject({
       code: 'UPSTREAM_MALFORMED_RESPONSE',
       httpStatus: 502,
@@ -56,7 +56,7 @@ describe('fetchFromOpenMeteo', () => {
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(timeout));
 
     await expect(
-      fetchFromOpenMeteo('/forecast?latitude=40&longitude=-105', responseSchema)
+      fetchFromOpenMeteo('/forecast?latitude=40&longitude=-105', responseSchema),
     ).rejects.toMatchObject({
       code: 'UPSTREAM_TIMEOUT',
       httpStatus: 504,
