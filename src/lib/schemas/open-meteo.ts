@@ -10,6 +10,7 @@ export const OpenMeteoHourlySchema = z
     precipitation_probability: NullableNumberArray.default([]),
     weather_code: NullableNumberArray.default([]),
     wind_speed_10m: NullableNumberArray.default([]),
+    is_day: NullableNumberArray.default([]),
   })
   .passthrough();
 

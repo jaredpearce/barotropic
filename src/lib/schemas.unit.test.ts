@@ -63,7 +63,8 @@ describe('weather validation schemas', () => {
         {
           id: '123e4567-e89b-12d3-a456-426614174003',
           name: 'Most likely',
-          description: 'Dry conditions hold through the day with a small chance of late-day showers.',
+          description:
+            'Dry conditions hold through the day with a small chance of late-day showers.',
           probability: 68,
           reasoning: 'The persistent ridge limits moisture lift.',
           weatherOutcome: [
@@ -99,9 +100,17 @@ describe('weather validation schemas', () => {
   });
 
   it('Use Case: accepts a valid GeoJSON polygon and multipolygon', () => {
-    const ring = [[-78, 35], [-77, 35], [-77, 36], [-78, 36], [-78, 35]];
+    const ring = [
+      [-78, 35],
+      [-77, 35],
+      [-77, 36],
+      [-78, 36],
+      [-78, 35],
+    ];
 
-    expect(GeoJsonPolygonSchema.safeParse({ type: 'Polygon', coordinates: [ring] }).success).toBe(true);
+    expect(GeoJsonPolygonSchema.safeParse({ type: 'Polygon', coordinates: [ring] }).success).toBe(
+      true,
+    );
     expect(
       GeoJsonMultiPolygonSchema.safeParse({
         type: 'MultiPolygon',
@@ -151,13 +160,22 @@ describe('weather validation schemas', () => {
     expect(
       GeoJsonPolygonSchema.safeParse({
         type: 'Polygon',
-        coordinates: [[[0, 0], [1, 0], [1, 1]]],
+        coordinates: [
+          [
+            [0, 0],
+            [1, 0],
+            [1, 1],
+          ],
+        ],
       }).success,
     ).toBe(false);
     expect(
       GeoJsonPolygonSchema.safeParse({
         type: 'LineString',
-        coordinates: [[0, 0], [1, 1]],
+        coordinates: [
+          [0, 0],
+          [1, 1],
+        ],
       }).success,
     ).toBe(false);
   });

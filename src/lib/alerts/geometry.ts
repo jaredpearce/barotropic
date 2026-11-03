@@ -50,17 +50,11 @@ const DEFAULT_PREVIEW_PADDING = 4;
 const BOUNDARY_EPSILON = 1e-10;
 
 function isFinitePosition(position: readonly number[]): boolean {
-  return (
-    Number.isFinite(position[0]) &&
-    Number.isFinite(position[1])
-  );
+  return Number.isFinite(position[0]) && Number.isFinite(position[1]);
 }
 
 function getRings(geometry: GeoJsonPolygonalGeometry): Polygon[] {
-  const polygons =
-    geometry.type === 'Polygon'
-      ? [geometry.coordinates]
-      : geometry.coordinates;
+  const polygons = geometry.type === 'Polygon' ? [geometry.coordinates] : geometry.coordinates;
 
   return polygons.map((polygon) => polygon as Polygon);
 }
@@ -68,9 +62,7 @@ function getRings(geometry: GeoJsonPolygonalGeometry): Polygon[] {
 /**
  * Count the polygon parts in an alert geometry. A plain Polygon counts as one.
  */
-export function getPolygonCount(
-  geometry: GeoJsonPolygonalGeometry | null
-): number {
+export function getPolygonCount(geometry: GeoJsonPolygonalGeometry | null): number {
   if (!geometry) return 0;
   return geometry.type === 'Polygon' ? 1 : geometry.coordinates.length;
 }
@@ -79,7 +71,7 @@ export function getPolygonCount(
  * Compute the longitude/latitude bounds of an alert geometry.
  */
 export function getGeometryBounds(
-  geometry: GeoJsonPolygonalGeometry | null
+  geometry: GeoJsonPolygonalGeometry | null,
 ): GeometryBounds | null {
   if (!geometry) return null;
 
@@ -113,7 +105,7 @@ export function getGeometryBounds(
 function pointOnSegment(
   point: GeoPoint,
   start: readonly number[],
-  end: readonly number[]
+  end: readonly number[],
 ): boolean {
   const startLongitude = start[0];
   const startLatitude = start[1];
@@ -127,8 +119,7 @@ function pointOnSegment(
   if (Math.abs(crossProduct) > BOUNDARY_EPSILON) return false;
 
   const dotProduct =
-    (point.longitude - startLongitude) *
-      (point.longitude - endLongitude) +
+    (point.longitude - startLongitude) * (point.longitude - endLongitude) +
     (point.latitude - startLatitude) * (point.latitude - endLatitude);
 
   return dotProduct <= BOUNDARY_EPSILON;
@@ -157,16 +148,12 @@ export function pointInRing(point: GeoPoint, ring: Ring): boolean {
     const startLatitude = start[1];
     const endLatitude = end[1];
 
-    if (
-      (startLatitude > point.latitude) ===
-      (endLatitude > point.latitude)
-    ) {
+    if (startLatitude > point.latitude === endLatitude > point.latitude) {
       continue;
     }
 
     const intersectionLongitude =
-      ((end[0] - start[0]) * (point.latitude - startLatitude)) /
-        (endLatitude - startLatitude) +
+      ((end[0] - start[0]) * (point.latitude - startLatitude)) / (endLatitude - startLatitude) +
       start[0];
 
     if (point.longitude < intersectionLongitude) {
@@ -195,10 +182,7 @@ export function pointInPolygon(point: GeoPoint, polygon: Polygon): boolean {
 /**
  * Test a point against every polygon part in a MultiPolygon.
  */
-export function pointInMultiPolygon(
-  point: GeoPoint,
-  polygons: ReadonlyArray<Polygon>
-): boolean {
+export function pointInMultiPolygon(point: GeoPoint, polygons: ReadonlyArray<Polygon>): boolean {
   return polygons.some((polygon) => pointInPolygon(point, polygon));
 }
 
@@ -207,7 +191,7 @@ export function pointInMultiPolygon(
  */
 export function pointInPolygonalGeometry(
   point: GeoPoint,
-  geometry: GeoJsonPolygonalGeometry
+  geometry: GeoJsonPolygonalGeometry,
 ): boolean {
   if (geometry.type === 'Polygon') {
     return pointInPolygon(point, geometry.coordinates as Polygon);
@@ -224,7 +208,7 @@ export function pointInPolygonalGeometry(
  */
 export function classifyAlertGeometry(
   geometry: GeoJsonPolygonalGeometry | null,
-  point: GeoPoint | null | undefined
+  point: GeoPoint | null | undefined,
 ): AlertGeometryMatch {
   if (!geometry) return 'area';
   if (!point) return 'polygon';
@@ -254,7 +238,7 @@ function roundCoordinate(value: number): number {
 export function buildGeometryPreview(
   geometry: GeoJsonPolygonalGeometry | null,
   point?: GeoPoint | null,
-  options: PolygonPreviewOptions = {}
+  options: PolygonPreviewOptions = {},
 ): AlertGeometryPreview {
   if (!geometry) {
     return { kind: 'area', polygonCount: 0, paths: [] };
@@ -285,13 +269,11 @@ export function buildGeometryPreview(
         .map((position) => ({
           longitude: unwrapLongitude(position[0], referenceLongitude),
           latitude: position[1],
-        }))
-    )
+        })),
+    ),
   );
 
-  const allPositions = projectedPolygons.flatMap((polygon) =>
-    polygon.flatMap((ring) => ring)
-  );
+  const allPositions = projectedPolygons.flatMap((polygon) => polygon.flatMap((ring) => ring));
 
   if (allPositions.length === 0) {
     return {
@@ -302,12 +284,8 @@ export function buildGeometryPreview(
   }
 
   const meanLatitude =
-    allPositions.reduce((sum, position) => sum + position.latitude, 0) /
-    allPositions.length;
-  const longitudeScale = Math.max(
-    Math.cos((meanLatitude * Math.PI) / 180),
-    0.01
-  );
+    allPositions.reduce((sum, position) => sum + position.latitude, 0) / allPositions.length;
+  const longitudeScale = Math.max(Math.cos((meanLatitude * Math.PI) / 180), 0.01);
 
   const projectedPoints = allPositions.map((position) => ({
     x: position.longitude * longitudeScale,
@@ -333,12 +311,8 @@ export function buildGeometryPreview(
       .filter((ring) => ring.length >= 3)
       .map((ring) => {
         const ringCommands = ring.map((position, index) => {
-          const x = roundCoordinate(
-            offsetX + (position.longitude * longitudeScale - minX) * scale
-          );
-          const y = roundCoordinate(
-            offsetY + (maxY - position.latitude) * scale
-          );
+          const x = roundCoordinate(offsetX + (position.longitude * longitudeScale - minX) * scale);
+          const y = roundCoordinate(offsetY + (maxY - position.latitude) * scale);
           return `${index === 0 ? 'M' : 'L'}${x},${y}`;
         });
 

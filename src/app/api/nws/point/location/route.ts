@@ -4,19 +4,17 @@ import { fetchFromNws } from '@/lib/nws/client';
 import { validateLatitudeLongitude } from '@/lib/nws/utils';
 import { PointSchema } from '@/lib/schemas';
 
-import { NextRequest } from 'next/server';
-
 export const dynamic = 'force-dynamic';
 
-export async function GET(request: NextRequest) {
-  const { searchParams } = request.nextUrl;
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
   const lat = searchParams.get('lat');
   const lon = searchParams.get('lon');
 
   if (lat === null || lon === null) {
     return NextResponse.json(
       { error: 'Both lat and lon query parameters are required' },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -27,7 +25,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Invalid coordinates' },
-      { status: 400 }
+      { status: 400 },
     );
   }
 

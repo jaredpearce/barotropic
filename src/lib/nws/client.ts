@@ -9,8 +9,7 @@ import 'server-only';
 import { isUpstreamTimeout, UpstreamApiError } from '../api-errors';
 
 const NWS_BASE_URL = 'https://api.weather.gov';
-const NWS_USER_AGENT =
-  process.env.NWS_USER_AGENT ?? 'Barotropic/0.1.0';
+const NWS_USER_AGENT = process.env.NWS_USER_AGENT ?? 'Barotropic/0.1.0';
 const NWS_REQUEST_TIMEOUT_MS = 10_000;
 const NWS_REVALIDATE_SECONDS = 60;
 
@@ -57,7 +56,7 @@ export function createNwsHeaders(): HeadersInit {
 export async function fetchFromNws<Schema extends z.ZodTypeAny>(
   endpoint: string,
   schema: Schema,
-  options: FetchFromNwsOptions = {}
+  options: FetchFromNwsOptions = {},
 ): Promise<z.output<Schema>> {
   const url = resolveNwsUrl(endpoint);
 
@@ -77,7 +76,7 @@ export async function fetchFromNws<Schema extends z.ZodTypeAny>(
         'NWS',
         502,
         response.status >= 500 || response.status === 429,
-        response.status
+        response.status,
       );
     }
 
@@ -92,7 +91,7 @@ export async function fetchFromNws<Schema extends z.ZodTypeAny>(
           'National Weather Service returned an invalid response',
           'NWS',
           502,
-          false
+          false,
         );
       }
       throw error;
@@ -108,7 +107,7 @@ export async function fetchFromNws<Schema extends z.ZodTypeAny>(
         'National Weather Service request timed out',
         'NWS',
         504,
-        true
+        true,
       );
     }
 
@@ -118,7 +117,7 @@ export async function fetchFromNws<Schema extends z.ZodTypeAny>(
       'National Weather Service is unavailable',
       'NWS',
       502,
-      true
+      true,
     );
   }
 }

@@ -32,6 +32,7 @@ describe('toCurrentConditions', () => {
       condition: 'Partly Cloudy',
       stationId: 'KRDU',
       observedAt: new Date('2026-10-26T16:53:00Z'),
+      retrievedAt: new Date('2026-10-26T17:00:00Z'),
     });
   });
 

@@ -5,8 +5,15 @@ import { renderWithProviders } from '../../tests/utils/render';
 import { ActiveAlerts } from './ActiveAlerts';
 import type { GeoJsonPolygon } from '@/lib/schemas/geojson';
 import type { NormalizedAlert } from '@/lib/schemas/normalized';
+import { useActiveAlerts } from '@/lib/hooks/use-active-alerts';
 
 const POINT = { latitude: 35.7915, longitude: -78.7811 };
+
+/** Test harness that supplies the request state AppLayout owns in production. */
+function ActiveAlertsHarness({ latitude, longitude }: { latitude: number; longitude: number }) {
+  const state = useActiveAlerts({ latitude, longitude });
+  return <ActiveAlerts {...state} />;
+}
 
 const POLYGON_AROUND_POINT: GeoJsonPolygon = {
   type: 'Polygon',
@@ -68,25 +75,24 @@ describe('ActiveAlerts integration', () => {
           severity: 'Extreme',
           geometry: null,
         }),
-      ])
+      ]),
     );
     vi.stubGlobal('fetch', fetchMock);
 
     const { container } = renderWithProviders(
-      <ActiveAlerts latitude={POINT.latitude} longitude={POINT.longitude} />
+      <ActiveAlertsHarness latitude={POINT.latitude} longitude={POINT.longitude} />,
     );
 
     expect(screen.getByRole('status')).toHaveTextContent('Loading active alerts');
 
-    expect(
-      await screen.findByRole('heading', { name: 'Active alerts (2)' })
-    ).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'Active alerts (2)' })).toBeInTheDocument();
     expect(screen.getByText('Heat Advisory')).toBeInTheDocument();
     expect(screen.getByText('Flood Watch')).toBeInTheDocument();
     expect(screen.getByText('Highest: Extreme')).toBeInTheDocument();
+    expect(screen.getByText('STALE')).toBeInTheDocument();
     expect(container.querySelector('.active-alerts-highest')).toHaveAttribute(
       'data-severity',
-      'extreme'
+      'extreme',
     );
 
     const requestedUrl = fetchMock.mock.calls[0][0] as URL;
@@ -110,12 +116,12 @@ describe('ActiveAlerts integration', () => {
             event: 'Flood Watch',
             geometry: null,
           }),
-        ])
-      )
+        ]),
+      ),
     );
 
     const { container } = renderWithProviders(
-      <ActiveAlerts latitude={POINT.latitude} longitude={POINT.longitude} />
+      <ActiveAlertsHarness latitude={POINT.latitude} longitude={POINT.longitude} />,
     );
 
     await screen.findByText('Heat Advisory');
@@ -125,9 +131,7 @@ describe('ActiveAlerts integration', () => {
     expect(cards[0]).toHaveAttribute('data-match', 'polygon');
     expect(cards[1]).toHaveAttribute('data-match', 'area');
     expect(
-      screen.getByText(
-        'Area-based alert. NWS did not publish a polygon for this alert.'
-      )
+      screen.getByText('Area-based alert. NWS did not publish a polygon for this alert.'),
     ).toBeInTheDocument();
   });
 
@@ -135,15 +139,11 @@ describe('ActiveAlerts integration', () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(alertsResponse([])));
 
     renderWithProviders(
-      <ActiveAlerts latitude={POINT.latitude} longitude={POINT.longitude} />
+      <ActiveAlertsHarness latitude={POINT.latitude} longitude={POINT.longitude} />,
     );
 
-    expect(
-      await screen.findByText('No active alerts for this location.')
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole('heading', { name: 'Active alerts' })
-    ).toBeInTheDocument();
+    expect(await screen.findByText('No active alerts for this location.')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Active alerts' })).toBeInTheDocument();
   });
 
   it('Use Case: retries after the alert request fails', async () => {
@@ -155,11 +155,11 @@ describe('ActiveAlerts integration', () => {
     vi.stubGlobal('fetch', fetchMock);
 
     renderWithProviders(
-      <ActiveAlerts latitude={POINT.latitude} longitude={POINT.longitude} />
+      <ActiveAlertsHarness latitude={POINT.latitude} longitude={POINT.longitude} />,
     );
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
-      'Unable to load alerts for this location.'
+      'Unable to load alerts for this location.',
     );
 
     await user.click(screen.getByRole('button', { name: 'Try again' }));
@@ -176,12 +176,12 @@ describe('ActiveAlerts integration', () => {
     vi.stubGlobal('fetch', fetchMock);
 
     const { rerender } = renderWithProviders(
-      <ActiveAlerts latitude={POINT.latitude} longitude={POINT.longitude} />
+      <ActiveAlertsHarness latitude={POINT.latitude} longitude={POINT.longitude} />,
     );
 
     await screen.findByText('No active alerts for this location.');
 
-    rerender(<ActiveAlerts latitude={40.7128} longitude={-74.006} />);
+    rerender(<ActiveAlertsHarness latitude={40.7128} longitude={-74.006} />);
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
     expect(await screen.findByText('Flood Watch')).toBeInTheDocument();

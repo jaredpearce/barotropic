@@ -56,9 +56,12 @@ describe('calculateForecastConfidence', () => {
     ['high', 50],
     ['medium', 34],
     ['low', 17],
-  ] as const)('Use Case: scores %s evidence with an empty pattern category', (confidence, expected) => {
-    expect(calculateForecastConfidence([createEvidence(confidence)], [])).toBe(expected);
-  });
+  ] as const)(
+    'Use Case: scores %s evidence with an empty pattern category',
+    (confidence, expected) => {
+      expect(calculateForecastConfidence([createEvidence(confidence)], [])).toBe(expected);
+    },
+  );
 
   it('Use Case: averages pattern confidence and treats empty evidence as zero', () => {
     expect(calculateForecastConfidence([], [createPattern(60), createPattern(80)])).toBe(35);
@@ -68,8 +71,8 @@ describe('calculateForecastConfidence', () => {
     expect(
       calculateForecastConfidence(
         [createEvidence('high'), createEvidence('low')],
-        [createPattern(60), createPattern(80)]
-      )
+        [createPattern(60), createPattern(80)],
+      ),
     ).toBe(68);
   });
 });
@@ -77,7 +80,7 @@ describe('calculateForecastConfidence', () => {
 describe('formatForecast', () => {
   it('Use Case: formats the location with the forecast start date', () => {
     expect(formatForecast(validForecast)).toBe(
-      `Seattle - ${validForecast.validStart.toLocaleDateString()}`
+      `Seattle - ${validForecast.validStart.toLocaleDateString()}`,
     );
   });
 });
@@ -94,7 +97,7 @@ describe('validateForecast', () => {
         location: '  ',
         hypothesis: '\t ',
         evidence: [],
-      })
+      }),
     ).toEqual({
       valid: false,
       errors: [

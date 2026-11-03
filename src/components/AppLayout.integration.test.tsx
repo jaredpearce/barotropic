@@ -4,10 +4,36 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { AppLayout } from './AppLayout';
 import { renderWithProviders } from '../../tests/utils/render';
 
+vi.mock('./MapPanel', () => ({
+  default: ({
+    alerts = [],
+    label,
+    latitude,
+    longitude,
+    stations = [],
+  }: {
+    alerts?: unknown[];
+    label?: string;
+    latitude: number;
+    longitude: number;
+    stations?: unknown[];
+  }) => (
+    <div
+      data-alerts={alerts.length}
+      data-label={label}
+      data-latitude={latitude}
+      data-longitude={longitude}
+      data-stations={stations.length}
+      data-testid="map-panel"
+    />
+  ),
+}));
+
 interface StubAppFetchOptions {
   results?: unknown[];
   alerts?: unknown[];
   conditions?: unknown;
+  stations?: unknown[];
 }
 
 /**
@@ -19,6 +45,7 @@ function stubAppFetch({
   results = [],
   alerts = [],
   conditions = null,
+  stations = [],
 }: StubAppFetchOptions = {}) {
   const fetchMock = vi.fn((input: RequestInfo | URL) => {
     const url = input instanceof Request ? input.url : input.toString();
@@ -28,7 +55,7 @@ function stubAppFetch({
         Response.json({
           point: { latitude: 35.7915, longitude: -78.7811 },
           alerts,
-        })
+        }),
       );
     }
 
@@ -37,8 +64,9 @@ function stubAppFetch({
         Response.json({
           location: { latitude: 35.7915, longitude: -78.7811 },
           currentConditions: conditions,
+          stations,
           forecast: [],
-        })
+        }),
       );
     }
 
@@ -95,6 +123,11 @@ const CURRENT_OBSERVATION = {
   pressureHpa: 1012.4,
 };
 
+const STATIONS = [
+  { id: 'KRDU', name: 'Raleigh-Durham International Airport', latitude: 35.89, longitude: -78.79 },
+  { id: 'KJNX', name: 'Johnston Regional Airport', latitude: 35.54, longitude: -78.39 },
+];
+
 afterEach(() => {
   window.localStorage.clear();
   vi.unstubAllGlobals();
@@ -107,7 +140,8 @@ describe('AppLayout location selection', () => {
     renderWithProviders(<AppLayout />);
 
     expect(screen.getByRole('img', { name: 'Barotropic' })).toBeInTheDocument();
-    expect(screen.getByText('Barotropic')).toBeInTheDocument();
+    expect(screen.getByText('barotropic')).toBeInTheDocument();
+    expect(screen.getByTestId('map-panel')).toHaveAttribute('data-label', 'Cary, NC');
   });
 
   it('Use Case: searches for a place and updates the selected navigation location', async () => {
@@ -116,7 +150,10 @@ describe('AppLayout location selection', () => {
 
     renderWithProviders(<AppLayout />);
     await user.click(screen.getByRole('button', { name: /Cary, NC/i }));
-    await user.type(screen.getByRole('searchbox', { name: 'City, state, or postal code' }), 'Seattle');
+    await user.type(
+      screen.getByRole('searchbox', { name: 'City, state, or postal code' }),
+      'Seattle',
+    );
     await user.click(screen.getByRole('button', { name: 'Search' }));
 
     await user.click(await screen.findByRole('button', { name: /Seattle, Washington/i }));
@@ -124,6 +161,9 @@ describe('AppLayout location selection', () => {
     expect(screen.getByRole('button', { name: /Seattle, Washington/i })).toBeInTheDocument();
     expect(window.localStorage.getItem('barotropic.location')).toContain('47.6062');
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(screen.getByTestId('map-panel')).toHaveAttribute('data-label', 'Seattle, Washington');
+    expect(screen.getByTestId('map-panel')).toHaveAttribute('data-latitude', '47.6062');
+    expect(screen.getByTestId('map-panel')).toHaveAttribute('data-longitude', '-122.3321');
   });
 
   it('Use Case: displays an empty state when location search has no matches', async () => {
@@ -132,7 +172,10 @@ describe('AppLayout location selection', () => {
 
     renderWithProviders(<AppLayout />);
     await user.click(screen.getByRole('button', { name: /Cary, NC/i }));
-    await user.type(screen.getByRole('searchbox', { name: 'City, state, or postal code' }), 'Nowhere');
+    await user.type(
+      screen.getByRole('searchbox', { name: 'City, state, or postal code' }),
+      'Nowhere',
+    );
     await user.click(screen.getByRole('button', { name: 'Search' }));
 
     expect(await screen.findByText(/No locations found/i)).toBeInTheDocument();
@@ -143,14 +186,12 @@ describe('AppLayout location selection', () => {
 
     renderWithProviders(<AppLayout />);
 
-    expect(
-      await screen.findByRole('heading', { name: 'Active alerts (1)' })
-    ).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'Active alerts (1)' })).toBeInTheDocument();
     expect(screen.getByText('Heat Advisory')).toBeInTheDocument();
     expect(screen.getByText('Highest: Moderate')).toBeInTheDocument();
   });
 
-  it('Use Case: shows the live current conditions for the selected location', async () => {
+  it('Use Case: shows the current conditions for the selected location', async () => {
     stubAppFetch({ conditions: CURRENT_OBSERVATION });
 
     renderWithProviders(<AppLayout />);
@@ -158,9 +199,73 @@ describe('AppLayout location selection', () => {
     expect(
       await screen.findByRole('heading', {
         name: 'Current conditions · KRDU',
-      })
+      }),
     ).toBeInTheDocument();
     expect(screen.getByText('Partly Cloudy')).toBeInTheDocument();
     expect(screen.getByText('1012.4 mb')).toBeInTheDocument();
+  });
+
+  it('Use Case: summarizes freshness in the header using the oldest panel timestamp', async () => {
+    stubAppFetch({ alerts: [ACTIVE_ALERT], conditions: CURRENT_OBSERVATION });
+
+    const { container } = renderWithProviders(<AppLayout />);
+
+    await screen.findByRole('heading', { name: 'Active alerts (1)' });
+    await screen.findByRole('heading', { name: 'Current conditions · KRDU' });
+
+    const headerPill = container.querySelector('.app-header .status-pill');
+    expect(headerPill).toHaveAttribute('data-state', 'stale');
+    expect(headerPill).toHaveTextContent('STALE');
+  });
+
+  it('Use Case: reports a live header when every panel was retrieved recently', async () => {
+    const retrievedAt = new Date().toISOString();
+    stubAppFetch({
+      alerts: [{ ...ACTIVE_ALERT, retrievedAt }],
+      conditions: { ...CURRENT_OBSERVATION, retrievedAt },
+      stations: STATIONS,
+    });
+
+    const { container } = renderWithProviders(<AppLayout />);
+
+    await screen.findByRole('heading', { name: 'Active alerts (1)' });
+    await screen.findByRole('heading', { name: 'Current conditions · KRDU' });
+
+    expect(container.querySelector('.app-header .status-pill')).toHaveAttribute(
+      'data-state',
+      'live',
+    );
+  });
+
+  it('Use Case: passes alert polygons and station points to the map', async () => {
+    stubAppFetch({
+      alerts: [
+        {
+          ...ACTIVE_ALERT,
+          geometry: {
+            type: 'Polygon',
+            coordinates: [
+              [
+                [-79, 35],
+                [-78, 35],
+                [-78, 36],
+                [-79, 36],
+                [-79, 35],
+              ],
+            ],
+          },
+        },
+      ],
+      conditions: CURRENT_OBSERVATION,
+      stations: STATIONS,
+    });
+
+    renderWithProviders(<AppLayout />);
+
+    await screen.findByRole('heading', { name: 'Active alerts (1)' });
+    await screen.findByRole('heading', { name: 'Current conditions · KRDU' });
+
+    expect(screen.getByTestId('map-panel')).toHaveAttribute('data-alerts', '1');
+    expect(screen.getByTestId('map-panel')).toHaveAttribute('data-stations', '2');
   });
 });

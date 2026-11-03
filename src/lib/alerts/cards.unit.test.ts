@@ -68,7 +68,7 @@ describe('alert cards', () => {
           severity: 'Minor',
         }),
       ],
-      { now: NOW, point: POINT }
+      { now: NOW, point: POINT },
     );
 
     expect(card.severity).toBe('minor');
@@ -86,13 +86,23 @@ describe('alert cards', () => {
   });
 
   it('Use Case: classifies alerts that contain the selected point', () => {
-    const [polygonCard] = buildAlertCards(
-      [makeAlert({ geometry: POLYGON_AROUND_POINT })],
-      { now: NOW, point: POINT }
-    );
+    const [polygonCard] = buildAlertCards([makeAlert({ geometry: POLYGON_AROUND_POINT })], {
+      now: NOW,
+      point: POINT,
+    });
 
     expect(polygonCard.match).toBe('polygon');
     expect(polygonCard.geometry.paths[0].containsPoint).toBe(true);
+    expect(polygonCard.polygon).toBe(POLYGON_AROUND_POINT);
+  });
+
+  it('Use Case: keeps area-based alerts without a polygon for the map', () => {
+    const [card] = buildAlertCards([makeAlert({ geometry: null })], {
+      now: NOW,
+      point: POINT,
+    });
+
+    expect(card.polygon).toBeNull();
   });
 
   it('Use Case: labels null geometry as area-based', () => {
@@ -110,10 +120,10 @@ describe('alert cards', () => {
   });
 
   it('Use Case: labels a polygon that does not contain the point as nearby', () => {
-    const [card] = buildAlertCards(
-      [makeAlert({ geometry: POLYGON_AWAY_FROM_POINT })],
-      { now: NOW, point: POINT }
-    );
+    const [card] = buildAlertCards([makeAlert({ geometry: POLYGON_AWAY_FROM_POINT })], {
+      now: NOW,
+      point: POINT,
+    });
 
     expect(card.match).toBe('outside');
     expect(card.geometry.paths[0].containsPoint).toBe(false);
@@ -126,7 +136,7 @@ describe('alert cards', () => {
         makeAlert({ id: 'active', expires: '2026-10-26T23:00:00Z' }),
         makeAlert({ id: 'open-ended', expires: null }),
       ],
-      { now: NOW, point: POINT }
+      { now: NOW, point: POINT },
     );
 
     expect(cards.map((card) => card.id)).toEqual(['active', 'open-ended']);
@@ -138,7 +148,7 @@ describe('alert cards', () => {
         makeAlert({ id: 'duplicate', event: 'First copy' }),
         makeAlert({ id: 'duplicate', event: 'Second copy' }),
       ],
-      { now: NOW, point: POINT }
+      { now: NOW, point: POINT },
     );
 
     expect(cards).toHaveLength(1);
@@ -182,7 +192,7 @@ describe('alert cards', () => {
           geometry: POLYGON_AROUND_POINT,
         }),
       ],
-      { now: NOW, point: POINT }
+      { now: NOW, point: POINT },
     );
 
     expect(cards.map((card) => card.id)).toEqual([
@@ -208,6 +218,12 @@ describe('alert cards', () => {
     expect(card.expiresLabel).toContain('UTC');
   });
 
+  it('Use Case: carries the retrieval time for the freshness indicator', () => {
+    const [card] = buildAlertCards([makeAlert()], { now: NOW, point: POINT });
+
+    expect(card.retrievedAt).toBe('2026-10-26T12:00:00Z');
+  });
+
   it('Use Case: falls back to a generic event name when NWS omits one', () => {
     const [card] = buildAlertCards(
       [
@@ -219,7 +235,7 @@ describe('alert cards', () => {
           instruction: null,
         }),
       ],
-      { now: NOW, point: POINT }
+      { now: NOW, point: POINT },
     );
 
     expect(card.event).toBe('Weather alert');

@@ -49,7 +49,7 @@ export function createOpenMeteoHeaders(): HeadersInit {
  */
 export async function fetchFromOpenMeteo<Schema extends z.ZodTypeAny>(
   endpoint: string,
-  schema: Schema
+  schema: Schema,
 ): Promise<z.output<Schema>> {
   const url = resolveOpenMeteoUrl(endpoint);
 
@@ -69,7 +69,7 @@ export async function fetchFromOpenMeteo<Schema extends z.ZodTypeAny>(
         'Open-Meteo',
         502,
         response.status >= 500 || response.status === 429,
-        response.status
+        response.status,
       );
     }
 
@@ -84,7 +84,7 @@ export async function fetchFromOpenMeteo<Schema extends z.ZodTypeAny>(
           'Open-Meteo returned an invalid response',
           'Open-Meteo',
           502,
-          false
+          false,
         );
       }
       throw error;
@@ -100,7 +100,7 @@ export async function fetchFromOpenMeteo<Schema extends z.ZodTypeAny>(
         'Open-Meteo request timed out',
         'Open-Meteo',
         504,
-        true
+        true,
       );
     }
 
@@ -110,7 +110,7 @@ export async function fetchFromOpenMeteo<Schema extends z.ZodTypeAny>(
       'Open-Meteo is unavailable',
       'Open-Meteo',
       502,
-      true
+      true,
     );
   }
 }

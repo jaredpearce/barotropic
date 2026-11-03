@@ -20,12 +20,7 @@ import {
 } from './format';
 
 /** Metrics a condition tile can represent. */
-export type ConditionTileKind =
-  | 'temperature'
-  | 'feels-like'
-  | 'wind'
-  | 'pressure'
-  | 'dewpoint';
+export type ConditionTileKind = 'temperature' | 'feels-like' | 'wind' | 'pressure' | 'dewpoint';
 
 /** Semantic emphasis applied to the detail line of a tile. */
 export type ConditionTileTone = 'default' | 'negative' | 'positive' | 'warning';
@@ -72,7 +67,7 @@ function isReading(value: number | null | undefined): value is number {
  */
 export function buildConditionTiles(
   conditions: CurrentConditions,
-  options: ConditionTileOptions = {}
+  options: ConditionTileOptions = {},
 ): ConditionTileData[] {
   const units = options.units ?? 'imperial';
   const tiles: ConditionTileData[] = [];
@@ -91,8 +86,7 @@ export function buildConditionTiles(
   });
 
   // The basis label only applies when the apparent temperature was derived here.
-  const feelsLikeBasis =
-    conditions.feelsLike === undefined ? derivedFeelsLike?.basis : undefined;
+  const feelsLikeBasis = conditions.feelsLike === undefined ? derivedFeelsLike?.basis : undefined;
   const feelsLikeWarning =
     isReading(feelsLike) && isReading(temperature)
       ? Math.abs(feelsLike - temperature) >= FEELS_LIKE_WARNING_DELTA_CELSIUS

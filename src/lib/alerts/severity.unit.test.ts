@@ -36,7 +36,7 @@ describe('alert severity', () => {
         { severity: 'minor' },
         { severity: 'extreme' },
         { severity: 'moderate' },
-      ])
+      ]),
     ).toBe('extreme');
   });
 

@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from 'next/link';
 
 export default function DashboardPage() {
   return (
@@ -38,23 +38,17 @@ export default function DashboardPage() {
           <div className="rounded-lg border border-sky-200 bg-white p-6 shadow-sm">
             <h3 className="text-lg font-semibold text-sky-900">Active Forecasts</h3>
             <p className="mt-2 text-4xl font-bold text-sky-600">0</p>
-            <p className="mt-1 text-sm text-gray-600">
-              No forecasts in progress
-            </p>
+            <p className="mt-1 text-sm text-gray-600">No forecasts in progress</p>
           </div>
 
           <div className="rounded-lg border border-sky-200 bg-white p-6 shadow-sm">
-            <h3 className="text-lg font-semibold text-sky-900">
-              Recent Analyses
-            </h3>
+            <h3 className="text-lg font-semibold text-sky-900">Recent Analyses</h3>
             <p className="mt-2 text-4xl font-bold text-sky-600">0</p>
             <p className="mt-1 text-sm text-gray-600">No recent analyses</p>
           </div>
 
           <div className="rounded-lg border border-sky-200 bg-white p-6 shadow-sm">
-            <h3 className="text-lg font-semibold text-sky-900">
-              Accuracy Score
-            </h3>
+            <h3 className="text-lg font-semibold text-sky-900">Accuracy Score</h3>
             <p className="mt-2 text-4xl font-bold text-sky-600">--</p>
             <p className="mt-1 text-sm text-gray-600">Based on forecasts</p>
           </div>
@@ -64,8 +58,8 @@ export default function DashboardPage() {
         <div className="mt-8 rounded-lg border-2 border-dashed border-sky-300 bg-sky-50 p-8">
           <h2 className="text-2xl font-bold text-sky-900">Get Started</h2>
           <p className="mt-2 text-gray-700">
-            Begin your first weather forecast analysis by examining atmospheric
-            evidence, recognizing patterns, and forming a hypothesis.
+            Begin your first weather forecast analysis by examining atmospheric evidence,
+            recognizing patterns, and forming a hypothesis.
           </p>
           <div className="mt-6 flex gap-4">
             <Link
@@ -86,37 +80,28 @@ export default function DashboardPage() {
         {/* Features Overview */}
         <div className="mt-8 grid gap-6 md:grid-cols-2">
           <div className="rounded-lg border border-sky-200 bg-white p-6 shadow-sm">
-            <h3 className="text-lg font-semibold text-sky-900">
-              📊 Pattern Analysis
-            </h3>
+            <h3 className="text-lg font-semibold text-sky-900">📊 Pattern Analysis</h3>
             <p className="mt-2 text-gray-600">
-              Recognize and analyze atmospheric patterns to inform your
-              forecast.
+              Recognize and analyze atmospheric patterns to inform your forecast.
             </p>
           </div>
 
           <div className="rounded-lg border border-sky-200 bg-white p-6 shadow-sm">
-            <h3 className="text-lg font-semibold text-sky-900">
-              🔍 Evidence Tracking
-            </h3>
+            <h3 className="text-lg font-semibold text-sky-900">🔍 Evidence Tracking</h3>
             <p className="mt-2 text-gray-600">
               Document and track evidence supporting your forecast hypothesis.
             </p>
           </div>
 
           <div className="rounded-lg border border-sky-200 bg-white p-6 shadow-sm">
-            <h3 className="text-lg font-semibold text-sky-900">
-              💭 Hypothesis Formation
-            </h3>
+            <h3 className="text-lg font-semibold text-sky-900">💭 Hypothesis Formation</h3>
             <p className="mt-2 text-gray-600">
               Develop well-reasoned hypotheses based on atmospheric analysis.
             </p>
           </div>
 
           <div className="rounded-lg border border-sky-200 bg-white p-6 shadow-sm">
-            <h3 className="text-lg font-semibold text-sky-900">
-              📢 Forecast Communication
-            </h3>
+            <h3 className="text-lg font-semibold text-sky-900">📢 Forecast Communication</h3>
             <p className="mt-2 text-gray-600">
               Articulate clear, evidence-based weather forecasts.
             </p>

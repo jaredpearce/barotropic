@@ -1,0 +1,11 @@
+# Generated, vendored, or hand-maintained content is formatted on its own terms.
+.github/
+barotropic.tokens.json
+README.md
+CONTRIBUTING.md
+LICENSE
+bun.lock
+src/public/
+src/styles/
+src/app/site.webmanifest
+next-env.d.ts

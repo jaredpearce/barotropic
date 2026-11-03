@@ -10,6 +10,7 @@ Barotropic is a weather forecasting platform designed around a simple premise: W
 - **Framework**: [Next.js 14](https://nextjs.org/) with App Router
 - **Language**: [TypeScript 5.6+](https://www.typescriptlang.org/)
 - **UI Library**: [React 19](https://react.dev/)
+- **Mapping**: [MapLibre GL JS](https://maplibre.org/) with [OpenFreeMap](https://openfreemap.org/) basemaps
 - **Styling**: [Tailwind CSS](https://tailwindcss.com/)
 - **Package Manager**: [Bun](https://bun.sh/)
 - **Linting**: [Oxlint](https://oxc-project.github.io/docs/guide/linter.html)
@@ -31,8 +32,7 @@ src/
 │   └── index.ts                # Component exports
 ├── lib/                        # Utility functions
 │   ├── forecast-utils.ts       # Forecast domain utilities
-│   ├── hooks.ts                # Custom React hooks
-│   └── index.ts                # Lib exports
+│   └── hooks.ts                # Custom React hooks
 ├── styles/                     # Global styles
 │   └── globals.css             # Tailwind directives
 └── types/                      # TypeScript type definitions
@@ -182,12 +182,19 @@ Create a `.env.local` file based on `.env.example`:
 cp .env.example .env.local
 ```
 
+`NEXT_PUBLIC_MAP_STYLE_URL` is optional. Leave it unset to use OpenFreeMap's dark style; set it only when pointing the desk map at a different MapLibre style.
+
 ## Weather Data Sources
 
+- The desk map uses [MapLibre GL JS](https://maplibre.org/) with [OpenFreeMap](https://openfreemap.org/)'s dark basemap (`https://tiles.openfreemap.org/styles/dark`). No API key is required, and the compact attribution control credits OpenFreeMap and OpenStreetMap. Set `NEXT_PUBLIC_MAP_STYLE_URL` to override the style. The MapLibre worker is synced into `public/maplibre-gl-worker.mjs` by the `predev` and `prebuild` scripts; do not edit that generated file.
 - NWS conditions, forecasts, alerts, and station observations use the [weather.gov API](https://www.weather.gov/documentation/services-web-api).
 - Radar imagery uses NOAA/NCEP's [MRMS Base Reflectivity WMS layer](https://opengeo.ncep.noaa.gov/geoserver/conus/conus_bref_qcd/ows?service=WMS&request=GetCapabilities), layer `conus_bref_qcd`. The API response includes a WMS tile URL template and NOAA/NCEP attribution.
-- Open-Meteo's generic forecast API is currently pinned to Cary, NC. The named GFS and HRRR products use the provider IDs `ncep_gfs_seamless` and `ncep_hrrr_conus`, respectively. The generic endpoint does not expose a model initialization time; per-record `runTime` is therefore `null`, while `retrievedAt` and the valid timestamp are populated.
+- Open-Meteo's forecast API accepts optional `lat`/`lon` coordinates and falls back to Cary, NC when they are omitted. Requests use `timezone=auto`; hourly records carry `isDaytime` from the provider's `is_day` flag, and each model response exposes `utcOffsetSeconds` so the UI can start its 24-hour list at the current local hour. The named GFS and HRRR products use the provider IDs `ncep_gfs_seamless` and `ncep_hrrr_conus`, respectively. The generic endpoint does not expose a model initialization time; per-record `runTime` is therefore `null`, while `retrievedAt` and the valid timestamp are populated.
 - Review [Open-Meteo API documentation](https://open-meteo.com/en/docs/gfs-api) and [terms](https://open-meteo.com/en/terms) before deployment. The public API currently describes free access for non-commercial use; commercial use requires the applicable paid API access.
+
+## Data Freshness
+
+Panels derive their `LIVE`/`STALE` indicator from `retrievedAt` (transport time) using a 15-minute threshold defined by `FRESHNESS_THRESHOLD_MS` in `src/lib/freshness.ts`. Missing or invalid timestamps are treated as stale, and future timestamps are clamped to zero age so small clock skew does not produce a false stale state.
 
 ## Deployment
 

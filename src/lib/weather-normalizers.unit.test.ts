@@ -34,7 +34,10 @@ describe('NWS measurement normalization', () => {
   });
 
   it('Use Case: converts barometric pressure from pascals to hectopascals', () => {
-    expect(normalizeNwsPressure({ value: 101998.03, unitCode: 'wmoUnit:Pa' })).toBeCloseTo(1019.9803, 4);
+    expect(normalizeNwsPressure({ value: 101998.03, unitCode: 'wmoUnit:Pa' })).toBeCloseTo(
+      1019.9803,
+      4,
+    );
     expect(normalizeNwsPressure({ value: 1012.4, unitCode: 'wmoUnit:hPa' })).toBe(1012.4);
     expect(normalizeNwsPressure({ value: null, unitCode: 'wmoUnit:Pa' })).toBeNull();
     expect(normalizeNwsPressure()).toBeNull();
