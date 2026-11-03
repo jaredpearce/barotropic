@@ -9,4 +9,5 @@ export { default as BarotropicLogo } from "./BarotropicLogo";
 export { default as Button } from "./Button";
 export { default as ConditionTile } from "./ConditionTile";
 export { default as CurrentConditions } from "./CurrentConditions";
+export { default as HourlyForecast } from './HourlyForecast';
 export { default as HourlyRow } from './HourlyRow';

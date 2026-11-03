@@ -1,11 +1,12 @@
 /**
  * Open-Meteo forecast route handler
- * GET /api/open-meteo/forecast?models={gfs,hrrr}
+ * GET /api/open-meteo/forecast?lat={latitude}&lon={longitude}&models={gfs,hrrr}
  *
- * The generic endpoint uses a fixed Cary, NC location while this API is being developed.
+ * Coordinates are optional for backwards compatibility; omitted coordinates
+ * continue to use the default Cary, NC location.
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { fetchFromOpenMeteo } from '@/lib/open-meteo/client';
 import { upstreamErrorResponse } from '@/lib/api-errors';
 import { OpenMeteoForecastSchema } from '@/lib/schemas';
@@ -16,6 +17,7 @@ import {
   type OpenMeteoModelName,
 } from '@/lib/open-meteo/utils';
 import { NormalizedWeatherRecordSchema } from '@/lib/schemas';
+import { validateLatitudeLongitude } from '@/lib/nws/utils';
 
 export const dynamic = 'force-dynamic';
 
@@ -29,10 +31,12 @@ const CARY_LOCATION = {
 const RADAR_WMS_URL =
   'https://opengeo.ncep.noaa.gov/geoserver/conus/conus_bref_qcd/ows';
 
-export async function GET(request: NextRequest) {
+export async function GET(request: Request) {
   try {
-    const { searchParams } = request.nextUrl;
+    const { searchParams } = new URL(request.url);
     const modelParam = searchParams.get('models');
+    const latitudeParam = searchParams.get('lat');
+    const longitudeParam = searchParams.get('lon');
 
     let models: OpenMeteoModelName[];
     try {
@@ -49,12 +53,58 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    let location: {
+      latitude: number;
+      longitude: number;
+      city?: string;
+      state?: string;
+    } = CARY_LOCATION;
+    if (latitudeParam !== null || longitudeParam !== null) {
+      if (latitudeParam === null || longitudeParam === null) {
+        return NextResponse.json(
+          {
+            error: 'Missing required parameters',
+            details: 'Both lat and lon query parameters are required',
+            example: '/api/open-meteo/forecast?lat=35.7915&lon=-78.7811',
+          },
+          { status: 400 }
+        );
+      }
+
+      if (!latitudeParam.trim() || !longitudeParam.trim()) {
+        return NextResponse.json(
+          {
+            error: 'Invalid coordinates',
+            details: 'lat and lon must be valid numbers',
+          },
+          { status: 400 }
+        );
+      }
+
+      try {
+        const coordinates = validateLatitudeLongitude(
+          latitudeParam,
+          longitudeParam
+        );
+        location = coordinates;
+      } catch (error) {
+        return NextResponse.json(
+          {
+            error: 'Invalid coordinates',
+            details:
+              error instanceof Error ? error.message : 'Validation failed',
+          },
+          { status: 400 }
+        );
+      }
+    }
+
     const forecasts = await Promise.all(
       models.map(async (modelName) => {
         const model = OPEN_METEO_MODELS[modelName];
         const endpoint = buildOpenMeteoForecastQuery(
-          CARY_LOCATION.latitude,
-          CARY_LOCATION.longitude,
+          location.latitude,
+          location.longitude,
           model.id,
           7
         );
@@ -109,7 +159,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       location: {
-        ...CARY_LOCATION,
+        ...location,
       },
       requestedModels: models,
       models: modelResults,
