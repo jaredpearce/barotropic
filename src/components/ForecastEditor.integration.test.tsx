@@ -1,8 +1,6 @@
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { http, HttpResponse } from 'msw';
-import { beforeEach, describe, expect, it } from 'vitest';
-import { server } from '../../tests/msw/server';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { renderWithProviders } from '../../tests/utils/render';
 import ForecastEditor from './ForecastEditor';
 import {
@@ -39,6 +37,10 @@ const nwsForecast = [
     condition: 'Partly Cloudy',
   },
 ];
+
+afterEach(() => {
+  vi.unstubAllGlobals();
+});
 
 describe('ForecastEditor integration', () => {
   beforeEach(async () => {
@@ -134,6 +136,82 @@ describe('ForecastEditor integration', () => {
     expect(history[0].values.high).toBe('25');
     expect(history[0].reasoning).toBe('First reasoning.');
     expect(history[1].values.high).toBe('27');
+  });
+
+  it('renders live official guidance even when model guidance fails', async () => {
+    const saved = await saveForecastRevision({
+      locationName: 'Boston',
+      latitude: 42.3601,
+      longitude: -71.0589,
+      validStart: '2026-11-03T12:00',
+      values: { ...emptyForecastValues(), high: '25' },
+      reasoning: 'First reasoning.',
+    });
+    const fetchMock = vi.fn((input: RequestInfo | URL) => {
+      const url = input instanceof Request ? input.url : input.toString();
+      if (url.includes('/api/nws/point')) {
+        return Promise.resolve(Response.json({ forecast: nwsForecast }));
+      }
+      if (url.includes('/api/open-meteo/forecast')) {
+        return Promise.resolve(Response.json({ error: 'Upstream unavailable' }, { status: 502 }));
+      }
+      return Promise.resolve(Response.json({ results: [] }));
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    const user = userEvent.setup();
+
+    renderWithProviders(<ForecastEditor forecastId={saved.forecast.id} />);
+
+    expect(await screen.findByText('24°C')).toBeInTheDocument();
+    expect(
+      await screen.findByText(/Model guidance is unavailable for this location\./),
+    ).toBeInTheDocument();
+
+    await user.clear(screen.getByRole('spinbutton', { name: 'High' }));
+    await user.type(screen.getByRole('spinbutton', { name: 'High' }), '27');
+
+    expect(
+      await screen.findByText('Saved · revision 2', {}, { timeout: 5000 }),
+    ).toBeInTheDocument();
+  });
+
+  it('shows a save error, keeps the draft, and saves after the value is fixed', async () => {
+    renderWithProviders(<ForecastEditor />);
+
+    fireEvent.change(screen.getByRole('textbox', { name: 'Location' }), {
+      target: { value: 'Boston' },
+    });
+    fireEvent.change(screen.getByRole('spinbutton', { name: 'Probability of precipitation' }), {
+      target: { value: '150' },
+    });
+
+    expect(
+      await screen.findByText(
+        'Probability of precipitation must be at most 100%.',
+        {},
+        { timeout: 5000 },
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('textbox', { name: 'Location' })).toHaveValue('Boston');
+
+    fireEvent.click(screen.getByRole('button', { name: 'Retry save' }));
+    expect(
+      await screen.findByText(
+        'Probability of precipitation must be at most 100%.',
+        {},
+        { timeout: 5000 },
+      ),
+    ).toBeInTheDocument();
+
+    fireEvent.change(screen.getByRole('spinbutton', { name: 'Probability of precipitation' }), {
+      target: { value: '50' },
+    });
+
+    expect(
+      await screen.findByText('Saved · revision 1', {}, { timeout: 5000 }),
+    ).toBeInTheDocument();
+    const [snapshot] = await listForecastSnapshots();
+    expect(snapshot.revision.values.pop).toBe('50');
   });
 
   it('flushes a pending edit when the editor unmounts', async () => {
