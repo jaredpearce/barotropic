@@ -25,12 +25,19 @@ interface AppLayoutProps {
 /** Main dark-mode application shell for Barotropic. */
 export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const [location, setLocation] = useState(DEFAULT_LOCATION);
+  const [isWeatherSidebarOpen, setIsWeatherSidebarOpen] = useState(false);
   const [isLocationPickerOpen, setIsLocationPickerOpen] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [results, setResults] = useState<LocationResult[]>([]);
   const [searchState, setSearchState] = useState<'idle' | 'loading' | 'empty' | 'error'>('idle');
   const [locationState, setLocationState] = useState<'idle' | 'loading' | 'error'>('idle');
   const [locationMessage, setLocationMessage] = useState('');
+
+  useEffect(() => {
+    const isDesktop =
+      window.matchMedia?.('(min-width: 768px)').matches ?? window.innerWidth >= 768;
+    setIsWeatherSidebarOpen(isDesktop);
+  }, []);
 
   const alerts = useActiveAlerts({
     latitude: location.latitude,
@@ -276,7 +283,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         </div>
       )}
 
-      <div className="grid min-h-0 grid-cols-[minmax(0,1fr)_300px]">
+      <div className="app-content" data-sidebar-open={isWeatherSidebarOpen}>
         <main className="app-main">
           {children ?? (
             <MapPanel
@@ -289,23 +296,48 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
           )}
         </main>
 
-        <aside className="app-sidebar">
-          <ActiveAlerts
-            alerts={alerts.alerts}
-            error={alerts.error}
-            highestSeverity={alerts.highestSeverity}
-            refresh={alerts.refresh}
-            status={alerts.status}
-          />
+        <aside
+          aria-labelledby="weather-sidebar-title"
+          className="app-sidebar"
+          data-sidebar-open={isWeatherSidebarOpen}
+        >
+          <header className="app-sidebar-header">
+            <h2 className="app-sidebar-title" id="weather-sidebar-title">
+              Weather details
+            </h2>
+            <button
+              aria-controls="weather-sidebar-content"
+              aria-expanded={isWeatherSidebarOpen}
+              aria-label={isWeatherSidebarOpen ? 'Hide weather details' : 'Show weather details'}
+              className="app-sidebar-toggle"
+              onClick={() => setIsWeatherSidebarOpen((isOpen) => !isOpen)}
+              type="button"
+            >
+              <span aria-hidden="true">{isWeatherSidebarOpen ? '›' : '‹'}</span>
+            </button>
+          </header>
+          <div
+            id="weather-sidebar-content"
+            hidden={!isWeatherSidebarOpen}
+            inert={!isWeatherSidebarOpen}
+          >
+            <ActiveAlerts
+              alerts={alerts.alerts}
+              error={alerts.error}
+              highestSeverity={alerts.highestSeverity}
+              refresh={alerts.refresh}
+              status={alerts.status}
+            />
 
-          <CurrentConditions
-            conditions={currentConditions.conditions}
-            error={currentConditions.error}
-            refresh={currentConditions.refresh}
-            status={currentConditions.status}
-          />
+            <CurrentConditions
+              conditions={currentConditions.conditions}
+              error={currentConditions.error}
+              refresh={currentConditions.refresh}
+              status={currentConditions.status}
+            />
 
-          <HourlyForecast latitude={location.latitude} longitude={location.longitude} />
+            <HourlyForecast latitude={location.latitude} longitude={location.longitude} />
+          </div>
         </aside>
       </div>
     </div>

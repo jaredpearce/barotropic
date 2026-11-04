@@ -133,7 +133,69 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
+function stubViewport(isDesktop: boolean) {
+  vi.stubGlobal(
+    'matchMedia',
+    vi.fn().mockImplementation((query: string) => ({
+      matches: query === '(min-width: 768px)' && isDesktop,
+      media: query,
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    })),
+  );
+}
+
 describe('AppLayout location selection', () => {
+  it('Use Case: opens weather details by default on desktop and lets the user toggle them', async () => {
+    const user = userEvent.setup();
+    stubViewport(true);
+    stubAppFetch({ alerts: [ACTIVE_ALERT] });
+
+    renderWithProviders(<AppLayout />);
+
+    const toggle = screen.getByRole('button', { name: 'Hide weather details' });
+    expect(toggle.closest('header')).toBeInTheDocument();
+    expect(toggle.closest('aside')).toHaveAttribute('data-sidebar-open', 'true');
+    expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    expect(await screen.findByRole('heading', { name: 'Active alerts (1)' })).toBeInTheDocument();
+
+    await user.click(toggle);
+    expect(screen.getByRole('button', { name: 'Show weather details' })).toHaveAttribute(
+      'aria-expanded',
+      'false',
+    );
+    await user.click(screen.getByRole('button', { name: 'Show weather details' }));
+    expect(screen.getByRole('button', { name: 'Hide weather details' })).toHaveAttribute(
+      'aria-expanded',
+      'true',
+    );
+  });
+
+  it('Use Case: closes weather details by default on smaller screens and lets the user open them', async () => {
+    const user = userEvent.setup();
+    stubViewport(false);
+    stubAppFetch({ alerts: [ACTIVE_ALERT] });
+
+    renderWithProviders(<AppLayout />);
+
+    const toggle = screen.getByRole('button', { name: 'Show weather details' });
+    expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    expect(toggle.closest('header')).toBeInTheDocument();
+    expect(toggle.closest('aside')).toHaveAttribute('data-sidebar-open', 'false');
+    expect(screen.queryByRole('heading', { name: 'Active alerts (1)' })).not.toBeInTheDocument();
+
+    await user.click(toggle);
+    expect(screen.getByRole('button', { name: 'Hide weather details' })).toHaveAttribute(
+      'aria-expanded',
+      'true',
+    );
+    expect(await screen.findByRole('heading', { name: 'Active alerts (1)' })).toBeInTheDocument();
+  });
+
   it('renders the Barotropic logo and wordmark as one accessible brand', () => {
     stubAppFetch();
 
