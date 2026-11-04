@@ -141,8 +141,10 @@ Manage all forecasts:
 ### Forecast Editor (`/forecasts/new`, `/forecasts/[forecastId]`)
 
 Create or edit a forecast with location and valid time, structured weather
-fields, official/model guidance, and free-text reasoning. Changes are saved to
-the browser's IndexedDB database and preserved as append-only revisions.
+fields, official/model guidance, and free-text reasoning. Search for a location
+to load NWS official guidance and Open-Meteo model guidance beside each field.
+Changes are saved to the browser's IndexedDB database and preserved as
+append-only revisions.
 
 ## Code Quality
 
