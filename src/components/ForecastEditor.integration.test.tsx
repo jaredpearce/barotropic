@@ -107,6 +107,33 @@ describe('ForecastEditor integration', () => {
     expect(revisions[1].values.high).toBe('28');
   });
 
+  it('Use Case: persists a created forecast across a reload', async () => {
+    const user = userEvent.setup();
+    const firstRender = renderWithProviders(<ForecastEditor />);
+
+    await user.type(screen.getByRole('textbox', { name: 'Location' }), 'Boston');
+    await user.type(screen.getByRole('spinbutton', { name: 'High' }), '25');
+    await user.type(screen.getByRole('textbox', { name: 'Reasoning' }), 'Persisted reasoning.');
+
+    expect(
+      await screen.findByText('Saved · revision 1', {}, { timeout: 5000 }),
+    ).toBeInTheDocument();
+
+    const [saved] = await listForecastSnapshots();
+    expect(saved.revision.values.high).toBe('25');
+    expect(saved.revision.reasoning).toBe('Persisted reasoning.');
+
+    firstRender.unmount();
+    forecastDatabase.close();
+    await forecastDatabase.open();
+
+    renderWithProviders(<ForecastEditor forecastId={saved.forecast.id} />);
+
+    expect(await screen.findByDisplayValue('Boston')).toBeInTheDocument();
+    expect(screen.getByRole('spinbutton', { name: 'High' })).toHaveValue(25);
+    expect(screen.getByRole('textbox', { name: 'Reasoning' })).toHaveValue('Persisted reasoning.');
+  });
+
   it('loads an existing forecast and appends a revision on edit', async () => {
     const saved = await saveForecastRevision({
       locationName: 'Boston',
