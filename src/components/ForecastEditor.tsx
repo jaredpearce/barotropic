@@ -100,10 +100,14 @@ export default function ForecastEditor({ forecastId }: ForecastEditorProps) {
   const guidanceValuesRef = useRef({
     officialValues: guidance.officialValues,
     modelValues: guidance.modelValues,
+    guidance: guidance.guidance,
+    target: guidance.target,
   });
   guidanceValuesRef.current = {
     officialValues: guidance.officialValues,
     modelValues: guidance.modelValues,
+    guidance: guidance.guidance,
+    target: guidance.target,
   };
 
   const officialValues =

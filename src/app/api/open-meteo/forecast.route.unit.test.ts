@@ -114,4 +114,33 @@ describe('Open-Meteo forecast route', () => {
     expect(body.radar.tileUrlTemplate).toContain('layers=conus_bref_qcd');
     expect(body.radar.attribution).toContain('NOAA/NCEP');
   });
+
+  it('Use Case: returns ECMWF and requests UTC timestamps for model comparison', async () => {
+    vi.mocked(fetchFromOpenMeteo).mockResolvedValue({
+      hourly: {
+        time: ['2026-10-12T12:00'],
+        temperature_2m: [22],
+        relative_humidity_2m: [55],
+        precipitation_probability: [20],
+        weather_code: [2],
+        wind_speed_10m: [4],
+        is_day: [1],
+      },
+    } as never);
+
+    const response = await GET(
+      new Request(
+        'http://localhost/api/open-meteo/forecast?lat=35.79&lon=-78.78&models=gfs,hrrr,ecmwf&timezone=UTC',
+      ),
+    );
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body.requestedModels).toEqual(['gfs', 'hrrr', 'ecmwf']);
+    expect(body.models.ecmwf.modelId).toBe('ecmwf_ifs025');
+    expect(body.models.ecmwf.retrievedAt).toEqual(expect.any(String));
+    expect(body.models.ecmwf.runTime).toBeNull();
+    const endpoint = vi.mocked(fetchFromOpenMeteo).mock.calls[0][0];
+    expect(endpoint).toContain('timezone=UTC');
+  });
 });

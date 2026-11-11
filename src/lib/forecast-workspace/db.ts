@@ -6,6 +6,42 @@ export type ForecastFieldKey = (typeof forecastFieldKeys)[number];
 export type ForecastValues = Record<ForecastFieldKey, string>;
 export type ForecastSourceValues = Partial<Record<ForecastFieldKey, string>>;
 
+export const guidanceSourceIds = ['NWS', 'GFS', 'HRRR', 'ECMWF'] as const;
+export type GuidanceSourceId = (typeof guidanceSourceIds)[number];
+
+/** Canonical numeric guidance values. Display strings are derived from these. */
+export interface GuidanceValues {
+  highC?: number;
+  lowC?: number;
+  popPercent?: number;
+  windSpeedMps?: number;
+  windDirectionDegrees?: number;
+  sky?: string;
+}
+
+export interface GuidanceSnapshot {
+  source: GuidanceSourceId;
+  /** Provider model id, e.g. ncep_gfs_seamless. Omitted for NWS. */
+  modelId?: string;
+  /** Provider initialization time when known. Null when the provider omits it. */
+  runTime: string | null;
+  /** When this app fetched the guidance. */
+  retrievedAt: string;
+  /** Provider-local offset for model timestamps, when known. */
+  utcOffsetSeconds?: number;
+  values: GuidanceValues;
+}
+
+/** Immutable verification target captured with a revision. */
+export interface ForecastTarget {
+  latitude?: number;
+  longitude?: number;
+  /** Nearest NWS observation station, e.g. KDEN. */
+  stationId?: string;
+  /** IANA time zone, e.g. America/Denver. */
+  timeZone?: string;
+}
+
 /** Editable state shared by the editor and the persistence boundary. */
 export interface ForecastDraft {
   locationName: string;
@@ -21,6 +57,10 @@ export interface ForecastLocation {
   name: string;
   latitude?: number;
   longitude?: number;
+  /** Nearest NWS observation station for the current location. */
+  stationId?: string;
+  /** IANA time zone for the current location. */
+  timeZone?: string;
   createdAt: Date;
 }
 
@@ -40,8 +80,37 @@ export interface ForecastRevision {
   createdAt: Date;
   values: ForecastValues;
   reasoning: string;
+  /** Structured snapshots used for verification. New revisions always write this. */
+  guidance?: GuidanceSnapshot[];
+  /** Immutable verification target captured with the revision. */
+  target?: ForecastTarget;
+  /** Legacy Epic 4 display snapshots, retained for old records. */
   officialValues: ForecastSourceValues;
   modelValues: ForecastSourceValues;
+}
+
+export type ObservedDayStatus = 'verified' | 'insufficient' | 'missing' | 'error';
+
+/** One observed record per station, per local calendar day. */
+export interface ObservedDayRecord {
+  stationId: string;
+  /** YYYY-MM-DD in the target time zone. */
+  date: string;
+  timeZone: string;
+  timeZoneSource: 'provider' | 'fallback';
+  status: ObservedDayStatus;
+  highC?: number;
+  lowC?: number;
+  meanWindMps?: number;
+  precipOccurred?: boolean;
+  coverage: {
+    temperatureHours: number;
+    windHours: number;
+    precipitationHours: number;
+    requiredHours: number;
+  };
+  observationsRetrievedAt: string;
+  fetchedAt: Date;
 }
 
 export interface ForecastSnapshot {
@@ -54,6 +123,10 @@ export interface SaveForecastInput extends ForecastDraft {
   forecastId?: string;
   officialValues?: ForecastSourceValues;
   modelValues?: ForecastSourceValues;
+  /** Numeric snapshots for every successful source. */
+  guidance?: GuidanceSnapshot[];
+  /** Coordinates, station, and time zone captured with the revision. */
+  target?: ForecastTarget;
 }
 
 export const emptyForecastValues = (): ForecastValues => ({
@@ -69,6 +142,7 @@ class ForecastWorkspaceDatabase extends Dexie {
   locations!: Table<ForecastLocation, string>;
   forecasts!: Table<Forecast, string>;
   revisions!: Table<ForecastRevision, string>;
+  observedDays!: Table<ObservedDayRecord, [string, string]>;
 
   constructor() {
     super('barotropic-forecast-workspace');
@@ -81,6 +155,12 @@ class ForecastWorkspaceDatabase extends Dexie {
       locations: 'id, name',
       forecasts: 'id, locationId, updatedAt',
       revisions: 'id, forecastId, &[forecastId+revisionNumber], createdAt',
+    });
+    this.version(3).stores({
+      locations: 'id, name',
+      forecasts: 'id, locationId, updatedAt',
+      revisions: 'id, forecastId, &[forecastId+revisionNumber], createdAt',
+      observedDays: '&[stationId+date], stationId, date, fetchedAt',
     });
   }
 }
@@ -149,6 +229,8 @@ export async function saveForecastRevision(input: SaveForecastInput): Promise<Fo
         name: normalizedInput.locationName,
         latitude: normalizedInput.latitude,
         longitude: normalizedInput.longitude,
+        stationId: normalizedInput.target?.stationId ?? currentLocation?.stationId,
+        timeZone: normalizedInput.target?.timeZone ?? currentLocation?.timeZone,
         createdAt: currentLocation?.createdAt ?? now,
       };
       const revisions = await forecastDatabase.revisions
@@ -166,6 +248,11 @@ export async function saveForecastRevision(input: SaveForecastInput): Promise<Fo
         createdAt: now,
         values: { ...normalizedInput.values },
         reasoning: normalizedInput.reasoning,
+        guidance: normalizedInput.guidance?.map((snapshot) => ({
+          ...snapshot,
+          values: { ...snapshot.values },
+        })),
+        target: normalizedInput.target ? { ...normalizedInput.target } : undefined,
         officialValues: { ...normalizedInput.officialValues },
         modelValues: { ...normalizedInput.modelValues },
       };
@@ -218,4 +305,29 @@ export async function listForecastSnapshots(): Promise<ForecastSnapshot[]> {
       return snapshotFor(forecast, revision);
     }),
   );
+}
+
+/** Every revision across all forecasts, for the verification job. */
+export async function listAllForecastRevisions(): Promise<ForecastRevision[]> {
+  return forecastDatabase.revisions.toArray();
+}
+
+/** Every forecast, for the verification job. */
+export async function listAllForecasts(): Promise<Forecast[]> {
+  return forecastDatabase.forecasts.toArray();
+}
+
+export async function getObservedDay(
+  stationId: string,
+  date: string,
+): Promise<ObservedDayRecord | undefined> {
+  return forecastDatabase.observedDays.get([stationId, date]);
+}
+
+export async function putObservedDay(record: ObservedDayRecord): Promise<void> {
+  await forecastDatabase.observedDays.put(record);
+}
+
+export async function clearObservedDays(): Promise<void> {
+  await forecastDatabase.observedDays.clear();
 }

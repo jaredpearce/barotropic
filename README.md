@@ -22,9 +22,11 @@ Barotropic is a weather forecasting platform designed around a simple premise: W
 ```
 src/
 ├── app/                         # Next.js App Router
+│   ├── compare/                # Model comparison screen
 │   ├── dashboard/              # Dashboard pages
 │   ├── forecasts/              # Forecast management
 │   │   └── new/                # New forecast creation wizard
+│   ├── track-record/           # Verification track record screen
 │   ├── layout.tsx              # Root layout
 │   └── page.tsx                # Landing page
 ├── components/                 # Reusable React components
@@ -146,6 +148,22 @@ to load NWS official guidance and Open-Meteo model guidance beside each field.
 Changes are saved to the browser's IndexedDB database and preserved as
 append-only revisions.
 
+### Compare (`/compare`)
+
+Plot NWS and the GFS, HRRR, and ECMWF models on one timeline. Switch between
+temperature, wind, and precipitation-probability series; the legend shows each
+source's provider run time (or `Run: unavailable`) and the real retrieval time.
+A failed source is listed separately instead of blanking the others. Nothing is
+persisted.
+
+### Track Record (`/track-record`)
+
+Verify past forecasts against NWS station observations entirely in the browser.
+The screen shows mean absolute error and bias per source and variable, PoP Brier
+scores, a signed-error chart by date, and a list of past forecasts with explicit
+`Pending`, `Insufficient coverage`, and `Missing observations` states. The
+observed high/low rule is documented in [docs/verification-rules.md](./docs/verification-rules.md).
+
 ## Code Quality
 
 ### Linting with Oxlint
@@ -191,12 +209,20 @@ cp .env.example .env.local
 - The desk map uses [MapLibre GL JS](https://maplibre.org/) with [OpenFreeMap](https://openfreemap.org/)'s dark basemap (`https://tiles.openfreemap.org/styles/dark`). No API key is required, and the compact attribution control credits OpenFreeMap and OpenStreetMap. Set `NEXT_PUBLIC_MAP_STYLE_URL` to override the style. The MapLibre worker is synced into `public/maplibre-gl-worker.mjs` by the `predev` and `prebuild` scripts; do not edit that generated file.
 - NWS conditions, forecasts, alerts, and station observations use the [weather.gov API](https://www.weather.gov/documentation/services-web-api).
 - Radar imagery uses NOAA/NCEP's [MRMS Base Reflectivity WMS layer](https://opengeo.ncep.noaa.gov/geoserver/conus/conus_bref_qcd/ows?service=WMS&request=GetCapabilities), layer `conus_bref_qcd`. The API response includes a WMS tile URL template and NOAA/NCEP attribution.
-- Open-Meteo's forecast API accepts optional `lat`/`lon` coordinates and falls back to Cary, NC when they are omitted. Requests use `timezone=auto`; hourly records carry `isDaytime` from the provider's `is_day` flag, and each model response exposes `utcOffsetSeconds` so the UI can start its 24-hour list at the current local hour. The named GFS and HRRR products use the provider IDs `ncep_gfs_seamless` and `ncep_hrrr_conus`, respectively. The generic endpoint does not expose a model initialization time; per-record `runTime` is therefore `null`, while `retrievedAt` and the valid timestamp are populated.
+- Open-Meteo's forecast API accepts optional `lat`/`lon` coordinates and falls back to Cary, NC when they are omitted. Requests use `timezone=auto`; hourly records carry `isDaytime` from the provider's `is_day` flag, and each model response exposes `utcOffsetSeconds` so the UI can start its 24-hour list at the current local hour. The named GFS, HRRR, and ECMWF products use the provider IDs `ncep_gfs_seamless`, `ncep_hrrr_conus`, and `ecmwf_ifs025`, respectively. The generic endpoint does not expose a model initialization time; per-record `runTime` is therefore `null`, the Compare legend renders `Run: unavailable`, and `retrievedAt` and the valid timestamp are populated. No run time is ever fabricated.
 - Review [Open-Meteo API documentation](https://open-meteo.com/en/docs/gfs-api) and [terms](https://open-meteo.com/en/terms) before deployment. The public API currently describes free access for non-commercial use; commercial use requires the applicable paid API access.
 
 ## Data Freshness
 
 Panels derive their `LIVE`/`STALE` indicator from `retrievedAt` (transport time) using a 15-minute threshold defined by `FRESHNESS_THRESHOLD_MS` in `src/lib/freshness.ts`. Missing or invalid timestamps are treated as stale, and future timestamps are clamped to zero age so small clock skew does not produce a false stale state.
+
+## Unit Preference
+
+The Compare and Track Record screens share a persisted metric/imperial preference stored under `barotropic.unit-system` in `localStorage`. It defaults to imperial (°F, mph) and toggles to metric (°C, m/s), and the choice is shared across screens and tabs. Storage and verification math always use canonical units (Celsius, meters per second, millimeters); imperial formatting is display-only.
+
+## Verification Rules
+
+Observed high/low, quality-control eligibility, missing-data handling, DST behavior, and the verification lag are defined in [docs/verification-rules.md](./docs/verification-rules.md), which is the canonical reference for the Track Record screen.
 
 ## Deployment
 

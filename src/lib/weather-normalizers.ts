@@ -1,7 +1,29 @@
 type NwsQuantity = {
   value?: number | null;
   unitCode?: string;
+  qualityControl?: string;
 };
+
+/** Read a per-quantity NWS quality-control flag without converting the value. */
+export function normalizeNwsQualityControl(quantity?: NwsQuantity): string | null {
+  return quantity?.qualityControl ?? null;
+}
+
+/**
+ * Normalize an NWS precipitation accumulation to millimeters.
+ *
+ * NWS publishes precipitation with `wmoUnit:mm` (or inches for a few legacy
+ * products); anything unrecognized returns `null` rather than a guessed value.
+ */
+export function normalizeNwsPrecipitation(quantity?: NwsQuantity): number | null {
+  const value = quantity?.value;
+  if (value == null) return null;
+
+  const unit = quantity?.unitCode?.toLowerCase() ?? '';
+  if (unit.includes('mm')) return value;
+  if (unit.includes('in') || unit.includes('inch')) return value * 25.4;
+  return null;
+}
 
 export function normalizeNwsTemperature(quantity?: NwsQuantity): number | null {
   const value = quantity?.value;

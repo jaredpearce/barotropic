@@ -10,7 +10,9 @@ import type { LatestObservation } from '@/lib/schemas/nws';
 import type { NormalizedObservation } from '@/lib/schemas/normalized';
 import { NormalizedObservationSchema } from '@/lib/schemas';
 import {
+  normalizeNwsPrecipitation,
   normalizeNwsPressure,
+  normalizeNwsQualityControl,
   normalizeNwsQuantityValue,
   normalizeNwsTemperature,
   normalizeNwsWindSpeed,
@@ -46,5 +48,14 @@ export function normalizeNwsObservation(
     windGustMps: normalizeNwsWindSpeed(properties.windGust),
     windDirectionDegrees: normalizeNwsQuantityValue(properties.windDirection),
     pressureHpa: normalizeNwsPressure(properties.barometricPressure),
+    temperatureQualityControl: normalizeNwsQualityControl(properties.temperature),
+    windSpeedQualityControl: normalizeNwsQualityControl(properties.windSpeed),
+    precipitationLastHourMm: normalizeNwsPrecipitation(properties.precipitationLastHour),
+    precipitationLast3HoursMm: normalizeNwsPrecipitation(properties.precipitationLast3Hours),
+    precipitationLast6HoursMm: normalizeNwsPrecipitation(properties.precipitationLast6Hours),
+    precipitationQualityControl:
+      normalizeNwsQualityControl(properties.precipitationLastHour) ??
+      normalizeNwsQualityControl(properties.precipitationLast3Hours) ??
+      normalizeNwsQualityControl(properties.precipitationLast6Hours),
   });
 }

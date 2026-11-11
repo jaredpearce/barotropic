@@ -15,7 +15,28 @@ beforeEach(() => {
 });
 
 describe('NWS route upstream errors', () => {
-  it('Use Case: returns a typed error when the point route station lookup fails', async () => {
+  it('Use Case: returns a typed error when the point metadata lookup fails', async () => {
+    vi.mocked(fetchFromNws).mockRejectedValue(
+      new UpstreamApiError(
+        'UPSTREAM_TIMEOUT',
+        'National Weather Service request timed out',
+        'NWS',
+        504,
+        true,
+      ),
+    );
+
+    const response = await getPoint(
+      new Request('http://localhost/api/nws/point?lat=35.79&lon=-78.78'),
+    );
+
+    expect(response.status).toBe(504);
+    await expect(response.json()).resolves.toMatchObject({
+      error: { code: 'UPSTREAM_TIMEOUT', upstream: 'NWS', retryable: true },
+    });
+  });
+
+  it('Use Case: tolerates a station lookup failure and still returns the forecast', async () => {
     vi.mocked(fetchFromNws).mockImplementation(async (endpoint) => {
       if (endpoint.startsWith('/points/')) {
         return {
@@ -25,7 +46,7 @@ describe('NWS route upstream errors', () => {
           },
         } as never;
       }
-      if (endpoint.includes('/forecast')) {
+      if (endpoint.endsWith('/forecast')) {
         return { properties: { periods: [] } } as never;
       }
       throw new UpstreamApiError(
@@ -41,9 +62,11 @@ describe('NWS route upstream errors', () => {
       new Request('http://localhost/api/nws/point?lat=35.79&lon=-78.78'),
     );
 
-    expect(response.status).toBe(504);
+    expect(response.status).toBe(200);
     await expect(response.json()).resolves.toMatchObject({
-      error: { code: 'UPSTREAM_TIMEOUT', upstream: 'NWS', retryable: true },
+      stationId: null,
+      stations: [],
+      forecast: [],
     });
   });
 

@@ -1,6 +1,7 @@
 export const OPEN_METEO_MODELS = {
   gfs: { name: 'GFS', id: 'ncep_gfs_seamless' },
   hrrr: { name: 'HRRR', id: 'ncep_hrrr_conus' },
+  ecmwf: { name: 'ECMWF', id: 'ecmwf_ifs025' },
 } as const;
 
 export type OpenMeteoModelName = keyof typeof OPEN_METEO_MODELS;
@@ -13,6 +14,9 @@ const OPEN_METEO_MODEL_ALIASES: Record<string, OpenMeteoModelName> = {
   hrr: 'hrrr',
   hrrr: 'hrrr',
   ncep_hrrr_conus: 'hrrr',
+  ecmwf: 'ecmwf',
+  ecmwf_ifs025: 'ecmwf',
+  ifs: 'ecmwf',
 };
 
 export function normalizeOpenMeteoModels(rawModels: string | null): OpenMeteoModelName[] {
@@ -23,7 +27,7 @@ export function normalizeOpenMeteoModels(rawModels: string | null): OpenMeteoMod
     .filter((model): model is OpenMeteoModelName => model !== undefined);
 
   if (normalized.length === 0) {
-    throw new Error('models must include gfs or hrrr');
+    throw new Error('models must include gfs, hrrr, or ecmwf');
   }
 
   return [...new Set(normalized)];
@@ -34,6 +38,7 @@ export function buildOpenMeteoForecastQuery(
   longitude: number,
   modelId: string,
   forecastDays = 7,
+  timezone = 'auto',
 ) {
   const params = new URLSearchParams({
     latitude: String(latitude),
@@ -47,7 +52,7 @@ export function buildOpenMeteoForecastQuery(
       'is_day',
     ].join(','),
     daily: ['weather_code', 'temperature_2m_max', 'temperature_2m_min'].join(','),
-    timezone: 'auto',
+    timezone,
     forecast_days: String(forecastDays),
     temperature_unit: 'celsius',
     wind_speed_unit: 'ms',

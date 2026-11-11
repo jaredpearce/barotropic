@@ -1,4 +1,4 @@
-import ForecastEditor from "@/components/ForecastEditor";
+import ForecastEditor from '@/components/ForecastEditor';
 
 export default function NewForecastPage() {
   return <ForecastEditor />;

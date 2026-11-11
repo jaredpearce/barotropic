@@ -10,11 +10,16 @@ describe('Open-Meteo model configuration', () => {
 
   it('Use Case: accepts display aliases and exact provider model IDs', () => {
     expect(normalizeOpenMeteoModels('GFS,hrr,ncep_hrrr_conus')).toEqual(['gfs', 'hrrr']);
+    expect(normalizeOpenMeteoModels('ecmwf,ecmwf_ifs025,ifs')).toEqual(['ecmwf']);
+  });
+
+  it('Use Case: maps ECMWF to its provider model id', () => {
+    expect(OPEN_METEO_MODELS.ecmwf.id).toBe('ecmwf_ifs025');
   });
 
   it('Use Case: rejects a selection without a supported model', () => {
-    expect(() => normalizeOpenMeteoModels('ecmwf,unknown')).toThrow(
-      'models must include gfs or hrrr',
+    expect(() => normalizeOpenMeteoModels('unknown')).toThrow(
+      'models must include gfs, hrrr, or ecmwf',
     );
   });
 
@@ -29,6 +34,16 @@ describe('Open-Meteo model configuration', () => {
     expect(query.searchParams.get('longitude')).toBe('-78.7811');
     expect(query.searchParams.get('temperature_unit')).toBe('celsius');
     expect(query.searchParams.get('wind_speed_unit')).toBe('ms');
+    expect(query.searchParams.get('timezone')).toBe('auto');
     expect(query.searchParams.get('hourly')).toContain('is_day');
+  });
+
+  it('Use Case: allows requesting UTC timestamps for model comparison', () => {
+    const query = new URL(
+      buildOpenMeteoForecastQuery(35.7915, -78.7811, 'ecmwf_ifs025', 7, 'UTC'),
+      'https://api.open-meteo.com',
+    );
+
+    expect(query.searchParams.get('timezone')).toBe('UTC');
   });
 });

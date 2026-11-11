@@ -2,9 +2,9 @@
  * NWS Point Data Route Handler
  * GET /api/nws/point?lat={latitude}&lon={longitude}
  *
- * Returns current conditions and forecast for a given latitude/longitude.
- * Combines data from NWS Points API (to get forecast URL and nearby stations)
- * with Forecast API and latest observations.
+ * Returns current conditions, 12-hour forecast periods, hourly periods, and
+ * nearby stations for a given latitude/longitude. A failure of one upstream
+ * resource does not discard the others.
  */
 
 import { NextResponse } from 'next/server';
@@ -27,6 +27,57 @@ import { validateLatitudeLongitude, extractStationId, toNwsPath } from '@/lib/nw
 import { normalizeObservationStations } from '@/lib/nws/stations';
 
 export const dynamic = 'force-dynamic';
+
+type ForecastPayload = {
+  properties: {
+    updateTime?: string;
+    periods?: Array<{
+      startTime?: string;
+      temperature: number;
+      temperatureUnit: 'F' | 'C';
+      windSpeed: string;
+      windDirection: string;
+      shortForecast: string;
+      probabilityOfPrecipitation?: { value?: number | null };
+      relativeHumidity?: { value?: number | null };
+      isDaytime?: boolean;
+      name: string;
+    }>;
+  };
+};
+
+function normalizePeriods(
+  payload: ForecastPayload | null,
+  retrievedAt: string,
+): ReturnType<typeof NormalizedWeatherRecordSchema.parse>[] {
+  if (!payload) return [];
+  const issuedAt = payload.properties.updateTime ?? retrievedAt;
+  return (payload.properties.periods ?? []).map((period) =>
+    NormalizedWeatherRecordSchema.parse({
+      source: 'NWS',
+      timestamp: period.startTime ?? retrievedAt,
+      retrievedAt,
+      issuedAt,
+      temperatureC:
+        period.temperatureUnit === 'F' ? ((period.temperature - 32) * 5) / 9 : period.temperature,
+      humidityPercent: normalizeNwsQuantityValue(period.relativeHumidity),
+      windSpeedMps: normalizeNwsWindSpeedText(period.windSpeed),
+      windDirectionDegrees: normalizeNwsWindDirection(period.windDirection),
+      precipitationProbabilityPercent: normalizeNwsQuantityValue(period.probabilityOfPrecipitation),
+      condition: period.shortForecast,
+      periodName: period.name,
+      isDaytime: period.isDaytime,
+    }),
+  );
+}
+
+function errorMessage(result: PromiseSettledResult<unknown>): string | null {
+  return result.status === 'rejected'
+    ? result.reason instanceof Error
+      ? result.reason.message
+      : 'Request failed'
+    : null;
+}
 
 export async function GET(request: Request) {
   try {
@@ -63,7 +114,9 @@ export async function GET(request: Request) {
     const point = await fetchFromNws(`/points/${latitude},${longitude}`, PointSchema);
 
     const forecastUrl = point.properties.forecast;
+    const hourlyUrl = point.properties.forecastHourly;
     const stationsUrl = point.properties.observationStations;
+    const timeZone = point.properties.timeZone ?? null;
     const relativeLocation = point.properties.relativeLocation?.properties;
 
     if (!forecastUrl) {
@@ -77,19 +130,35 @@ export async function GET(request: Request) {
       );
     }
 
-    // Fetch the forecast and nearby stations in parallel
-    const forecastPath = toNwsPath(forecastUrl);
-    const stationsPath = stationsUrl ? toNwsPath(stationsUrl) : null;
-    const [forecast, stations] = await Promise.all([
-      fetchFromNws(forecastPath, ForecastSchema),
-      stationsPath ? fetchFromNws(stationsPath, ObservationStationsSchema) : Promise.resolve(null),
+    // Fetch the daily forecast, hourly forecast, and nearby stations in parallel.
+    // One upstream failure must not discard the others.
+    const [forecastResult, hourlyResult, stationsResult] = await Promise.allSettled([
+      fetchFromNws(toNwsPath(forecastUrl), ForecastSchema),
+      hourlyUrl ? fetchFromNws(toNwsPath(hourlyUrl), ForecastSchema) : Promise.resolve(null),
+      stationsUrl
+        ? fetchFromNws(toNwsPath(stationsUrl), ObservationStationsSchema)
+        : Promise.resolve(null),
     ]);
+
+    const forecast = forecastResult.status === 'fulfilled' ? forecastResult.value : null;
+    const hourly = hourlyResult.status === 'fulfilled' ? hourlyResult.value : null;
+    const stations = stationsResult.status === 'fulfilled' ? stationsResult.value : null;
+
     const stationUrl = stations?.features[0]?.id;
     const stationId = stationUrl ? extractStationId(stationUrl) : null;
     const stationCoordinates = normalizeObservationStations(stations);
-    const currentConditions = stationId
-      ? await fetchFromNws(`/stations/${stationId}/observations/latest`, LatestObservationSchema)
-      : null;
+
+    let currentConditions: Awaited<ReturnType<typeof fetchFromNws>> | null = null;
+    if (stationId) {
+      try {
+        currentConditions = await fetchFromNws(
+          `/stations/${stationId}/observations/latest`,
+          LatestObservationSchema,
+        );
+      } catch {
+        currentConditions = null;
+      }
+    }
 
     const retrievedAt = new Date().toISOString();
     const normalizedCurrentConditions =
@@ -104,29 +173,16 @@ export async function GET(request: Request) {
         city: relativeLocation?.city ?? undefined,
         state: relativeLocation?.state ?? undefined,
       },
+      timeZone,
+      stationId,
+      retrievedAt,
+      forecastIssuedAt: forecast?.properties.updateTime ?? null,
       currentConditions: normalizedCurrentConditions,
       stations: stationCoordinates,
-      forecast: (forecast.properties.periods ?? []).map((period) =>
-        NormalizedWeatherRecordSchema.parse({
-          source: 'NWS',
-          timestamp: period.startTime ?? retrievedAt,
-          retrievedAt,
-          issuedAt: forecast.properties.updateTime ?? retrievedAt,
-          temperatureC:
-            period.temperatureUnit === 'F'
-              ? ((period.temperature - 32) * 5) / 9
-              : period.temperature,
-          humidityPercent: normalizeNwsQuantityValue(period.relativeHumidity),
-          windSpeedMps: normalizeNwsWindSpeedText(period.windSpeed),
-          windDirectionDegrees: normalizeNwsWindDirection(period.windDirection),
-          precipitationProbabilityPercent: normalizeNwsQuantityValue(
-            period.probabilityOfPrecipitation,
-          ),
-          condition: period.shortForecast,
-          periodName: period.name,
-          isDaytime: period.isDaytime,
-        }),
-      ),
+      forecast: normalizePeriods(forecast, retrievedAt),
+      hourly: normalizePeriods(hourly, retrievedAt),
+      forecastError: errorMessage(forecastResult),
+      hourlyError: errorMessage(hourlyResult),
     });
   } catch (error) {
     const upstreamResponse = upstreamErrorResponse(error);
