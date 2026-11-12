@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { useEffect, useState } from "react";
-import { listForecastSnapshots, type ForecastSnapshot } from "@/lib/forecast-workspace/db";
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { listForecastSnapshots, type ForecastSnapshot } from '@/lib/forecast-workspace/db';
 
 export default function ForecastsPage() {
   const [forecasts, setForecasts] = useState<ForecastSnapshot[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
 
   useEffect(() => {
     listForecastSnapshots()
@@ -16,7 +16,7 @@ export default function ForecastsPage() {
         setError(
           cause instanceof Error
             ? `Unable to load forecasts: ${cause.message}`
-            : "Unable to load forecasts.",
+            : 'Unable to load forecasts.',
         );
       })
       .finally(() => setLoading(false));
@@ -71,14 +71,14 @@ export default function ForecastsPage() {
                   className="block rounded-lg border border-sky-200 bg-white p-5 shadow-sm hover:border-sky-400"
                 >
                   <h2 className="text-lg font-semibold text-sky-900">
-                    {forecast.locationName || "Untitled location"}
+                    {forecast.locationName || 'Untitled location'}
                   </h2>
                   <p className="mt-1 text-sm text-gray-600">
-                    {forecast.validStart || "Valid time not set"}
+                    {forecast.validStart || 'Valid time not set'}
                   </p>
                   <p className="mt-3 text-sm text-gray-700">
-                    High: {revision.values.high || "Not set"} · Low:{" "}
-                    {revision.values.low || "Not set"}
+                    High: {revision.values.high || 'Not set'} · Low:{' '}
+                    {revision.values.low || 'Not set'}
                   </p>
                   <p className="mt-2 text-xs text-gray-500">Revision {revision.revisionNumber}</p>
                 </Link>

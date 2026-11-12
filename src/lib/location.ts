@@ -22,6 +22,23 @@ export interface SelectedLocation extends LocationResult {
 /** localStorage key for the selected location. */
 export const LOCATION_STORAGE_KEY = 'barotropic.location';
 
+/** Window event fired when the selected location changes in this tab. */
+export const LOCATION_CHANGED_EVENT = 'barotropic.location-changed';
+
+/** Type guard for a persisted/selected location. */
+export function isSelectedLocation(value: unknown): value is SelectedLocation {
+  if (typeof value !== 'object' || value === null) return false;
+  const candidate = value as Record<string, unknown>;
+  return (
+    typeof candidate.name === 'string' &&
+    typeof candidate.latitude === 'number' &&
+    Number.isFinite(candidate.latitude) &&
+    typeof candidate.longitude === 'number' &&
+    Number.isFinite(candidate.longitude) &&
+    typeof candidate.label === 'string'
+  );
+}
+
 /** Default location used before the user selects one. */
 export const DEFAULT_LOCATION: SelectedLocation = {
   id: 0,

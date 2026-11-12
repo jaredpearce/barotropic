@@ -45,6 +45,12 @@ export const NormalizedObservationSchema = z
     windGustMps: z.number().nullable(),
     windDirectionDegrees: z.number().min(0).max(360).nullable(),
     pressureHpa: z.number().nullable().optional(),
+    temperatureQualityControl: z.string().nullable().optional(),
+    windSpeedQualityControl: z.string().nullable().optional(),
+    precipitationLastHourMm: z.number().nullable().optional(),
+    precipitationLast3HoursMm: z.number().nullable().optional(),
+    precipitationLast6HoursMm: z.number().nullable().optional(),
+    precipitationQualityControl: z.string().nullable().optional(),
   })
   .refine((record) => record.issuedAt !== undefined || record.runTime !== undefined, {
     message: 'An observation must include issuedAt or runTime metadata',

@@ -43,6 +43,8 @@ export async function GET(request: Request) {
     const modelParam = searchParams.get('models');
     const latitudeParam = searchParams.get('lat');
     const longitudeParam = searchParams.get('lon');
+    const timezoneParam = searchParams.get('timezone');
+    const timezone = timezoneParam === 'UTC' ? 'UTC' : 'auto';
 
     let models: OpenMeteoModelName[];
     try {
@@ -100,7 +102,7 @@ export async function GET(request: Request) {
       }
     }
 
-    const forecasts = await Promise.all(
+    const forecastResults = await Promise.allSettled(
       models.map(async (modelName) => {
         const model = OPEN_METEO_MODELS[modelName];
         const endpoint = buildOpenMeteoForecastQuery(
@@ -108,6 +110,7 @@ export async function GET(request: Request) {
           location.longitude,
           model.id,
           7,
+          timezone,
         );
         const forecast = await fetchFromOpenMeteo(endpoint, OpenMeteoForecastSchema);
         const retrievedAt = new Date().toISOString();
@@ -151,13 +154,24 @@ export async function GET(request: Request) {
           timezone: forecast.timezone ?? null,
           timezoneAbbreviation: forecast.timezone_abbreviation ?? null,
           utcOffsetSeconds: forecast.utc_offset_seconds ?? 0,
+          retrievedAt,
+          runTime: null,
         };
       }),
     );
 
-    const modelResults = Object.fromEntries(
-      forecasts.map(({ modelName, ...forecast }) => [modelName, forecast]),
-    );
+    const modelResults: Record<string, unknown> = {};
+    const modelErrors: Record<string, string> = {};
+    forecastResults.forEach((result, index) => {
+      const modelName = models[index];
+      if (result.status === 'fulfilled') {
+        const { modelName: _ignored, ...forecast } = result.value;
+        modelResults[modelName] = forecast;
+      } else {
+        modelErrors[modelName] =
+          result.reason instanceof Error ? result.reason.message : 'Request failed';
+      }
+    });
 
     return NextResponse.json({
       location: {
@@ -165,6 +179,7 @@ export async function GET(request: Request) {
       },
       requestedModels: models,
       models: modelResults,
+      modelErrors,
       radar: {
         source: 'NOAA/NCEP MRMS Base Reflectivity',
         attribution: 'NOAA/NCEP Multi-Radar Multi-Sensor (MRMS)',

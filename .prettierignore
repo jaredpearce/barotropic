@@ -9,3 +9,5 @@ src/public/
 src/styles/
 src/app/site.webmanifest
 next-env.d.ts
+playwright-report/
+test-results/

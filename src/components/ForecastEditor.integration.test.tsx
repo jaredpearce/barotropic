@@ -49,10 +49,12 @@ describe('ForecastEditor integration', () => {
       forecastDatabase.locations,
       forecastDatabase.forecasts,
       forecastDatabase.revisions,
+      forecastDatabase.observedDays,
       async () => {
         await forecastDatabase.revisions.clear();
         await forecastDatabase.forecasts.clear();
         await forecastDatabase.locations.clear();
+        await forecastDatabase.observedDays.clear();
       },
     );
   });
@@ -254,5 +256,113 @@ describe('ForecastEditor integration', () => {
       expect(snapshots).toHaveLength(1);
       expect(snapshots[0].revision.values.high).toBe('18');
     });
+  });
+
+  it('snapshots all successful guidance sources and the verification target', async () => {
+    const saved = await saveForecastRevision({
+      locationName: 'Boston',
+      latitude: 42.3601,
+      longitude: -71.0589,
+      validStart: '2026-11-03T12:00',
+      values: { ...emptyForecastValues(), high: '25' },
+      reasoning: 'First reasoning.',
+    });
+
+    const modelRecord = (timestamp: string, overrides: Record<string, unknown>) => ({
+      source: 'Open-Meteo',
+      timestamp,
+      retrievedAt: '2026-11-03T12:00:00Z',
+      runTime: null,
+      ...overrides,
+    });
+
+    const fetchMock = vi.fn((input: RequestInfo | URL) => {
+      const url = input instanceof Request ? input.url : input.toString();
+      if (url.includes('/api/nws/point')) {
+        return Promise.resolve(
+          Response.json({
+            forecast: nwsForecast,
+            hourly: nwsForecast,
+            timeZone: 'America/New_York',
+            stationId: 'KBOS',
+            forecastIssuedAt: '2026-11-03T11:00:00Z',
+            retrievedAt: '2026-11-03T12:00:00Z',
+          }),
+        );
+      }
+      if (url.includes('/api/open-meteo/forecast')) {
+        return Promise.resolve(
+          Response.json({
+            models: {
+              gfs: {
+                modelId: 'ncep_gfs_seamless',
+                retrievedAt: '2026-11-03T12:00:00Z',
+                runTime: null,
+                utcOffsetSeconds: -18000,
+                daily: [
+                  modelRecord('2026-11-03', { maximumTemperatureC: 26, minimumTemperatureC: 15 }),
+                ],
+                hourly: [
+                  modelRecord('2026-11-03T12:00:00Z', {
+                    precipitationProbabilityPercent: 30,
+                    windSpeedMps: 6,
+                  }),
+                ],
+              },
+              hrrr: {
+                modelId: 'ncep_hrrr_conus',
+                retrievedAt: '2026-11-03T12:00:00Z',
+                runTime: null,
+                daily: [
+                  modelRecord('2026-11-03', { maximumTemperatureC: 27, minimumTemperatureC: 16 }),
+                ],
+                hourly: [],
+              },
+              ecmwf: {
+                modelId: 'ecmwf_ifs025',
+                retrievedAt: '2026-11-03T12:00:00Z',
+                runTime: null,
+                daily: [
+                  modelRecord('2026-11-03', { maximumTemperatureC: 25, minimumTemperatureC: 14 }),
+                ],
+                hourly: [],
+              },
+            },
+          }),
+        );
+      }
+      return Promise.resolve(Response.json({ results: [] }));
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    const user = userEvent.setup();
+
+    renderWithProviders(<ForecastEditor forecastId={saved.forecast.id} />);
+
+    expect(await screen.findByText('24°C')).toBeInTheDocument();
+
+    await user.clear(screen.getByRole('spinbutton', { name: 'High' }));
+    await user.type(screen.getByRole('spinbutton', { name: 'High' }), '27');
+
+    expect(
+      await screen.findByText('Saved · revision 2', {}, { timeout: 5000 }),
+    ).toBeInTheDocument();
+
+    const history = await getForecastRevisionHistory(saved.forecast.id);
+    const latest = history[history.length - 1];
+    expect(latest.guidance?.map((snapshot) => snapshot.source)).toEqual([
+      'NWS',
+      'GFS',
+      'HRRR',
+      'ECMWF',
+    ]);
+    expect(latest.target).toMatchObject({
+      latitude: 42.3601,
+      longitude: -71.0589,
+      stationId: 'KBOS',
+      timeZone: 'America/New_York',
+    });
+    expect(latest.guidance?.[0].runTime).toBe('2026-11-03T11:00:00Z');
+    expect(latest.guidance?.[1].runTime).toBeNull();
+    expect(latest.guidance?.[1].modelId).toBe('ncep_gfs_seamless');
   });
 });

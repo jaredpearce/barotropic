@@ -1,8 +1,8 @@
 'use client';
 
+import Link from 'next/link';
 import React, { ReactNode, useEffect, useState } from 'react';
 import {
-  DEFAULT_LOCATION,
   LOCATION_STORAGE_KEY,
   locationLabel,
   type LocationResult,
@@ -11,6 +11,7 @@ import {
 import { getOldestTimestamp } from '@/lib/freshness';
 import { useActiveAlerts } from '@/lib/hooks/use-active-alerts';
 import { useCurrentConditions } from '@/lib/hooks/use-current-conditions';
+import { useSelectedLocation } from '@/lib/hooks/use-selected-location';
 import ActiveAlerts from './ActiveAlerts';
 import BarotropicLogo from './BarotropicLogo';
 import CurrentConditions from './CurrentConditions';
@@ -24,7 +25,7 @@ interface AppLayoutProps {
 
 /** Main dark-mode application shell for Barotropic. */
 export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
-  const [location, setLocation] = useState(DEFAULT_LOCATION);
+  const { location, setLocation } = useSelectedLocation();
   const [isWeatherSidebarOpen, setIsWeatherSidebarOpen] = useState(false);
   const [isLocationPickerOpen, setIsLocationPickerOpen] = useState(false);
   const [searchText, setSearchText] = useState('');
@@ -34,8 +35,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const [locationMessage, setLocationMessage] = useState('');
 
   useEffect(() => {
-    const isDesktop =
-      window.matchMedia?.('(min-width: 768px)').matches ?? window.innerWidth >= 768;
+    const isDesktop = window.matchMedia?.('(min-width: 768px)').matches ?? window.innerWidth >= 768;
     setIsWeatherSidebarOpen(isDesktop);
   }, []);
 
@@ -91,7 +91,6 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         label: state ? `${city}, ${state}` : city,
       };
       setLocation(selectedLocation);
-      window.localStorage.setItem(LOCATION_STORAGE_KEY, JSON.stringify(selectedLocation));
       setLocationState('idle');
       setIsLocationPickerOpen(false);
     } catch (error) {
@@ -113,21 +112,9 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   useEffect(() => {
     let hasSavedLocation = false;
     try {
-      const savedLocation = window.localStorage.getItem(LOCATION_STORAGE_KEY);
-      if (savedLocation) {
-        const parsed = JSON.parse(savedLocation) as SelectedLocation;
-        if (
-          typeof parsed.name === 'string' &&
-          typeof parsed.latitude === 'number' &&
-          typeof parsed.longitude === 'number' &&
-          typeof parsed.label === 'string'
-        ) {
-          setLocation(parsed);
-          hasSavedLocation = true;
-        }
-      }
+      hasSavedLocation = Boolean(window.localStorage.getItem(LOCATION_STORAGE_KEY));
     } catch {
-      window.localStorage.removeItem(LOCATION_STORAGE_KEY);
+      hasSavedLocation = false;
     }
 
     if (!hasSavedLocation && navigator.geolocation && navigator.permissions) {
@@ -138,6 +125,8 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         })
         .catch(() => undefined);
     }
+    // useCurrentLocation is intentionally read once on mount.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function searchLocations(event: React.FormEvent<HTMLFormElement>) {
@@ -168,7 +157,6 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   function selectLocation(result: LocationResult) {
     const selectedLocation = { ...result, label: locationLabel(result) };
     setLocation(selectedLocation);
-    window.localStorage.setItem(LOCATION_STORAGE_KEY, JSON.stringify(selectedLocation));
     setIsLocationPickerOpen(false);
     setSearchText('');
     setResults([]);
@@ -180,6 +168,23 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
       <nav className="app-header">
         <div className="flex items-center gap-4">
           <BarotropicLogo />
+          <ul className="app-nav">
+            <li>
+              <Link className="app-nav-link" href="/forecasts">
+                Forecasts
+              </Link>
+            </li>
+            <li>
+              <Link className="app-nav-link" href="/compare">
+                Compare
+              </Link>
+            </li>
+            <li>
+              <Link className="app-nav-link" href="/track-record">
+                Track record
+              </Link>
+            </li>
+          </ul>
         </div>
         <div className="app-header-actions">
           {headerRetrievedAt ? <StatusPill retrievedAt={headerRetrievedAt} /> : null}

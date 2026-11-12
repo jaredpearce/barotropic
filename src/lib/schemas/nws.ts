@@ -5,6 +5,7 @@ const NwsQuantitySchema = z
   .object({
     value: z.number().nullable().optional(),
     unitCode: z.string().optional(),
+    qualityControl: z.string().optional(),
   })
   .passthrough();
 
@@ -16,6 +17,7 @@ export const PointSchema = z
         forecast: z.string().url().optional(),
         forecastHourly: z.string().url().optional(),
         observationStations: z.string().url().optional(),
+        timeZone: z.string().optional(),
         relativeLocation: z
           .object({
             properties: z
@@ -88,21 +90,26 @@ export const ForecastSchema = z
   })
   .passthrough();
 
+export const ObservationPropertiesSchema = z
+  .object({
+    timestamp: z.string().datetime({ offset: true }).optional(),
+    textDescription: z.string().optional(),
+    temperature: NwsQuantitySchema.optional(),
+    dewpoint: NwsQuantitySchema.optional(),
+    relativeHumidity: NwsQuantitySchema.optional(),
+    windSpeed: NwsQuantitySchema.optional(),
+    windGust: NwsQuantitySchema.optional(),
+    windDirection: NwsQuantitySchema.optional(),
+    barometricPressure: NwsQuantitySchema.optional(),
+    precipitationLastHour: NwsQuantitySchema.optional(),
+    precipitationLast3Hours: NwsQuantitySchema.optional(),
+    precipitationLast6Hours: NwsQuantitySchema.optional(),
+  })
+  .passthrough();
+
 export const LatestObservationSchema = z
   .object({
-    properties: z
-      .object({
-        timestamp: z.string().datetime({ offset: true }).optional(),
-        textDescription: z.string().optional(),
-        temperature: NwsQuantitySchema.optional(),
-        dewpoint: NwsQuantitySchema.optional(),
-        relativeHumidity: NwsQuantitySchema.optional(),
-        windSpeed: NwsQuantitySchema.optional(),
-        windGust: NwsQuantitySchema.optional(),
-        windDirection: NwsQuantitySchema.optional(),
-        barometricPressure: NwsQuantitySchema.optional(),
-      })
-      .passthrough(),
+    properties: ObservationPropertiesSchema,
   })
   .passthrough();
 
@@ -162,22 +169,19 @@ export const StationObservationsSchema = z
       .array(
         z.object({
           id: z.string(),
-          properties: z
-            .object({
-              timestamp: z.string().datetime({ offset: true }).optional(),
-              textDescription: z.string().optional(),
-              temperature: NwsQuantitySchema.optional(),
-              dewpoint: NwsQuantitySchema.optional(),
-              relativeHumidity: NwsQuantitySchema.optional(),
-              windSpeed: NwsQuantitySchema.optional(),
-              windDirection: NwsQuantitySchema.optional(),
-            })
-            .passthrough(),
+          properties: ObservationPropertiesSchema,
         }),
       )
       .default([]),
   })
   .passthrough();
+
+/** Query parameters for the station observations route. */
+export const StationObservationsQuerySchema = z.object({
+  start: z.string().datetime({ offset: true }).optional(),
+  end: z.string().datetime({ offset: true }).optional(),
+  limit: z.coerce.number().int().min(1).max(500).optional(),
+});
 
 export type Point = z.infer<typeof PointSchema>;
 export type Forecast = z.infer<typeof ForecastSchema>;
@@ -186,3 +190,5 @@ export type Zone = z.infer<typeof ZoneSchema>;
 export type AlertsResponse = z.infer<typeof AlertsResponseSchema>;
 export type StationObservations = z.infer<typeof StationObservationsSchema>;
 export type ObservationStations = z.infer<typeof ObservationStationsSchema>;
+export type ObservationProperties = z.infer<typeof ObservationPropertiesSchema>;
+export type StationObservationsQuery = z.infer<typeof StationObservationsQuerySchema>;
