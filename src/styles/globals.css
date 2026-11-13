@@ -1,9 +1,33 @@
 /* Local imports
- * - design tokens
+ * - design tokens (Figma source of truth)
  * - CSS icons
+ * - component-owned styles, imported in cascade order
+ *
+ * Next compiles each imported CSS file independently, so every component
+ * stylesheet declares its own `@tailwind components` before using `@layer
+ * components`.
  */
 @import './tokens.css';
 @import './weather-icons.css';
+@import './components/AppLayout.css';
+@import './components/WeatherPanel.css';
+@import './components/StatusPill.css';
+@import './components/Button.css';
+@import './components/TopNavigation.css';
+@import './components/BarotropicLogo.css';
+@import './components/LocationPicker.css';
+@import './components/DeskMap.css';
+@import './components/ActiveAlerts.css';
+@import './components/AlertSeverity.css';
+@import './components/AlertCard.css';
+@import './components/CurrentConditions.css';
+@import './components/ConditionTile.css';
+@import './components/ConditionsPage.css';
+@import './components/HourlyForecast.css';
+@import './components/SettingsPage.css';
+@import './components/SeriesChart.css';
+@import './components/Compare.css';
+@import './components/TrackRecord.css';
 
 @tailwind base;
 @tailwind components;
@@ -11,15 +35,20 @@
 
 @layer base {
   html {
+    color-scheme: dark;
     scroll-behavior: smooth;
-    font-size: var(--font_size_base);
+    font-size: var(--font-size-step-1);
+  }
+
+  html[data-theme='light'] {
+    color-scheme: light;
   }
 
   body {
     background-color: var(--color-background);
     color: var(--color-text-primary);
-    font-family: var(--font_family);
-    font-weight: var(--font_weight_regular);
+    font-family: var(--font-family-body);
+    font-weight: var(--font-weight-regular);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -34,4 +63,3 @@
     text-wrap: balance;
   }
 }
-

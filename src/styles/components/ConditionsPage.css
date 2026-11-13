@@ -1,0 +1,20 @@
+@tailwind components;
+
+/* Full-page conditions screen. */
+
+@layer components {
+  .condition-page {
+    @apply absolute inset-0 overflow-y-auto;
+    padding: var(--spacing-lg);
+  }
+
+  .condition-page-title {
+    @apply text-sm font-semibold uppercase;
+    letter-spacing: 0.18em;
+  }
+
+  .condition-page-meta {
+    @apply mt-1 text-xs;
+    color: var(--color-text-secondary);
+  }
+}

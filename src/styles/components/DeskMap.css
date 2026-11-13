@@ -1,0 +1,107 @@
+@tailwind components;
+
+/* Map canvas, overlays, and MapLibre control theming. */
+
+@layer components {
+  .desk-map {
+    --map-background: var(--color-dark-bg-primary);
+    --map-station: var(--color-accent-cerulean);
+    --map-overlay: color-mix(in oklch, var(--color-dark-bg-primary) 82%, transparent);
+
+    @apply relative h-full w-full overflow-hidden;
+    background-color: var(--map-background);
+  }
+
+  .desk-map-canvas {
+    @apply absolute inset-0;
+  }
+
+  .desk-map-canvas.maplibregl-map {
+    outline: 1px dashed purple;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  .desk-map--error .desk-map-canvas {
+    visibility: hidden;
+  }
+
+  .desk-map-overlay {
+    @apply absolute inset-0 z-[5] flex flex-col items-center justify-center gap-2 px-6 text-center text-sm;
+    background-color: var(--map-background);
+    color: var(--color-text-secondary);
+  }
+
+  .desk-map-overlay-title {
+    @apply text-base font-semibold;
+    color: var(--color-text-primary);
+  }
+
+  .desk-map-overlay--error {
+    background-color: color-mix(in oklch, var(--color-dark-bg-primary) 92%, transparent);
+  }
+
+  .desk-map-marker {
+    @apply h-3.5 w-3.5 rounded-full;
+    border: 2px solid var(--color-background);
+    background-color: var(--color-accent-emerald);
+    box-shadow: 0 0 0 4px color-mix(in oklch, var(--color-accent-emerald) 28%, transparent);
+  }
+
+  .desk-map-legend {
+    @apply absolute left-3 top-3 z-[4] flex items-center gap-3 rounded px-2.5 py-1.5 text-[11px] font-semibold uppercase;
+    border: 1px solid var(--color-border-secondary);
+    background-color: var(--map-overlay);
+    color: var(--color-text-secondary);
+    letter-spacing: 0.12em;
+  }
+
+  .desk-map-legend span + span {
+    border-left: 1px solid var(--color-border-secondary);
+    padding-left: var(--spacing-sm);
+  }
+
+  .desk-map-layers {
+    @apply absolute right-3 top-3 z-[4] flex flex-col gap-1.5 rounded px-2.5 py-2 text-xs;
+    border: 1px solid var(--color-border-secondary);
+    background-color: var(--map-overlay);
+    color: var(--color-text-secondary);
+  }
+
+  .desk-map-layer-toggle {
+    @apply flex items-center gap-2;
+  }
+
+  .desk-map-layer-toggle input {
+    @apply accent-emerald-400;
+  }
+
+  .desk-map .maplibregl-ctrl-group {
+    border: 1px solid var(--color-border-secondary);
+    background-color: var(--color-surface-secondary);
+  }
+
+  .desk-map .maplibregl-ctrl-group button + button {
+    border-top-color: var(--color-border-secondary);
+  }
+
+  .desk-map .maplibregl-ctrl button .maplibregl-ctrl-icon {
+    filter: invert(0.82);
+  }
+
+  .desk-map .maplibregl-ctrl-attrib,
+  .desk-map .maplibregl-ctrl-scale {
+    border: 1px solid var(--color-border-secondary);
+    background-color: color-mix(in oklch, var(--color-dark-bg-primary) 78%, transparent);
+    color: var(--color-text-secondary);
+    font-size: var(--text-size-xs);
+  }
+
+  .desk-map .maplibregl-ctrl-attrib a {
+    color: var(--color-text-secondary);
+  }
+
+  .desk-map .maplibregl-ctrl-attrib a:hover {
+    color: var(--color-accent-emerald);
+  }
+}

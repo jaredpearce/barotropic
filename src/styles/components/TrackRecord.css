@@ -1,0 +1,174 @@
+@tailwind components;
+
+/* Track record screen and forecast table. */
+
+@layer components {
+  .track-record-screen {
+    @apply absolute inset-0 overflow-y-auto;
+    padding: var(--spacing-lg);
+  }
+
+  .track-record-header {
+    @apply mb-4 flex flex-wrap items-start justify-between gap-3;
+  }
+
+  .track-record-title {
+    @apply text-sm font-semibold uppercase;
+    letter-spacing: 0.18em;
+  }
+
+  .track-record-subtitle {
+    @apply mt-1 text-xs;
+    color: var(--color-text-secondary);
+  }
+
+  .track-record-controls {
+    @apply flex flex-wrap items-center gap-2;
+  }
+
+  .track-record-tabs {
+    @apply mb-3 flex flex-wrap gap-1;
+  }
+
+  .track-record-tab {
+    @apply rounded px-3 py-1 text-xs;
+    border: 1px solid var(--color-border);
+    color: var(--color-text-secondary);
+    background-color: var(--color-surface-primary);
+    cursor: pointer;
+  }
+
+  .track-record-tab[aria-selected='true'] {
+    border-color: var(--color-accent-cerulean);
+    color: var(--color-text-primary);
+  }
+
+  .track-record-status {
+    @apply text-xs;
+    color: var(--color-text-secondary);
+  }
+
+  .track-record-chart {
+    @apply mb-4 rounded p-3;
+    border: 1px solid var(--color-border);
+    background-color: color-mix(in oklch, var(--color-surface-primary) 60%, transparent);
+  }
+
+  .track-record-counts {
+    @apply mb-4 flex flex-wrap gap-x-4 gap-y-1 text-xs;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    color: var(--color-text-secondary);
+  }
+
+  .track-record-summary,
+  .track-record-table {
+    @apply mb-4 w-full text-xs;
+    border-collapse: collapse;
+  }
+
+  .track-record-summary caption,
+  .track-record-table caption {
+    @apply mb-2 text-left text-[10px] uppercase;
+    letter-spacing: 0.14em;
+    color: var(--color-text-tertiary);
+  }
+
+  .track-record-summary th,
+  .track-record-summary td,
+  .track-record-table th,
+  .track-record-table td {
+    @apply px-2 py-1 text-left align-top;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .track-record-summary thead th,
+  .track-record-table thead th {
+    color: var(--color-text-secondary);
+  }
+
+  .track-record-summary tbody th,
+  .track-record-table tbody th {
+    color: var(--color-text-secondary);
+    font-weight: var(--font_weight_semi-bold);
+  }
+
+  .track-record-metric {
+    @apply font-semibold;
+  }
+
+  .track-record-sample-count {
+    @apply ml-1 text-[10px];
+    color: var(--color-text-tertiary);
+  }
+
+  .track-record-cell {
+    @apply flex flex-col gap-0.5;
+    color: var(--color-text-secondary);
+  }
+
+  .track-record-chart h2,
+  .track-record-list h2 {
+    @apply mb-2 text-xs font-semibold uppercase;
+    letter-spacing: 0.14em;
+    color: var(--color-text-secondary);
+  }
+
+  .track-record-forecasts {
+    @apply flex flex-col gap-2;
+  }
+
+  .track-record-forecast {
+    @apply rounded p-2 text-xs;
+    border: 1px solid var(--color-border);
+    background-color: color-mix(in oklch, var(--color-surface-primary) 72%, transparent);
+  }
+
+  .track-record-forecast summary {
+    @apply flex flex-wrap items-center gap-x-3 gap-y-1;
+    cursor: pointer;
+  }
+
+  .track-record-forecast-date {
+    @apply font-semibold;
+  }
+
+  .track-record-forecast-location,
+  .track-record-forecast-revision,
+  .track-record-forecast-lead {
+    color: var(--color-text-secondary);
+  }
+
+  .track-record-forecast-status {
+    @apply ml-auto rounded px-2 py-0.5 text-[10px] font-semibold uppercase;
+    letter-spacing: 0.12em;
+    border: 1px solid var(--color-border-secondary);
+    color: var(--color-text-secondary);
+  }
+
+  .track-record-forecast-note {
+    @apply mt-2 text-xs;
+    color: var(--color-text-secondary);
+  }
+
+  .track-record-error {
+    @apply flex flex-col items-start gap-2 rounded p-3 text-xs;
+    border: 1px solid var(--color-accent-rose);
+    background-color: color-mix(in oklch, var(--color-accent-rose) 8%, transparent);
+    color: var(--color-accent-rose);
+  }
+
+  .track-record-empty {
+    @apply text-xs;
+    color: var(--color-text-secondary);
+  }
+
+  .track-record-warnings {
+    @apply mt-4 flex flex-col gap-2;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    color: var(--color-accent-amber-light);
+  }
+}

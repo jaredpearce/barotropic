@@ -1,0 +1,22 @@
+@tailwind components;
+
+/* Current conditions observation block. */
+
+@layer components {
+  .app-conditions-section {
+    @apply mt-3 flex items-end gap-3;
+  }
+
+  .app-conditions-temp {
+    @apply text-4xl font-light;
+  }
+
+  .app-conditions-description {
+    @apply mt-2 text-xs;
+    color: var(--color-text-secondary);
+  }
+
+  .app-conditions-grid {
+    @apply mt-5 grid grid-cols-2 gap-4 text-xs;
+  }
+}

@@ -1,0 +1,26 @@
+@tailwind components;
+
+/* Data freshness status pill. */
+
+@layer components {
+  .status-pill {
+    @apply inline-flex shrink-0 items-center gap-2;
+    font-size: var(--text-size-xs);
+    letter-spacing: 0.14em;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+  }
+
+  .status-pill-indicator {
+    @apply h-2 w-2 rounded-full;
+    background-color: var(--color-accent-emerald);
+  }
+
+  .status-pill[data-state='stale'] {
+    color: var(--color-accent-amber-light);
+  }
+
+  .status-pill[data-state='stale'] .status-pill-indicator {
+    background-color: var(--color-accent-amber);
+  }
+}

@@ -1,0 +1,41 @@
+@tailwind components;
+
+/* Hourly forecast grid and rows. */
+
+@layer components {
+  .app-forecast-grid {
+    @apply border-b pb-2;
+    border-color: var(--color-border-secondary);
+  }
+
+  .app-forecast-header {
+    @apply grid grid-cols-[54px_24px_42px_32px_1fr] gap-x-2;
+    font-size: var(--text-size-xs);
+    color: var(--color-text-tertiary);
+  }
+
+  .app-forecast-row {
+    @apply grid grid-cols-[54px_24px_42px_32px_1fr] items-center gap-x-2 py-2 text-xs;
+    border-color: var(--color-border-secondary);
+  }
+
+  .app-forecast-row:not(:first-child) {
+    border-top: 1px solid var(--color-border-secondary);
+  }
+
+  .app-forecast-time {
+    color: var(--color-text-secondary);
+  }
+
+  .app-forecast-icon {
+    @apply text-base;
+  }
+
+  .app-forecast-precip {
+    color: var(--color-text-secondary);
+  }
+
+  .app-forecast-wind {
+    color: var(--color-text-secondary);
+  }
+}

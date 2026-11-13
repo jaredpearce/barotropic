@@ -1,1486 +1,397 @@
-/* Design tokens for Barotropic */
-@tailwind components;
+/* ==========================================================================
+   Barotropic design tokens
+   --------------------------------------------------------------------------
+   Source of truth: Figma "themes-tokens"
+   https://www.figma.com/design/3e1pG2rh8FQDObgPf4H254/themes-tokens
+
+   This file contains ONLY the color, font, spacing, and effect tokens that
+   exist in that Figma file. Component and layout CSS lives in
+   `src/styles/components/` next to the component it belongs to.
+
+   Every color is the OKLCH conversion of the Figma sRGB value. The comment
+   beside each token records the original Figma value for traceability.
+   ========================================================================== */
 
 :root {
-  /* Primary colors */
-  --color-background: rgb(5, 6, 13); /* slate-950 */
-  --color-surface-primary: rgb(15, 23, 42); /* slate-900 */
-  --color-surface-secondary: rgb(30, 41, 59); /* slate-800/90 */
-  --color-border: rgb(30, 41, 59); /* slate-800 */
-  --color-border-secondary: rgb(51, 65, 85); /* slate-700 */
-  --color-text-primary: rgb(255, 255, 255); /* white */
-  --color-text-secondary: rgb(148, 163, 184); /* slate-400 */
-  --color-text-tertiary: rgb(100, 116, 139); /* slate-500 */
-  --color-text-muted: rgb(71, 85, 105); /* slate-600 */
+  /* ------------------------------------------------------------------------
+     Figma primitive colors
+     Collections: bg-colors, grey-colors, cerulean-colors, crimson-colors,
+     emerald-colors, ochre-colors, gold-colors
+     ------------------------------------------------------------------------ */
 
-  /* Accent colors */
-  --color-accent-emerald: rgb(52, 211, 153); /* emerald-400 */
-  --color-accent-amber: rgb(251, 146, 60); /* amber-500 */
-  --color-accent-amber-light: rgb(251, 191, 36); /* amber-400 */
-  --color-accent-rose: rgb(244, 63, 94); /* rose-500 */
+  --color-bg-0: oklch(0.0809 0.0057 196.09); /* #010202 */
+  --color-bg-1: oklch(0.1813 0.0114 260.64); /* #0f1217 */
+  --color-bg-2: oklch(0.2804 0.0198 264.18); /* #242933 */
+  --color-bg-3: oklch(0.3792 0.0290 266.47); /* #3b4252 */
+  --color-bg-4: oklch(0.4814 0.0362 265.03); /* #545e73 */
+  --color-bg-5: oklch(0.5795 0.0407 266.43); /* #6f7a93 */
+  --color-bg-6: oklch(0.6798 0.0373 267.48); /* #8e98b0 */
+  --color-bg-7: oklch(0.7795 0.0298 268.29); /* #afb7cb */
+  --color-bg-8: oklch(0.8808 0.0194 263.00); /* #d1d8e5 */
+  --color-bg-9: oklch(0.9789 0.0099 267.36); /* #f5f8ff */
 
-  /* Alert severity (CAP values, independent of brand accents) */
-  --color-severity-extreme: rgb(244, 63, 94); /* rose-500 */
-  --color-severity-extreme-soft: rgba(244, 63, 94, 0.16);
-  --color-severity-severe: rgb(251, 146, 60); /* orange-400 */
-  --color-severity-severe-soft: rgba(251, 146, 60, 0.16);
-  --color-severity-moderate: rgb(251, 191, 36); /* amber-400 */
-  --color-severity-moderate-soft: rgba(251, 191, 36, 0.14);
-  --color-severity-minor: rgb(52, 211, 153); /* emerald-400 */
-  --color-severity-minor-soft: rgba(52, 211, 153, 0.14);
-  --color-severity-unknown: rgb(148, 163, 184); /* slate-400 */
-  --color-severity-unknown-soft: rgba(148, 163, 184, 0.14);
+  --color-grey-0: oklch(0.9807 0.0051 247.88); /* #f6f9fc */
+  --color-grey-1: oklch(0.8798 0.0088 247.93); /* #d3d8dd */
+  --color-grey-2: oklch(0.7792 0.0127 247.99); /* #b1b8bf */
+  --color-grey-3: oklch(0.6793 0.0162 251.22); /* #9199a2 */
+  --color-grey-4: oklch(0.5788 0.0188 250.96); /* #727b85 */
+  --color-grey-5: oklch(0.4814 0.0163 248.17); /* #575f67 */
+  --color-grey-6: oklch(0.3796 0.0130 248.17); /* #3d4349 */
+  --color-grey-7: oklch(0.2795 0.0085 255.57); /* #26292d */
+  --color-grey-8: oklch(0.1809 0.0052 248.12); /* #101214 */
+  --color-grey-9: oklch(0.0809 0.0057 196.09); /* #010202 */
 
-  /* Map area */
-  --color-map-background: rgb(13, 26, 44); /* #0d1a2c */
-  --color-map-station: rgb(56, 189, 248); /* sky-400 */
+  --color-cerulean-0: oklch(0.9787 0.0083 236.56); /* #f3f9fd */
+  --color-cerulean-1: oklch(0.9492 0.0217 234.99); /* #e1f1fb */
+  --color-cerulean-2: oklch(0.8832 0.0518 234.04); /* #b8dff6 */
+  --color-cerulean-3: oklch(0.7932 0.0902 235.99); /* #81c5ee */
+  --color-cerulean-4: oklch(0.6887 0.1319 238.76); /* #3aa5e3 */
+  --color-cerulean-5: oklch(0.4732 0.1260 247.55); /* #005f9e */
+  --color-cerulean-6: oklch(0.4324 0.1173 248.33); /* #00538d */
+  --color-cerulean-7: oklch(0.3813 0.1027 248.03); /* #004576 */
+  --color-cerulean-8: oklch(0.3332 0.0906 248.40); /* #003862 */
+  --color-cerulean-9: oklch(0.2811 0.0737 246.86); /* #002b4b */
 
-  /* Spacing */
-  --space_scale-1: 4px;
-  --space_scale-2: 8px;
-  --space_scale-3: 16px;
-  --space_scale-4: 24px;
-  --space_scale-5: 32px;
+  --color-crimson-0: oklch(0.9738 0.0130 11.54); /* #fff3f4 */
+  --color-crimson-1: oklch(0.9352 0.0333 10.89); /* #ffe1e4 */
+  --color-crimson-2: oklch(0.8582 0.0778 12.86); /* #ffbcc2 */
+  --color-crimson-3: oklch(0.7608 0.1443 14.74); /* #ff8894 */
+  --color-crimson-4: oklch(0.6610 0.2148 18.15); /* #fa465e */
+  --color-crimson-5: oklch(0.4933 0.1997 24.33); /* #b8001f */
+  --color-crimson-6: oklch(0.4549 0.1843 24.78); /* #a50019 */
+  --color-crimson-7: oklch(0.4032 0.1635 25.23); /* #8c0012 */
+  --color-crimson-8: oklch(0.3520 0.1429 25.57); /* #74000c */
+  --color-crimson-9: oklch(0.2985 0.1219 27.71); /* #5c0003 */
 
-  --spacing-xs: var(--space_scale-1); /* 4px */
-  --spacing-sm: var(--space_scale-2); /* 8px */
-  --spacing-md: var(--space_scale-3); /* 16px */
-  --spacing-lg: var(--space_scale-4); /* 24px */
-  --spacing-xl: var(--space_scale-5); /* 32px */
+  --color-emerald-0: oklch(0.9792 0.0204 173.97); /* #ebfdf7 */
+  --color-emerald-1: oklch(0.9481 0.0480 173.50); /* #cef9eb */
+  --color-emerald-2: oklch(0.8786 0.0957 172.18); /* #92ecd0 */
+  --color-emerald-3: oklch(0.8021 0.1406 168.60); /* #47dbae */
+  --color-emerald-4: oklch(0.7104 0.1485 165.46); /* #00be8b */
+  --color-emerald-5: oklch(0.4528 0.0928 167.03); /* #00664b */
+  --color-emerald-6: oklch(0.4147 0.0857 166.32); /* #005a41 */
+  --color-emerald-7: oklch(0.3660 0.0762 165.71); /* #004b35 */
+  --color-emerald-8: oklch(0.3190 0.0669 165.17); /* #003d2a */
+  --color-emerald-9: oklch(0.2703 0.0573 164.39); /* #002f1f */
 
-  /* Typography */
-  --font_family: Tahoma, Geneva, sans-serif;
-  --font_size_base: 16px;
-  --font_size_step-1: 1rem;
-  --font_size_step-2: 1.25rem;
-  --font_size_step-3: 1.56rem;
-  --font_size_step-4: 1.95rem;
-  --font_size_step-5: 2.44rem;
-  --font_size_step-6: 3.05rem;
+  --color-ochre-0: oklch(0.9848 0.0113 71.90); /* #fff9f2 */
+  --color-ochre-1: oklch(0.9622 0.0288 72.48); /* #fff0de */
+  --color-ochre-2: oklch(0.9131 0.0645 71.42); /* #fedcb4 */
+  --color-ochre-3: oklch(0.8493 0.1056 68.79); /* #fbc180 */
+  --color-ochre-4: oklch(0.7643 0.1417 65.58); /* #ef9e43 */
+  --color-ochre-5: oklch(0.5235 0.1285 55.75); /* #a05200 */
+  --color-ochre-6: oklch(0.4779 0.1184 54.94); /* #8e4700 */
+  --color-ochre-7: oklch(0.4182 0.1035 55.01); /* #763a00 */
+  --color-ochre-8: oklch(0.3631 0.0905 54.44); /* #612e00 */
+  --color-ochre-9: oklch(0.3058 0.0770 53.61); /* #4c2200 */
 
-  --font_weight_bold: bold;
-  --font_weight_light: thin;
-  --font_weight_regular: normal;
-  --font_weight_semi-bold: 600;
+  --color-gold-0: oklch(0.9817 0.0257 92.39); /* #fff9e6 */
+  --color-gold-1: oklch(0.9579 0.0495 88.08); /* #fff0cc */
+  --color-gold-2: oklch(0.9166 0.0954 86.93); /* #ffe099 */
+  --color-gold-3: oklch(0.8755 0.1333 86.83); /* #fcd066 */
+  --color-gold-4: oklch(0.7865 0.1459 86.63); /* #e2b233 */
+  --color-gold-5: oklch(0.5242 0.1084 80.64); /* #8a6200 */
+  --color-gold-6: oklch(0.4643 0.0961 80.08); /* #755200 */
+  --color-gold-7: oklch(0.4011 0.0830 80.24); /* #5f4200 */
+  --color-gold-8: oklch(0.3389 0.0700 80.89); /* #4a3300 */
+  --color-gold-9: oklch(0.2699 0.0557 81.41); /* #342300 */
 
-  --text-size-xs: 0.75rem; /* 12px */
-  --text-size-sm: 0.875rem; /* 14px */
-  --text-size-base: var(--font_size_step-1); /* 16px */
-  --text-size-lg: var(--font_size_step-2); /* 20px */
+  /* ------------------------------------------------------------------------
+     Figma theme color variables
+     Collection: barotropic (design-tokens.io READONLY)
+     Both modes are declared so either can be consumed directly.
+     ------------------------------------------------------------------------ */
 
-  /* Letter spacing for tracking */
-  --tracking-wide: 0.18em;
-  --tracking-normal: 0.14em;
-  --tracking-tight: 0.12em;
+  --color-dark-bg-primary: oklch(0.1695 0.0220 267.28); /* #0b0f19 */
+  --color-dark-bg-surface: oklch(0.2795 0.0368 260.03); /* #1e293b */
+  --color-dark-cerulean: oklch(0.7535 0.1390 232.66); /* #38bdf8 */
+  --color-dark-crimson: oklch(0.7192 0.1690 13.43); /* #fb7185 */
+  --color-dark-emerald: oklch(0.7729 0.1535 163.22); /* #34d399 */
+  --color-dark-gold: oklch(0.8790 0.1534 91.61); /* #fcd34d */
+  --color-dark-ochre: oklch(0.7686 0.1647 70.08); /* #f59e0b */
+  --color-dark-text-primary: oklch(0.9683 0.0069 247.90); /* #f1f5f9 */
+  --color-dark-text-secondary: oklch(0.7107 0.0351 256.79); /* #94a3b8 */
 
-  /* Layout */
-  --sidebar-width: 300px;
-  --header-height: auto;
+  --color-light-bg-primary: oklch(0.9842 0.0034 247.86); /* #f8fafc */
+  --color-light-bg-surface: oklch(1.0000 0.0000 89.88); /* #ffffff */
+  --color-light-cerulean: oklch(0.4732 0.1260 247.55); /* #005f9e */
+  --color-light-crimson: oklch(0.4933 0.1997 24.33); /* #b8001f */
+  --color-light-emerald: oklch(0.4528 0.0928 167.03); /* #00664b */
+  --color-light-gold: oklch(0.5242 0.1084 80.64); /* #8a6200 */
+  --color-light-ochre: oklch(0.5235 0.1285 55.75); /* #a05200 */
+  --color-light-text-primary: oklch(0.2077 0.0398 265.75); /* #0f172a */
+  --color-light-text-secondary: oklch(0.4455 0.0374 257.28); /* #475569 */
 
-  /* Borders */
-  --border-width: 1px;
-  --border-radius: 0.375rem; /* rounded */
+  /* ------------------------------------------------------------------------
+     App semantic aliases
+     Dark is the default. `[data-theme='light']` remaps the same roles to the
+     Figma light group, so component CSS never needs to know the active mode.
+     ------------------------------------------------------------------------ */
 
-  /* Top navigation (light/dark variants share the same structure) */
-  --nav-surface: var(--color-surface-primary);
-  --nav-surface-raised: var(--color-surface-primary);
-  --nav-text: var(--color-text-primary);
-  --nav-text-secondary: var(--color-text-secondary);
-  --nav-border: var(--color-border);
-  --nav-divider: var(--color-border-secondary);
-  --nav-hover: var(--color-surface-secondary);
-  --nav-active: rgba(52, 211, 153, 0.14);
-  --nav-active-text: var(--color-accent-emerald);
-  --nav-live: var(--color-accent-emerald);
-  --nav-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+  --color-background: var(--color-dark-bg-primary);
+  --color-surface-primary: var(--color-bg-1);
+  --color-surface-secondary: var(--color-dark-bg-surface);
+  --color-border: var(--color-bg-2);
+  --color-border-secondary: var(--color-bg-3);
+  --color-text-primary: var(--color-dark-text-primary);
+  --color-text-secondary: var(--color-dark-text-secondary);
+  --color-text-tertiary: var(--color-grey-4);
+  --color-text-muted: var(--color-grey-5);
+
+  --color-accent-cerulean: var(--color-dark-cerulean);
+  --color-accent-emerald: var(--color-dark-emerald);
+  --color-accent-gold: var(--color-dark-gold);
+  --color-accent-ochre: var(--color-dark-ochre);
+  --color-accent-rose: var(--color-dark-crimson);
+  --color-accent-amber: var(--color-dark-ochre);
+  --color-accent-amber-light: var(--color-dark-gold);
+
+  --color-severity-extreme: var(--color-dark-crimson);
+  --color-severity-severe: var(--color-dark-ochre);
+  --color-severity-moderate: var(--color-dark-gold);
+  --color-severity-minor: var(--color-dark-emerald);
+  --color-severity-unknown: var(--color-dark-text-secondary);
+  --color-severity-extreme-soft: color-mix(in oklch, var(--color-severity-extreme) 16%, transparent);
+  --color-severity-severe-soft: color-mix(in oklch, var(--color-severity-severe) 16%, transparent);
+  --color-severity-moderate-soft: color-mix(in oklch, var(--color-severity-moderate) 14%, transparent);
+  --color-severity-minor-soft: color-mix(in oklch, var(--color-severity-minor) 14%, transparent);
+  --color-severity-unknown-soft: color-mix(in oklch, var(--color-severity-unknown) 14%, transparent);
+
+  /* ------------------------------------------------------------------------
+     Figma spacing
+     Collection: base-space + barotropic space/scale + margin aliases
+     ------------------------------------------------------------------------ */
+
+  --space-scale-1: 4px;
+  --space-scale-2: 8px;
+  --space-scale-3: 16px;
+  --space-scale-4: 24px;
+  --space-scale-5: 32px;
+
+  --margin-bottom-xs: var(--space-scale-1);
+  --margin-bottom-sm: var(--space-scale-2);
+  --margin-bottom-md: var(--space-scale-3);
+  --margin-bottom-lg: var(--space-scale-4);
+  --margin-bottom-xl: var(--space-scale-5);
+  --margin-right-xs: var(--space-scale-1);
+  --margin-right-sm: var(--space-scale-2);
+  --margin-right-md: var(--space-scale-3);
+  --margin-right-lg: var(--space-scale-4);
+  --margin-right-xl: var(--space-scale-5);
+
+  /* Legacy app aliases for the same Figma spacing scale. */
+  --space_scale-1: var(--space-scale-1);
+  --space_scale-2: var(--space-scale-2);
+  --space_scale-3: var(--space-scale-3);
+  --space_scale-4: var(--space-scale-4);
+  --space_scale-5: var(--space-scale-5);
+  --spacing-xs: var(--space-scale-1);
+  --spacing-sm: var(--space-scale-2);
+  --spacing-md: var(--space-scale-3);
+  --spacing-lg: var(--space-scale-4);
+  --spacing-xl: var(--space-scale-5);
+
+  /* ------------------------------------------------------------------------
+     Figma fonts
+     Collection: barotropic font/*
+     ------------------------------------------------------------------------ */
+
+  --font-family-body: var(--font_manrope), Manrope, Tahoma, Geneva, sans-serif;
+  --font-family-code: 'Roboto Mono', Menlo, Monaco, 'Courier New', monospace;
+
+  --font-weight-light: 100;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semi-bold: 600;
+  --font-weight-bold: 700;
+
+  --font-size-base: 12px;
+  --font-size-step-1: 16px;
+  --font-size-step-2: 20px;
+  --font-size-step-3: 24.96px;
+  --font-size-step-4: 31.2px;
+  --font-size-step-5: 39.04px;
+  --font-size-step-6: 48.8px;
+
+  /* Legacy app aliases. */
+  --font_family: var(--font-family-body);
+  --font_size_base: var(--font-size-base);
+  --font_size_step-1: var(--font-size-step-1);
+  --font_size_step-2: var(--font-size-step-2);
+  --font_size_step-3: var(--font-size-step-3);
+  --font_size_step-4: var(--font-size-step-4);
+  --font_size_step-5: var(--font-size-step-5);
+  --font_size_step-6: var(--font-size-step-6);
+  --font_weight_light: var(--font-weight-light);
+  --font_weight_regular: var(--font-weight-regular);
+  --font_weight_semi-bold: var(--font-weight-semi-bold);
+  --font_weight_bold: var(--font-weight-bold);
+  --text-size-xs: 12px;
+  --text-size-sm: 14px;
+  --text-size-base: var(--font-size-step-1);
+  --text-size-lg: var(--font-size-step-2);
+
+  /* ------------------------------------------------------------------------
+     Figma text styles
+     Values are the published text styles, including their percentage-based
+     letter spacing converted to pixels at the style's font size.
+     ------------------------------------------------------------------------ */
+
+  --typography-body-font-size: 16px;
+  --typography-body-font-weight: 400;
+  --typography-body-line-height: 19.2px;
+  --typography-body-letter-spacing: 0;
+  --typography-body-text-case: none;
+
+  --typography-h4-md-font-size: 20px;
+  --typography-h4-md-font-weight: 500;
+  --typography-h4-md-line-height: 24px;
+  --typography-h4-md-letter-spacing: 0;
+  --typography-h4-md-text-case: none;
+
+  --typography-h3-lg-font-size: 25px;
+  --typography-h3-lg-font-weight: 600;
+  --typography-h3-lg-line-height: 30px;
+  --typography-h3-lg-letter-spacing: 0;
+  --typography-h3-lg-text-case: none;
+
+  --typography-h2-xl-font-size: 31px;
+  --typography-h2-xl-font-weight: 700;
+  --typography-h2-xl-line-height: 37.2px;
+  --typography-h2-xl-letter-spacing: 0;
+  --typography-h2-xl-text-case: none;
+
+  --typography-h1-xxl-font-size: 39px;
+  --typography-h1-xxl-font-weight: 800;
+  --typography-h1-xxl-line-height: 46.8px;
+  --typography-h1-xxl-letter-spacing: 0;
+  --typography-h1-xxl-text-case: none;
+
+  --typography-code-body-font-size: 14px;
+  --typography-code-body-font-family: var(--font-family-code);
+  --typography-code-body-font-weight: 400;
+  --typography-code-body-line-height: 16.8px;
+  --typography-code-body-letter-spacing: 0;
+  --typography-code-body-text-case: none;
+
+  --typography-code-header-font-size: 20px;
+  --typography-code-header-font-family: var(--font-family-code);
+  --typography-code-header-font-weight: 500;
+  --typography-code-header-line-height: 24px;
+  --typography-code-header-letter-spacing: 0;
+  --typography-code-header-text-case: none;
+
+  --typography-logo-font-size: 20px;
+  --typography-logo-font-weight: 600;
+  --typography-logo-line-height: 24px;
+  --typography-logo-letter-spacing: 0.8px;
+  --typography-logo-text-case: none;
+
+  --typography-dom-markings-font-size: 8px;
+  --typography-dom-markings-font-family: var(--font-family-code);
+  --typography-dom-markings-font-weight: 400;
+  --typography-dom-markings-line-height: 9.6px;
+  --typography-dom-markings-letter-spacing: 0;
+  --typography-dom-markings-text-case: none;
+
+  --typography-section-title-font-size: 12px;
+  --typography-section-title-font-weight: 600;
+  --typography-section-title-line-height: 14.4px;
+  --typography-section-title-letter-spacing: 0.48px;
+  --typography-section-title-text-case: uppercase;
+
+  --typography-alert-title-font-size: 12px;
+  --typography-alert-title-font-weight: 700;
+  --typography-alert-title-line-height: 14.4px;
+  --typography-alert-title-letter-spacing: 0.48px;
+  --typography-alert-title-text-case: none;
+
+  --typography-temperature-font-size: 39px;
+  --typography-temperature-font-weight: 500;
+  --typography-temperature-line-height: 46.8px;
+  --typography-temperature-letter-spacing: -0.78px;
+  --typography-temperature-text-case: none;
+
+  --typography-title-font-size: 12px;
+  --typography-title-font-weight: 600;
+  --typography-title-line-height: 14.4px;
+  --typography-title-letter-spacing: 0.48px;
+  --typography-title-text-case: none;
+
+  --typography-default-font-size: 14px;
+  --typography-default-font-weight: 600;
+  --typography-default-line-height: 16.8px;
+  --typography-default-letter-spacing: 0;
+  --typography-default-text-case: none;
+
+  --typography-semantic-section-title-font-size: 12px;
+  --typography-semantic-section-title-font-weight: 600;
+  --typography-semantic-section-title-line-height: 14.4px;
+  --typography-semantic-section-title-letter-spacing: 0.24px;
+  --typography-semantic-section-title-text-case: uppercase;
+
+  --typography-semantic-alert-title-font-size: 12px;
+  --typography-semantic-alert-title-font-weight: 600;
+  --typography-semantic-alert-title-line-height: 14.4px;
+  --typography-semantic-alert-title-letter-spacing: 0.24px;
+  --typography-semantic-alert-title-text-case: none;
+
+  --typography-semantic-alert-location-font-size: 14px;
+  --typography-semantic-alert-location-font-weight: 600;
+  --typography-semantic-alert-location-line-height: 16.8px;
+  --typography-semantic-alert-location-letter-spacing: 0;
+  --typography-semantic-alert-location-text-case: none;
+
+  --typography-style-guide-body-font-size: 12px;
+  --typography-style-guide-body-font-weight: 400;
+  --typography-style-guide-body-line-height: 14.4px;
+  --typography-style-guide-body-letter-spacing: 0;
+  --typography-style-guide-body-text-case: none;
+
+  --typography-style-guide-title-font-size: 14px;
+  --typography-style-guide-title-font-weight: 700;
+  --typography-style-guide-title-line-height: 16.8px;
+  --typography-style-guide-title-letter-spacing: 0.28px;
+  --typography-style-guide-title-text-case: none;
+
+  --typography-primitive-base-font-size: 12px;
+  --typography-primitive-base-font-weight: 400;
+  --typography-primitive-base-line-height: 14.4px;
+  --typography-primitive-base-letter-spacing: 0;
+  --typography-primitive-base-text-case: none;
+
+  /* ------------------------------------------------------------------------
+     Figma effects
+     Styles: effect-small, effect-medium
+     ------------------------------------------------------------------------ */
+
+  --effect-small: 0 2px 4px 0 oklch(0 0 0 / 0.25);
+  --effect-medium: 0 4px 12px 0 oklch(0 0 0 / 0.25);
 }
 
+/* Light mode remaps the semantic roles to the Figma light group. */
 [data-theme='light'] {
-  --nav-surface: #f6f9fc;
-  --nav-surface-raised: #ffffff;
-  --nav-text: #0f172a;
-  --nav-text-secondary: #727b85;
-  --nav-border: #dbe3ec;
-  --nav-divider: #d5dee8;
-  --nav-hover: #e8f0f8;
-  --nav-active: rgba(0, 95, 158, 0.1);
-  --nav-active-text: #005f9e;
-  --nav-live: #16a34a;
-  --nav-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
-}
-
-@theme {
-  --font-body: var(--font_family);
-}
-
-@layer components {
-  .app-shell {
-    @apply grid h-screen w-screen grid-rows-[auto_1fr] overflow-hidden;
-    background-color: var(--color-background);
-    color: var(--color-text-primary);
-  }
-
-  .app-shell-content {
-    @apply min-h-0 overflow-x-hidden overflow-y-auto;
-  }
-
-  .app-shell-content > .app-content {
-    height: 100%;
-  }
-
-  .app-topnav {
-    @apply relative flex items-center justify-between gap-4;
-    min-height: 48px;
-    padding: var(--spacing-sm) var(--spacing-md);
-    border-bottom: var(--border-width) solid var(--nav-border);
-    background-color: var(--nav-surface);
-    color: var(--nav-text);
-    font-family: var(--font_manrope), Manrope, var(--font_family);
-    font-size: 0.75rem;
-    letter-spacing: 0.48px;
-  }
-
-  .app-topnav-left,
-  .app-topnav-right {
-    @apply flex min-w-0 items-center;
-  }
-
-  .app-topnav-left {
-    @apply gap-3;
-  }
-
-  .app-topnav-right {
-    @apply shrink-0 gap-1;
-  }
-
-  .app-topnav-brand {
-    @apply inline-flex shrink-0 items-center gap-2;
-  }
-
-  .app-topnav-brand-link {
-    @apply inline-flex shrink-0 items-center rounded;
-    color: inherit;
-    text-decoration: none;
-  }
-
-  .app-topnav-brand-link:focus-visible {
-    outline: 2px solid var(--nav-active-text);
-    outline-offset: 2px;
-  }
-
-  .app-logo-wordmark {
-    font-size: 20px;
-    font-weight: 600;
-    letter-spacing: 0.8px;
-    line-height: 1.2;
-    color: var(--nav-text);
-  }
-
-  .app-topnav-divider {
-    @apply inline-block h-5 w-px shrink-0;
-    background-color: var(--nav-divider);
-  }
-
-  .app-topnav-live {
-    @apply inline-flex shrink-0 items-center gap-2;
-    color: var(--nav-text);
-  }
-
-  .app-topnav-live-dot {
-    @apply relative inline-block h-2.5 w-2.5 shrink-0 rounded-full;
-    background-color: var(--nav-live);
-  }
-
-  .app-topnav-live-dot::after {
-    content: '';
-    @apply absolute inset-0 rounded-full;
-    background-color: var(--nav-live);
-    opacity: 0.55;
-    animation: app-topnav-live-pulse 2s ease-out infinite;
-  }
-
-  @keyframes app-topnav-live-pulse {
-    0% {
-      transform: scale(1);
-      opacity: 0.55;
-    }
-    70% {
-      transform: scale(2.4);
-      opacity: 0;
-    }
-    100% {
-      transform: scale(2.4);
-      opacity: 0;
-    }
-  }
-
-  .app-topnav-clock {
-    @apply inline-flex shrink-0 items-baseline gap-1.5 whitespace-nowrap;
-  }
-
-  .app-topnav-clock-utc {
-    color: var(--nav-text);
-  }
-
-  .app-topnav-clock-local {
-    color: var(--nav-text-secondary);
-  }
-
-  .app-topnav-links {
-    @apply hidden items-center gap-1;
-  }
-
-  .app-topnav-link {
-    @apply inline-flex shrink-0 items-center gap-1.5 rounded px-2 py-1;
-    border: 0;
-    background: transparent;
-    color: var(--nav-text-secondary);
-    text-decoration: none;
-    white-space: nowrap;
-    cursor: pointer;
-    transition: background-color 150ms ease-in-out, color 150ms ease-in-out;
-  }
-
-  .app-topnav-link:hover {
-    background-color: var(--nav-hover);
-    color: var(--nav-text);
-  }
-
-  .app-topnav-link[data-active='true'] {
-    background-color: var(--nav-active);
-    color: var(--nav-active-text);
-  }
-
-  .app-topnav-button {
-    font-size: inherit;
-    letter-spacing: inherit;
-    font-family: inherit;
-  }
-
-  .app-topnav-icon {
-    @apply h-4 w-4 shrink-0;
-  }
-
-  .app-topnav-icon-button {
-    @apply inline-flex h-8 w-8 shrink-0 items-center justify-center rounded;
-    border: 0;
-    background: transparent;
-    color: var(--nav-text-secondary);
-    cursor: pointer;
-    transition: background-color 150ms ease-in-out, color 150ms ease-in-out;
-  }
-
-  .app-topnav-icon-button:hover {
-    background-color: var(--nav-hover);
-    color: var(--nav-text);
-  }
-
-  .app-topnav-menu {
-    @apply relative;
-  }
-
-  .app-topnav-menu-panel {
-    @apply absolute right-0 z-50 flex flex-col;
-    top: calc(100% + 4px);
-    width: 124px;
-    padding: var(--spacing-xs) 0;
-    border: var(--border-width) solid var(--nav-border);
-    border-radius: 4px;
-    background-color: var(--nav-surface-raised);
-    box-shadow: var(--nav-shadow);
-  }
-
-  .app-topnav-menu-item {
-    @apply flex h-8 items-center gap-1 px-2;
-    color: var(--nav-text);
-    text-decoration: none;
-    white-space: nowrap;
-  }
-
-  .app-topnav-menu-item + .app-topnav-menu-item {
-    border-top: var(--border-width) solid var(--nav-divider);
-  }
-
-  .app-topnav-menu-item:hover,
-  .app-topnav-menu-item[data-active='true'] {
-    background-color: var(--nav-hover);
-  }
-
-  @media (max-width: 479px) {
-    .app-logo-wordmark,
-    .app-topnav-live-label,
-    .app-topnav-divider-clock,
-    .app-topnav-clock-local {
-      display: none;
-    }
-
-    .app-topnav {
-      gap: var(--spacing-sm);
-      padding-right: var(--spacing-sm);
-      padding-left: var(--spacing-sm);
-    }
-  }
-
-  @media (min-width: 1024px) {
-    .app-topnav-links {
-      @apply flex;
-    }
-
-    .app-topnav-menu {
-      display: none;
-    }
-  }
-
-  @media (max-width: 1023px) {
-    .app-topnav-label {
-      display: none;
-    }
-  }
-
-  .app-header {
-    @apply flex items-center justify-between overflow-hidden;
-    border-bottom: var(--border-width) solid var(--color-border);
-    background-color: var(--color-surface-primary);
-    padding: var(--spacing-md) var(--spacing-lg);
-  }
-
-  .app-header-title {
-    @apply text-sm font-semibold;
-    letter-spacing: var(--tracking-wide);
-  }
-
-  .status-pill {
-    @apply inline-flex shrink-0 items-center gap-2;
-    font-size: var(--text-size-xs);
-    letter-spacing: var(--tracking-normal);
-    color: var(--color-text-secondary);
-    text-transform: uppercase;
-  }
-
-  .status-pill-indicator {
-    @apply h-2 w-2 rounded-full;
-    background-color: var(--color-accent-emerald);
-  }
-
-  .status-pill[data-state='stale'] {
-    color: var(--color-accent-amber-light);
-  }
-
-  .status-pill[data-state='stale'] .status-pill-indicator {
-    background-color: var(--color-accent-amber);
-  }
-
-  .app-header-actions {
-    @apply flex items-center gap-2;
-    font-size: var(--text-size-xs);
-  }
-
-  .app-button {
-    @apply rounded;
-    border: var(--border-width) solid var(--color-border-secondary);
-    padding: var(--spacing-sm) var(--spacing-md);
-    color: var(--color-text-secondary);
-    background-color: transparent;
-    cursor: pointer;
-    transition: background-color 150ms ease-in-out;
-  }
-
-  .app-button:hover {
-    background-color: var(--color-surface-secondary);
-  }
-
-  .location-picker-backdrop {
-    @apply fixed inset-0 z-50 flex items-start justify-center px-4 pt-24;
-    background: rgba(3, 7, 18, 0.76);
-  }
-
-  .location-picker {
-    @apply w-full max-w-lg;
-    border: var(--border-width) solid var(--color-border-secondary);
-    background: var(--color-surface-primary);
-    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.45);
-  }
-
-  .location-picker-heading {
-    @apply flex items-center justify-between;
-    border-bottom: var(--border-width) solid var(--color-border);
-    padding: var(--spacing-md) var(--spacing-lg);
-  }
-
-  .location-picker-heading h2 {
-    @apply text-sm font-semibold;
-    color: var(--color-text-primary);
-  }
-
-  .location-picker-close {
-    @apply h-8 w-8 text-lg;
-    color: var(--color-text-secondary);
-    background: transparent;
-    cursor: pointer;
-  }
-
-  .location-search-form {
-    padding: var(--spacing-md) var(--spacing-lg) var(--spacing-sm);
-  }
-
-  .location-current-button {
-    @apply mb-4 w-full text-left;
-    border: var(--border-width) solid var(--color-border-secondary);
-    padding: 10px 12px;
-    color: var(--color-accent-emerald);
-    background: rgba(52, 211, 153, 0.06);
-    font-size: var(--text-size-sm);
-    cursor: pointer;
-  }
-
-  .location-current-button:disabled {
-    cursor: wait;
-    opacity: 0.65;
-  }
-
-  .location-permission-message {
-    @apply mb-3;
-    color: var(--color-accent-amber-light);
-    font-size: var(--text-size-xs);
-  }
-
-  .location-search-label {
-    @apply mb-2 block;
-    color: var(--color-text-secondary);
-    font-size: var(--text-size-xs);
-  }
-
-  .location-search-row {
-    @apply flex gap-2;
-  }
-
-  .location-search-row input {
-    @apply min-w-0 flex-1;
-    border: var(--border-width) solid var(--color-border-secondary);
-    padding: 10px 12px;
-    color: var(--color-text-primary);
-    background: var(--color-background);
-    outline: none;
-  }
-
-  .location-search-row input:focus {
-    border-color: var(--color-accent-emerald);
-  }
-
-  .location-search-submit {
-    border: var(--border-width) solid var(--color-accent-emerald);
-    padding: 0 16px;
-    color: var(--color-background);
-    background: var(--color-accent-emerald);
-    font-size: var(--text-size-sm);
-    font-weight: var(--font_weight_semi-bold);
-    cursor: pointer;
-  }
-
-  .location-search-submit:disabled {
-    cursor: wait;
-    opacity: 0.65;
-  }
-
-  .location-search-results {
-    min-height: 48px;
-    padding: var(--spacing-xs) var(--spacing-lg);
-  }
-
-  .location-search-results > p {
-    padding: 12px 0;
-    color: var(--color-text-secondary);
-    font-size: var(--text-size-sm);
-  }
-
-  .location-result {
-    @apply flex w-full items-center justify-between gap-4 text-left;
-    border-bottom: var(--border-width) solid var(--color-border);
-    padding: 12px 0;
-    color: var(--color-text-primary);
-    background: transparent;
-    cursor: pointer;
-  }
-
-  .location-result:hover,
-  .location-result:focus-visible {
-    color: var(--color-accent-emerald);
-    outline: none;
-  }
-
-  .location-result-country {
-    color: var(--color-text-tertiary);
-    font-size: var(--text-size-xs);
-    text-align: right;
-  }
-
-  .location-picker-current {
-    border-top: var(--border-width) solid var(--color-border);
-    padding: 12px var(--spacing-lg);
-    color: var(--color-text-tertiary);
-    font-size: var(--text-size-xs);
-  }
-
-  @media (max-width: 640px) {
-    .location-picker-backdrop {
-      @apply items-start px-3 pt-16;
-    }
-
-    .location-picker-heading,
-    .location-search-form {
-      padding-right: var(--spacing-md);
-      padding-left: var(--spacing-md);
-    }
-
-    .location-search-results {
-      padding-right: var(--spacing-md);
-      padding-left: var(--spacing-md);
-    }
-
-    .location-picker-current {
-      padding-right: var(--spacing-md);
-      padding-left: var(--spacing-md);
-    }
-  }
-
-  .app-main {
-    @apply relative min-h-0 overflow-hidden;
-    background-color: var(--color-map-background);
-  }
-
-  .app-content {
-    @apply relative grid min-h-0;
-    grid-template-columns: minmax(0, 1fr) var(--sidebar-width);
-    transition: grid-template-columns 180ms ease-in-out;
-  }
-
-  .app-content[data-sidebar-open='false'] {
-    grid-template-columns: minmax(0, 1fr) 48px;
-  }
-
-  .desk-map {
-    @apply relative h-full w-full overflow-hidden;
-    background-color: var(--color-map-background);
-  }
-
-  .desk-map-canvas {
-    @apply absolute inset-0;
-  }
-
-  .desk-map-canvas.maplibregl-map {
-    outline: 1px dashed purple;
-    height: 100vh;
-    width: 100vw;
-  }
-
-  .desk-map--error .desk-map-canvas {
-    visibility: hidden;
-  }
-
-  .desk-map-overlay {
-    @apply absolute inset-0 z-[5] flex flex-col items-center justify-center gap-2 px-6 text-center text-sm;
-    background-color: var(--color-map-background);
-    color: var(--color-text-secondary);
-  }
-
-  .desk-map-overlay-title {
-    @apply text-base font-semibold;
-    color: var(--color-text-primary);
-  }
-
-  .desk-map-overlay--error {
-    background-color: rgba(5, 6, 13, 0.92);
-  }
-
-  .desk-map-marker {
-    @apply h-3.5 w-3.5 rounded-full;
-    border: 2px solid var(--color-background);
-    background-color: var(--color-accent-emerald);
-    box-shadow: 0 0 0 4px rgba(52, 211, 153, 0.28);
-  }
-
-  .desk-map-legend {
-    @apply absolute left-3 top-3 z-[4] flex items-center gap-3 rounded px-2.5 py-1.5 text-[11px] font-semibold uppercase;
-    border: var(--border-width) solid var(--color-border-secondary);
-    background-color: rgba(5, 6, 13, 0.82);
-    color: var(--color-text-secondary);
-    letter-spacing: var(--tracking-tight);
-  }
-
-  .desk-map-legend span + span {
-    border-left: var(--border-width) solid var(--color-border-secondary);
-    padding-left: var(--spacing-sm);
-  }
-
-  .desk-map-layers {
-    @apply absolute right-3 top-3 z-[4] flex flex-col gap-1.5 rounded px-2.5 py-2 text-xs;
-    border: var(--border-width) solid var(--color-border-secondary);
-    background-color: rgba(5, 6, 13, 0.82);
-    color: var(--color-text-secondary);
-  }
-
-  .desk-map-layer-toggle {
-    @apply flex items-center gap-2;
-  }
-
-  .desk-map-layer-toggle input {
-    @apply accent-emerald-400;
-  }
-
-  .desk-map .maplibregl-ctrl-group {
-    border: var(--border-width) solid var(--color-border-secondary);
-    background-color: var(--color-surface-secondary);
-  }
-
-  .desk-map .maplibregl-ctrl-group button + button {
-    border-top-color: var(--color-border-secondary);
-  }
-
-  .desk-map .maplibregl-ctrl button .maplibregl-ctrl-icon {
-    filter: invert(0.82);
-  }
-
-  .desk-map .maplibregl-ctrl-attrib,
-  .desk-map .maplibregl-ctrl-scale {
-    border: var(--border-width) solid var(--color-border-secondary);
-    background-color: rgba(5, 6, 13, 0.78);
-    color: var(--color-text-secondary);
-    font-size: var(--text-size-xs);
-  }
-
-  .desk-map .maplibregl-ctrl-attrib a {
-    color: var(--color-text-secondary);
-  }
-
-  .desk-map .maplibregl-ctrl-attrib a:hover {
-    color: var(--color-accent-emerald);
-  }
-
-  .app-sidebar {
-    @apply min-h-0 min-w-0 overflow-y-auto;
-    border-left: var(--border-width) solid var(--color-border-secondary);
-    background-color: var(--color-surface-secondary);
-    width: 100%;
-  }
-
-  .app-sidebar-header {
-    @apply flex items-center justify-between;
-    min-height: 48px;
-    border-bottom: var(--border-width) solid var(--color-border-secondary);
-    padding: var(--spacing-sm) var(--spacing-md);
-  }
-
-  .app-sidebar-title {
-    @apply text-sm font-semibold;
-    color: var(--color-text-primary);
-  }
-
-  .app-sidebar-toggle {
-    @apply flex h-8 w-8 shrink-0 items-center justify-center rounded;
-    border: var(--border-width) solid var(--color-border-secondary);
-    color: var(--color-text-secondary);
-    background-color: transparent;
-    cursor: pointer;
-    font-size: 1.25rem;
-  }
-
-  .app-sidebar-toggle:hover {
-    background-color: var(--color-surface-primary);
-  }
-
-  .app-sidebar[data-sidebar-open='false'] .app-sidebar-header {
-    justify-content: center;
-    padding-right: var(--spacing-xs);
-    padding-left: var(--spacing-xs);
-  }
-
-  .app-sidebar[data-sidebar-open='false'] .app-sidebar-title {
-    @apply sr-only;
-  }
-
-  @media (max-width: 767px) {
-    .app-content {
-      grid-template-columns: minmax(0, 1fr);
-    }
-
-    .app-sidebar[data-sidebar-open='true'] {
-      position: absolute;
-      inset: 0 0 0 auto;
-      z-index: 20;
-      width: min(var(--sidebar-width), calc(100vw - 24px));
-      box-shadow: -12px 0 24px rgba(0, 0, 0, 0.35);
-    }
-
-    .app-sidebar[data-sidebar-open='false'] {
-      position: absolute;
-      top: 0;
-      right: 0;
-      z-index: 20;
-      width: 48px;
-      overflow: visible;
-      border-bottom: var(--border-width) solid var(--color-border-secondary);
-      box-shadow: -8px 8px 16px rgba(0, 0, 0, 0.25);
-    }
-  }
-
-  .app-section {
-    border-bottom: var(--border-width) solid var(--color-border-secondary);
-    padding: var(--spacing-md);
-  }
-
-  .app-section-title {
-    @apply mb-3;
-    font-size: var(--text-size-xs);
-    letter-spacing: var(--tracking-normal);
-    color: var(--color-text-secondary);
-    text-transform: uppercase;
-  }
-
-  .active-alerts-heading,
-  .current-conditions-heading {
-    @apply flex items-start justify-between gap-2;
-    margin-bottom: var(--spacing-sm);
-  }
-
-  .app-section-meta {
-    @apply flex shrink-0 items-center gap-2;
-  }
-
-  .active-alerts-heading .app-section-title,
-  .current-conditions-heading .app-section-title {
-    margin-bottom: 0;
-  }
-
-  .active-alerts-highest,
-  .alert-card-severity {
-    @apply inline-flex shrink-0 items-center rounded px-2 py-0.5 text-[10px] font-semibold uppercase;
-    letter-spacing: var(--tracking-tight);
-    border: var(--border-width) solid var(--alert-severity);
-    color: var(--alert-severity);
-    background-color: var(--alert-severity-soft);
-  }
-
-  .alert-card,
-  .active-alerts-highest {
-    --alert-severity: var(--color-severity-unknown);
-    --alert-severity-soft: var(--color-severity-unknown-soft);
-  }
-
-  .alert-card[data-severity='extreme'],
-  .active-alerts-highest[data-severity='extreme'] {
-    --alert-severity: var(--color-severity-extreme);
-    --alert-severity-soft: var(--color-severity-extreme-soft);
-  }
-
-  .alert-card[data-severity='severe'],
-  .active-alerts-highest[data-severity='severe'] {
-    --alert-severity: var(--color-severity-severe);
-    --alert-severity-soft: var(--color-severity-severe-soft);
-  }
-
-  .alert-card[data-severity='moderate'],
-  .active-alerts-highest[data-severity='moderate'] {
-    --alert-severity: var(--color-severity-moderate);
-    --alert-severity-soft: var(--color-severity-moderate-soft);
-  }
-
-  .alert-card[data-severity='minor'],
-  .active-alerts-highest[data-severity='minor'] {
-    --alert-severity: var(--color-severity-minor);
-    --alert-severity-soft: var(--color-severity-minor-soft);
-  }
-
-  .alert-card[data-severity='unknown'],
-  .active-alerts-highest[data-severity='unknown'] {
-    --alert-severity: var(--color-severity-unknown);
-    --alert-severity-soft: var(--color-severity-unknown-soft);
-  }
-
-  .alert-card {
-    @apply rounded;
-    border: var(--border-width) solid var(--color-border);
-    border-left: 3px solid var(--alert-severity);
-    padding: var(--spacing-sm) var(--spacing-sm) var(--spacing-sm) 10px;
-    background-color: rgba(15, 23, 42, 0.72);
-  }
-
-  .alert-card-heading {
-    @apply flex items-start justify-between gap-2;
-  }
-
-  .alert-card-heading-copy {
-    @apply min-w-0;
-  }
-
-  .alert-card-event {
-    @apply text-xs font-semibold;
-    line-height: 1.35;
-  }
-
-  .alert-card-headline {
-    @apply mt-1 text-[10px];
-    color: var(--color-text-secondary);
-    line-height: 1.4;
-  }
-
-  .alert-card-area {
-    @apply mt-1 text-[10px];
-    color: var(--color-text-tertiary);
-    line-height: 1.4;
-  }
-
-  .alert-card-preview {
-    @apply mt-2;
-  }
-
-  .alert-card-preview-svg {
-    @apply block w-full rounded;
-    height: 72px;
-    border: var(--border-width) solid var(--color-border);
-    background-color: rgba(2, 6, 23, 0.55);
-  }
-
-  .alert-card-preview-shape {
-    fill: var(--alert-severity);
-    fill-opacity: 0.12;
-    stroke: var(--alert-severity);
-    stroke-width: 1.5;
-    stroke-linejoin: round;
-  }
-
-  .alert-card-preview-shape--contained {
-    fill-opacity: 0.45;
-    stroke-width: 2;
-  }
-
-  .alert-card-preview-shape--outside {
-    fill-opacity: 0.06;
-    stroke-opacity: 0.6;
-  }
-
-  .alert-card-preview-caption {
-    @apply mt-1 flex items-center justify-between gap-2 text-[10px];
-    color: var(--color-text-secondary);
-  }
-
-  .alert-card-preview-count {
-    color: var(--color-text-tertiary);
-  }
-
-  .alert-card-area-note {
-    @apply mt-2 rounded p-2 text-[10px];
-    border: 1px dashed var(--color-border-secondary);
-    color: var(--color-text-secondary);
-    line-height: 1.4;
-  }
-
-  .alert-card-meta {
-    @apply mt-2 grid gap-1 text-[10px];
-  }
-
-  .alert-card-meta-row {
-    @apply flex items-baseline justify-between gap-2;
-  }
-
-  .alert-card-meta dt {
-    color: var(--color-text-tertiary);
-  }
-
-  .alert-card-meta dd {
-    color: var(--color-text-secondary);
-    text-align: right;
-  }
-
-  .alert-card-instructions {
-    @apply mt-2 text-[10px];
-  }
-
-  .alert-card-instructions summary {
-    cursor: pointer;
-    color: var(--alert-severity);
-  }
-
-  .alert-card-instructions summary:hover {
-    text-decoration: underline;
-  }
-
-  .alert-card-instructions p {
-    @apply mt-1;
-    color: var(--color-text-secondary);
-    line-height: 1.45;
-  }
-
-  .active-alerts-list {
-    @apply flex flex-col gap-2;
-  }
-
-  .active-alerts-message,
-  .current-conditions-message {
-    @apply text-xs;
-    color: var(--color-text-secondary);
-  }
-
-  .active-alerts-error,
-  .current-conditions-error {
-    @apply flex flex-col items-start gap-2 rounded p-2 text-xs;
-    border: var(--border-width) solid var(--color-accent-rose);
-    background-color: rgba(244, 63, 94, 0.08);
-  }
-
-  .active-alerts-error p,
-  .current-conditions-error p {
-    color: var(--color-accent-rose);
-  }
-
-  .active-alerts-retry,
-  .current-conditions-retry {
-    @apply rounded px-2 py-1 text-[10px] font-semibold uppercase;
-    border: var(--border-width) solid var(--color-accent-rose);
-    color: var(--color-background);
-    background-color: var(--color-accent-rose);
-    cursor: pointer;
-  }
-
-  .active-alerts-retry:hover,
-  .current-conditions-retry:hover {
-    opacity: 0.9;
-  }
-
-  .app-conditions-section {
-    @apply mt-3 flex items-end gap-3;
-  }
-
-  .app-conditions-temp {
-    @apply text-4xl font-light;
-  }
-
-  .app-conditions-meta {
-    @apply pb-1 text-xs;
-    color: var(--color-text-secondary);
-  }
-
-  .app-conditions-description {
-    @apply mt-2 text-xs;
-    color: var(--color-text-secondary);
-  }
-
-  .app-conditions-grid {
-    @apply mt-5 grid grid-cols-2 gap-4 text-xs;
-  }
-
-  .app-conditions-item-label {
-    @apply text-[10px];
-    color: var(--color-text-tertiary);
-  }
-
-  .app-conditions-item-value {
-    @apply mt-1;
-  }
-
-  .app-conditions-item-meta {
-    color: var(--color-text-secondary);
-  }
-
-  .app-conditions-item-meta.negative {
-    color: var(--color-accent-rose);
-  }
-
-  .condition-tile {
-    @apply rounded p-3;
-    border: var(--border-width) solid var(--color-border);
-    background-color: var(--color-surface-primary);
-  }
-
-  .condition-tile--bare {
-    border: none;
-    padding: 0;
-    background-color: transparent;
-  }
-
-  .condition-tile-label {
-    @apply text-[10px];
-    color: var(--color-text-tertiary);
-  }
-
-  .condition-tile-value {
-    @apply mt-1 text-base font-semibold;
-  }
-
-  .condition-tile--bare .condition-tile-value {
-    @apply text-xs font-normal;
-  }
-
-  .condition-tile-meta {
-    @apply mt-1 text-[10px];
-    color: var(--color-text-secondary);
-  }
-
-  .condition-tile--bare .condition-tile-meta {
-    @apply text-xs;
-  }
-
-  .condition-tile-meta.negative {
-    color: var(--color-accent-rose);
-  }
-
-  .condition-tile-meta.positive {
-    color: var(--color-accent-emerald);
-  }
-
-  .condition-tile-meta.warning {
-    color: var(--color-accent-amber-light);
-  }
-
-  .condition-tile-grid {
-    @apply mt-5 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5;
-  }
-
-  .condition-page {
-    @apply absolute inset-0 overflow-y-auto;
-    padding: var(--spacing-lg);
-  }
-
-  .condition-page-title {
-    @apply text-sm font-semibold uppercase;
-    letter-spacing: var(--tracking-wide);
-  }
-
-  .condition-page-meta {
-    @apply mt-1 text-xs;
-    color: var(--color-text-secondary);
-  }
-
-  .app-forecast-grid {
-    @apply border-b pb-2;
-    border-color: var(--color-border-secondary);
-  }
-
-  .app-forecast-header {
-    @apply grid grid-cols-[54px_24px_42px_32px_1fr] gap-x-2;
-    font-size: var(--text-size-xs);
-    color: var(--color-text-tertiary);
-  }
-
-  .app-forecast-row {
-    @apply grid grid-cols-[54px_24px_42px_32px_1fr] items-center gap-x-2 py-2 text-xs;
-    border-color: var(--color-border-secondary);
-  }
-
-  .app-forecast-row:not(:first-child) {
-    border-top: var(--border-width) solid var(--color-border-secondary);
-  }
-
-  .app-forecast-time {
-    color: var(--color-text-secondary);
-  }
-
-  .app-forecast-icon {
-    @apply text-base;
-  }
-
-  .app-forecast-precip {
-    color: var(--color-text-secondary);
-  }
-
-  .app-forecast-wind {
-    color: var(--color-text-secondary);
-  }
-
-  /* Settings */
-  .settings-page {
-    @apply mx-auto w-full max-w-3xl;
-    padding: var(--spacing-xl) var(--spacing-lg) 64px;
-  }
-
-  .settings-header {
-    margin-bottom: var(--spacing-xl);
-  }
-
-  .settings-eyebrow {
-    font-size: var(--text-size-xs);
-    letter-spacing: var(--tracking-normal);
-    text-transform: uppercase;
-    color: var(--color-accent-emerald);
-  }
-
-  .settings-title {
-    margin-top: var(--spacing-xs);
-    font-size: var(--font_size_step-4);
-    font-weight: var(--font_weight_semi-bold);
-    color: var(--color-text-primary);
-  }
-
-  .settings-description {
-    margin-top: var(--spacing-sm);
-    max-width: 60ch;
-    font-size: var(--text-size-sm);
-    color: var(--color-text-secondary);
-  }
-
-  .settings-section {
-    border-top: var(--border-width) solid var(--color-border);
-    padding: var(--spacing-lg) 0;
-  }
-
-  .settings-section-heading {
-    @apply flex flex-col gap-1;
-  }
-
-  .settings-section-title {
-    font-size: var(--text-size-sm);
-    font-weight: var(--font_weight_semi-bold);
-    letter-spacing: var(--tracking-tight);
-    color: var(--color-text-primary);
-  }
-
-  .settings-section-description {
-    max-width: 60ch;
-    font-size: var(--text-size-sm);
-    color: var(--color-text-secondary);
-  }
-
-  .settings-choice-group {
-    @apply mt-4 flex flex-wrap gap-2;
-  }
-
-  .settings-choice {
-    @apply min-w-[180px] rounded text-left;
-    border: var(--border-width) solid var(--color-border-secondary);
-    padding: var(--spacing-sm) var(--spacing-md);
-    background-color: var(--color-surface-primary);
-    color: var(--color-text-primary);
-    cursor: pointer;
-    transition: border-color 150ms ease-in-out, background-color 150ms ease-in-out;
-  }
-
-  .settings-choice:hover {
-    background-color: var(--color-surface-secondary);
-  }
-
-  .settings-choice[aria-pressed='true'] {
-    border-color: var(--color-accent-emerald);
-    background-color: rgba(52, 211, 153, 0.08);
-  }
-
-  .settings-choice-title {
-    @apply block text-sm font-semibold;
-    color: var(--color-text-primary);
-  }
-
-  .settings-choice-meta {
-    @apply mt-1 block;
-    font-size: var(--text-size-xs);
-    color: var(--color-text-secondary);
-  }
-
-  .settings-location {
-    @apply mt-4 flex flex-col gap-1;
-  }
-
-  .settings-location-label {
-    font-size: var(--text-size-xs);
-    letter-spacing: var(--tracking-normal);
-    text-transform: uppercase;
-    color: var(--color-text-tertiary);
-  }
-
-  .settings-location-value {
-    font-size: var(--text-size-lg);
-    font-weight: var(--font_weight_semi-bold);
-    color: var(--color-text-primary);
-  }
-
-  .settings-location-hint {
-    max-width: 60ch;
-    font-size: var(--text-size-sm);
-    color: var(--color-text-secondary);
-  }
-
-  /* Primary navigation */
-  .app-nav {
-    @apply flex items-center gap-1;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  .app-nav-link {
-    @apply inline-flex items-center rounded px-2 py-1 text-xs;
-    color: var(--color-text-secondary);
-    letter-spacing: var(--tracking-normal);
-    text-transform: uppercase;
-    text-decoration: none;
-  }
-
-  .app-nav-link:hover {
-    color: var(--color-text-primary);
-    background-color: var(--color-surface-secondary);
-  }
-
-  /* Shared chart styles (SeriesChart / SeriesLegend) */
-  .series-chart {
-    @apply flex flex-col gap-2;
-  }
-
-  .series-chart-responsive {
-    @apply w-full;
-  }
-
-  .series-chart svg {
-    @apply block w-full;
-  }
-
-  .series-chart-unit {
-    @apply text-[10px] uppercase;
-    letter-spacing: var(--tracking-normal);
-    color: var(--color-text-tertiary);
-  }
-
-  .series-chart-empty {
-    @apply rounded p-4 text-xs;
-    border: var(--border-width) dashed var(--color-border-secondary);
-    color: var(--color-text-secondary);
-  }
-
-  .series-legend {
-    @apply flex flex-wrap gap-x-4 gap-y-2;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  .series-legend-item {
-    @apply flex flex-wrap items-center gap-x-2 gap-y-1 text-xs;
-  }
-
-  .series-legend-swatch {
-    @apply inline-block h-2 w-2 rounded-full;
-  }
-
-  .series-legend-label {
-    @apply font-semibold;
-  }
-
-  .series-legend-meta {
-    color: var(--color-text-secondary);
-  }
-
-  .series-legend-note {
-    color: var(--color-accent-amber-light);
-  }
-
-  .series-chart-data {
-    @apply text-xs;
-    color: var(--color-text-secondary);
-  }
-
-  .series-chart-data summary {
-    cursor: pointer;
-  }
-
-  .series-chart-data table {
-    @apply mt-2 w-full;
-    border-collapse: collapse;
-  }
-
-  .series-chart-data th,
-  .series-chart-data td {
-    @apply px-2 py-1 text-left;
-    border-bottom: var(--border-width) solid var(--color-border);
-  }
-
-  /* Compare and Track Record screens */
-  .compare-screen,
-  .track-record-screen {
-    @apply absolute inset-0 overflow-y-auto;
-    padding: var(--spacing-lg);
-  }
-
-  .compare-header,
-  .track-record-header {
-    @apply mb-4 flex flex-wrap items-start justify-between gap-3;
-  }
-
-  .compare-title,
-  .track-record-title {
-    @apply text-sm font-semibold uppercase;
-    letter-spacing: var(--tracking-wide);
-  }
-
-  .compare-subtitle,
-  .track-record-subtitle {
-    @apply mt-1 text-xs;
-    color: var(--color-text-secondary);
-  }
-
-  .compare-controls,
-  .track-record-controls {
-    @apply flex flex-wrap items-center gap-2;
-  }
-
-  .compare-tabs,
-  .track-record-tabs {
-    @apply mb-3 flex flex-wrap gap-1;
-  }
-
-  .compare-tab,
-  .track-record-tab {
-    @apply rounded px-3 py-1 text-xs;
-    border: var(--border-width) solid var(--color-border);
-    color: var(--color-text-secondary);
-    background-color: var(--color-surface-primary);
-    cursor: pointer;
-  }
-
-  .compare-tab[aria-selected='true'],
-  .track-record-tab[aria-selected='true'] {
-    border-color: var(--color-map-station);
-    color: var(--color-text-primary);
-  }
-
-  .compare-status,
-  .track-record-status {
-    @apply text-xs;
-    color: var(--color-text-secondary);
-  }
-
-  .compare-chart,
-  .track-record-chart {
-    @apply mb-4 rounded p-3;
-    border: var(--border-width) solid var(--color-border);
-    background-color: rgba(15, 23, 42, 0.6);
-  }
-
-  .compare-unavailable,
-  .track-record-warnings {
-    @apply mt-4 flex flex-col gap-2;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  .compare-unavailable-item {
-    @apply flex items-center gap-2 rounded px-2 py-1 text-xs;
-    border: var(--border-width) solid var(--color-accent-rose);
-    background-color: rgba(244, 63, 94, 0.08);
-    color: var(--color-text-secondary);
-  }
-
-  .compare-unavailable-swatch {
-    @apply inline-block h-2 w-2 shrink-0 rounded-full;
-  }
-
-  .track-record-counts {
-    @apply mb-4 flex flex-wrap gap-x-4 gap-y-1 text-xs;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    color: var(--color-text-secondary);
-  }
-
-  .track-record-summary,
-  .track-record-table {
-    @apply mb-4 w-full text-xs;
-    border-collapse: collapse;
-  }
-
-  .track-record-summary caption,
-  .track-record-table caption {
-    @apply mb-2 text-left text-[10px] uppercase;
-    letter-spacing: var(--tracking-normal);
-    color: var(--color-text-tertiary);
-  }
-
-  .track-record-summary th,
-  .track-record-summary td,
-  .track-record-table th,
-  .track-record-table td {
-    @apply px-2 py-1 text-left align-top;
-    border-bottom: var(--border-width) solid var(--color-border);
-  }
-
-  .track-record-summary thead th,
-  .track-record-table thead th {
-    color: var(--color-text-secondary);
-  }
-
-  .track-record-summary tbody th,
-  .track-record-table tbody th {
-    color: var(--color-text-secondary);
-    font-weight: var(--font_weight_semi-bold);
-  }
-
-  .track-record-metric {
-    @apply font-semibold;
-  }
-
-  .track-record-sample-count {
-    @apply ml-1 text-[10px];
-    color: var(--color-text-tertiary);
-  }
-
-  .track-record-cell {
-    @apply flex flex-col gap-0.5;
-    color: var(--color-text-secondary);
-  }
-
-  .track-record-chart h2,
-  .track-record-list h2 {
-    @apply mb-2 text-xs font-semibold uppercase;
-    letter-spacing: var(--tracking-normal);
-    color: var(--color-text-secondary);
-  }
-
-  .track-record-forecasts {
-    @apply flex flex-col gap-2;
-  }
-
-  .track-record-forecast {
-    @apply rounded p-2 text-xs;
-    border: var(--border-width) solid var(--color-border);
-    background-color: rgba(15, 23, 42, 0.72);
-  }
-
-  .track-record-forecast summary {
-    @apply flex flex-wrap items-center gap-x-3 gap-y-1;
-    cursor: pointer;
-  }
-
-  .track-record-forecast-date {
-    @apply font-semibold;
-  }
-
-  .track-record-forecast-location,
-  .track-record-forecast-revision,
-  .track-record-forecast-lead {
-    color: var(--color-text-secondary);
-  }
-
-  .track-record-forecast-status {
-    @apply ml-auto rounded px-2 py-0.5 text-[10px] font-semibold uppercase;
-    letter-spacing: var(--tracking-tight);
-    border: var(--border-width) solid var(--color-border-secondary);
-    color: var(--color-text-secondary);
-  }
-
-  .track-record-forecast-note {
-    @apply mt-2 text-xs;
-    color: var(--color-text-secondary);
-  }
-
-  .track-record-error {
-    @apply flex flex-col items-start gap-2 rounded p-3 text-xs;
-    border: var(--border-width) solid var(--color-accent-rose);
-    background-color: rgba(244, 63, 94, 0.08);
-    color: var(--color-accent-rose);
-  }
-
-  .track-record-empty {
-    @apply text-xs;
-    color: var(--color-text-secondary);
-  }
-
-  .track-record-warnings {
-    color: var(--color-accent-amber-light);
-  }
+  --color-background: var(--color-light-bg-primary);
+  --color-surface-primary: var(--color-light-bg-surface);
+  --color-surface-secondary: var(--color-grey-0);
+  --color-border: var(--color-grey-1);
+  --color-border-secondary: var(--color-grey-2);
+  --color-text-primary: var(--color-light-text-primary);
+  --color-text-secondary: var(--color-light-text-secondary);
+  --color-text-tertiary: var(--color-grey-4);
+  --color-text-muted: var(--color-grey-3);
+
+  --color-accent-cerulean: var(--color-light-cerulean);
+  --color-accent-emerald: var(--color-light-emerald);
+  --color-accent-gold: var(--color-light-gold);
+  --color-accent-ochre: var(--color-light-ochre);
+  --color-accent-rose: var(--color-light-crimson);
+  --color-accent-amber: var(--color-light-ochre);
+  --color-accent-amber-light: var(--color-light-gold);
+
+  --color-severity-extreme: var(--color-light-crimson);
+  --color-severity-severe: var(--color-light-ochre);
+  --color-severity-moderate: var(--color-light-gold);
+  --color-severity-minor: var(--color-light-emerald);
+  --color-severity-unknown: var(--color-light-text-secondary);
 }

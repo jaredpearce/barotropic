@@ -1,0 +1,13 @@
+@tailwind components;
+
+/* Barotropic wordmark. */
+
+@layer components {
+  .app-logo-wordmark {
+    font-size: var(--typography-logo-font-size);
+    font-weight: var(--typography-logo-font-weight);
+    letter-spacing: var(--typography-logo-letter-spacing);
+    line-height: 1.2;
+    color: var(--nav-text);
+  }
+}

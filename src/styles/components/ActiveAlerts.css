@@ -1,0 +1,9 @@
+@tailwind components;
+
+/* Active alerts list. Shared section chrome lives in WeatherPanel.css. */
+
+@layer components {
+  .active-alerts-list {
+    @apply flex flex-col gap-2;
+  }
+}

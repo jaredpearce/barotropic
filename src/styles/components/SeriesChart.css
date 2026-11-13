@@ -1,0 +1,76 @@
+@tailwind components;
+
+/* Shared chart and legend styles for SeriesChart / SeriesLegend. */
+
+@layer components {
+  .series-chart {
+    @apply flex flex-col gap-2;
+  }
+
+  .series-chart-responsive {
+    @apply w-full;
+  }
+
+  .series-chart svg {
+    @apply block w-full;
+  }
+
+  .series-chart-unit {
+    @apply text-[10px] uppercase;
+    letter-spacing: 0.14em;
+    color: var(--color-text-tertiary);
+  }
+
+  .series-chart-empty {
+    @apply rounded p-4 text-xs;
+    border: 1px dashed var(--color-border-secondary);
+    color: var(--color-text-secondary);
+  }
+
+  .series-legend {
+    @apply flex flex-wrap gap-x-4 gap-y-2;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .series-legend-item {
+    @apply flex flex-wrap items-center gap-x-2 gap-y-1 text-xs;
+  }
+
+  .series-legend-swatch {
+    @apply inline-block h-2 w-2 rounded-full;
+  }
+
+  .series-legend-label {
+    @apply font-semibold;
+  }
+
+  .series-legend-meta {
+    color: var(--color-text-secondary);
+  }
+
+  .series-legend-note {
+    color: var(--color-accent-amber-light);
+  }
+
+  .series-chart-data {
+    @apply text-xs;
+    color: var(--color-text-secondary);
+  }
+
+  .series-chart-data summary {
+    cursor: pointer;
+  }
+
+  .series-chart-data table {
+    @apply mt-2 w-full;
+    border-collapse: collapse;
+  }
+
+  .series-chart-data th,
+  .series-chart-data td {
+    @apply px-2 py-1 text-left;
+    border-bottom: 1px solid var(--color-border);
+  }
+}

@@ -1,0 +1,114 @@
+@tailwind components;
+
+/* Settings screen. */
+
+@layer components {
+  .settings-page {
+    @apply mx-auto w-full max-w-3xl;
+    padding: var(--spacing-xl) var(--spacing-lg) 64px;
+  }
+
+  .settings-header {
+    margin-bottom: var(--spacing-xl);
+  }
+
+  .settings-eyebrow {
+    font-size: var(--text-size-xs);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-accent-emerald);
+  }
+
+  .settings-title {
+    margin-top: var(--spacing-xs);
+    font-size: var(--font_size_step-4);
+    font-weight: var(--font_weight_semi-bold);
+    color: var(--color-text-primary);
+  }
+
+  .settings-description {
+    margin-top: var(--spacing-sm);
+    max-width: 60ch;
+    font-size: var(--text-size-sm);
+    color: var(--color-text-secondary);
+  }
+
+  .settings-section {
+    border-top: 1px solid var(--color-border);
+    padding: var(--spacing-lg) 0;
+  }
+
+  .settings-section-heading {
+    @apply flex flex-col gap-1;
+  }
+
+  .settings-section-title {
+    font-size: var(--text-size-sm);
+    font-weight: var(--font_weight_semi-bold);
+    letter-spacing: 0.12em;
+    color: var(--color-text-primary);
+  }
+
+  .settings-section-description {
+    max-width: 60ch;
+    font-size: var(--text-size-sm);
+    color: var(--color-text-secondary);
+  }
+
+  .settings-choice-group {
+    @apply mt-4 flex flex-wrap gap-2;
+  }
+
+  .settings-choice {
+    @apply min-w-[180px] rounded text-left;
+    border: 1px solid var(--color-border-secondary);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background-color: var(--color-surface-primary);
+    color: var(--color-text-primary);
+    cursor: pointer;
+    transition: border-color 150ms ease-in-out, background-color 150ms ease-in-out;
+  }
+
+  .settings-choice:hover {
+    background-color: var(--color-surface-secondary);
+  }
+
+  .settings-choice[aria-pressed='true'] {
+    border-color: var(--color-accent-emerald);
+    background-color: color-mix(in oklch, var(--color-accent-emerald) 8%, transparent);
+  }
+
+  .settings-choice-title {
+    @apply block text-sm font-semibold;
+    color: var(--color-text-primary);
+  }
+
+  .settings-choice-meta {
+    @apply mt-1 block;
+    font-size: var(--text-size-xs);
+    color: var(--color-text-secondary);
+  }
+
+  .settings-location {
+    @apply mt-4 flex flex-col gap-1;
+  }
+
+  .settings-location-label {
+    font-size: var(--text-size-xs);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-text-tertiary);
+  }
+
+  .settings-location-value {
+    font-size: var(--text-size-lg);
+    font-weight: var(--font_weight_semi-bold);
+    color: var(--color-text-primary);
+  }
+
+  .settings-location-hint {
+    max-width: 60ch;
+    font-size: var(--text-size-sm);
+    color: var(--color-text-secondary);
+  }
+}

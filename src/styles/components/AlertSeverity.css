@@ -1,0 +1,50 @@
+@tailwind components;
+
+/* CAP severity palette shared by alert cards and the highest-severity badge. */
+
+@layer components {
+  .active-alerts-highest,
+  .alert-card-severity {
+    @apply inline-flex shrink-0 items-center rounded px-2 py-0.5 text-[10px] font-semibold uppercase;
+    letter-spacing: 0.12em;
+    border: 1px solid var(--alert-severity);
+    color: var(--alert-severity);
+    background-color: var(--alert-severity-soft);
+  }
+
+  .alert-card,
+  .active-alerts-highest {
+    --alert-severity: var(--color-severity-unknown);
+    --alert-severity-soft: var(--color-severity-unknown-soft);
+  }
+
+  .alert-card[data-severity='extreme'],
+  .active-alerts-highest[data-severity='extreme'] {
+    --alert-severity: var(--color-severity-extreme);
+    --alert-severity-soft: var(--color-severity-extreme-soft);
+  }
+
+  .alert-card[data-severity='severe'],
+  .active-alerts-highest[data-severity='severe'] {
+    --alert-severity: var(--color-severity-severe);
+    --alert-severity-soft: var(--color-severity-severe-soft);
+  }
+
+  .alert-card[data-severity='moderate'],
+  .active-alerts-highest[data-severity='moderate'] {
+    --alert-severity: var(--color-severity-moderate);
+    --alert-severity-soft: var(--color-severity-moderate-soft);
+  }
+
+  .alert-card[data-severity='minor'],
+  .active-alerts-highest[data-severity='minor'] {
+    --alert-severity: var(--color-severity-minor);
+    --alert-severity-soft: var(--color-severity-minor-soft);
+  }
+
+  .alert-card[data-severity='unknown'],
+  .active-alerts-highest[data-severity='unknown'] {
+    --alert-severity: var(--color-severity-unknown);
+    --alert-severity-soft: var(--color-severity-unknown-soft);
+  }
+}

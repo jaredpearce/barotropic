@@ -1,0 +1,119 @@
+@tailwind components;
+
+/* Alert card. Severity custom properties are defined in AlertSeverity.css. */
+
+@layer components {
+  .alert-card {
+    @apply rounded;
+    border: 1px solid var(--color-border);
+    border-left: 3px solid var(--alert-severity);
+    padding: var(--spacing-sm) var(--spacing-sm) var(--spacing-sm) 10px;
+    background-color: color-mix(in oklch, var(--color-surface-primary) 72%, transparent);
+  }
+
+  .alert-card-heading {
+    @apply flex items-start justify-between gap-2;
+  }
+
+  .alert-card-heading-copy {
+    @apply min-w-0;
+  }
+
+  .alert-card-event {
+    @apply text-xs font-semibold;
+    line-height: 1.35;
+  }
+
+  .alert-card-headline {
+    @apply mt-1 text-[10px];
+    color: var(--color-text-secondary);
+    line-height: 1.4;
+  }
+
+  .alert-card-area {
+    @apply mt-1 text-[10px];
+    color: var(--color-text-tertiary);
+    line-height: 1.4;
+  }
+
+  .alert-card-preview {
+    @apply mt-2;
+  }
+
+  .alert-card-preview-svg {
+    @apply block w-full rounded;
+    height: 72px;
+    border: 1px solid var(--color-border);
+    background-color: color-mix(in oklch, var(--color-background) 55%, transparent);
+  }
+
+  .alert-card-preview-shape {
+    fill: var(--alert-severity);
+    fill-opacity: 0.12;
+    stroke: var(--alert-severity);
+    stroke-width: 1.5;
+    stroke-linejoin: round;
+  }
+
+  .alert-card-preview-shape--contained {
+    fill-opacity: 0.45;
+    stroke-width: 2;
+  }
+
+  .alert-card-preview-shape--outside {
+    fill-opacity: 0.06;
+    stroke-opacity: 0.6;
+  }
+
+  .alert-card-preview-caption {
+    @apply mt-1 flex items-center justify-between gap-2 text-[10px];
+    color: var(--color-text-secondary);
+  }
+
+  .alert-card-preview-count {
+    color: var(--color-text-tertiary);
+  }
+
+  .alert-card-area-note {
+    @apply mt-2 rounded p-2 text-[10px];
+    border: 1px dashed var(--color-border-secondary);
+    color: var(--color-text-secondary);
+    line-height: 1.4;
+  }
+
+  .alert-card-meta {
+    @apply mt-2 grid gap-1 text-[10px];
+  }
+
+  .alert-card-meta-row {
+    @apply flex items-baseline justify-between gap-2;
+  }
+
+  .alert-card-meta dt {
+    color: var(--color-text-tertiary);
+  }
+
+  .alert-card-meta dd {
+    color: var(--color-text-secondary);
+    text-align: right;
+  }
+
+  .alert-card-instructions {
+    @apply mt-2 text-[10px];
+  }
+
+  .alert-card-instructions summary {
+    cursor: pointer;
+    color: var(--alert-severity);
+  }
+
+  .alert-card-instructions summary:hover {
+    text-decoration: underline;
+  }
+
+  .alert-card-instructions p {
+    @apply mt-1;
+    color: var(--color-text-secondary);
+    line-height: 1.45;
+  }
+}

@@ -1,0 +1,74 @@
+@tailwind components;
+
+/* Model comparison screen. */
+
+@layer components {
+  .compare-screen {
+    @apply absolute inset-0 overflow-y-auto;
+    padding: var(--spacing-lg);
+  }
+
+  .compare-header {
+    @apply mb-4 flex flex-wrap items-start justify-between gap-3;
+  }
+
+  .compare-title {
+    @apply text-sm font-semibold uppercase;
+    letter-spacing: 0.18em;
+  }
+
+  .compare-subtitle {
+    @apply mt-1 text-xs;
+    color: var(--color-text-secondary);
+  }
+
+  .compare-controls {
+    @apply flex flex-wrap items-center gap-2;
+  }
+
+  .compare-tabs {
+    @apply mb-3 flex flex-wrap gap-1;
+  }
+
+  .compare-tab {
+    @apply rounded px-3 py-1 text-xs;
+    border: 1px solid var(--color-border);
+    color: var(--color-text-secondary);
+    background-color: var(--color-surface-primary);
+    cursor: pointer;
+  }
+
+  .compare-tab[aria-selected='true'] {
+    border-color: var(--color-accent-cerulean);
+    color: var(--color-text-primary);
+  }
+
+  .compare-status {
+    @apply text-xs;
+    color: var(--color-text-secondary);
+  }
+
+  .compare-chart {
+    @apply mb-4 rounded p-3;
+    border: 1px solid var(--color-border);
+    background-color: color-mix(in oklch, var(--color-surface-primary) 60%, transparent);
+  }
+
+  .compare-unavailable {
+    @apply mt-4 flex flex-col gap-2;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .compare-unavailable-item {
+    @apply flex items-center gap-2 rounded px-2 py-1 text-xs;
+    border: 1px solid var(--color-accent-rose);
+    background-color: color-mix(in oklch, var(--color-accent-rose) 8%, transparent);
+    color: var(--color-text-secondary);
+  }
+
+  .compare-unavailable-swatch {
+    @apply inline-block h-2 w-2 shrink-0 rounded-full;
+  }
+}

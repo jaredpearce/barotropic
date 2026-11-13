@@ -1,0 +1,102 @@
+@tailwind components;
+
+/* Application shell, map/sidebar split, and sidebar chrome. */
+
+@layer components {
+  .app-shell {
+    @apply grid h-screen w-screen grid-rows-[auto_1fr] overflow-hidden;
+    background-color: var(--color-background);
+    color: var(--color-text-primary);
+  }
+
+  .app-shell-content {
+    @apply min-h-0 overflow-x-hidden overflow-y-auto;
+  }
+
+  .app-shell-content > .app-content {
+    height: 100%;
+  }
+
+  .app-main {
+    @apply relative min-h-0 overflow-hidden;
+    background-color: var(--color-dark-bg-primary);
+  }
+
+  .app-content {
+    @apply relative grid min-h-0;
+    --sidebar-width: 300px;
+    grid-template-columns: minmax(0, 1fr) var(--sidebar-width);
+    transition: grid-template-columns 180ms ease-in-out;
+  }
+
+  .app-content[data-sidebar-open='false'] {
+    grid-template-columns: minmax(0, 1fr) 48px;
+  }
+
+  .app-sidebar {
+    @apply min-h-0 min-w-0 overflow-y-auto;
+    border-left: 1px solid var(--color-border-secondary);
+    background-color: var(--color-surface-secondary);
+    width: 100%;
+  }
+
+  .app-sidebar-header {
+    @apply flex items-center justify-between;
+    min-height: 48px;
+    border-bottom: 1px solid var(--color-border-secondary);
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+
+  .app-sidebar-title {
+    @apply text-sm font-semibold;
+    color: var(--color-text-primary);
+  }
+
+  .app-sidebar-toggle {
+    @apply flex h-8 w-8 shrink-0 items-center justify-center rounded;
+    border: 1px solid var(--color-border-secondary);
+    color: var(--color-text-secondary);
+    background-color: transparent;
+    cursor: pointer;
+    font-size: 1.25rem;
+  }
+
+  .app-sidebar-toggle:hover {
+    background-color: var(--color-surface-primary);
+  }
+
+  .app-sidebar[data-sidebar-open='false'] .app-sidebar-header {
+    justify-content: center;
+    padding-right: var(--spacing-xs);
+    padding-left: var(--spacing-xs);
+  }
+
+  .app-sidebar[data-sidebar-open='false'] .app-sidebar-title {
+    @apply sr-only;
+  }
+
+  @media (max-width: 767px) {
+    .app-content {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .app-sidebar[data-sidebar-open='true'] {
+      position: absolute;
+      inset: 0 0 0 auto;
+      z-index: 20;
+      width: min(var(--sidebar-width), calc(100vw - 24px));
+      box-shadow: var(--effect-medium);
+    }
+
+    .app-sidebar[data-sidebar-open='false'] {
+      position: absolute;
+      top: 0;
+      right: 0;
+      z-index: 20;
+      width: 48px;
+      overflow: visible;
+      border-bottom: 1px solid var(--color-border-secondary);
+      box-shadow: var(--effect-medium);
+    }
+  }
+}

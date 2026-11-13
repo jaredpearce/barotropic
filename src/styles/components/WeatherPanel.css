@@ -1,0 +1,65 @@
+@tailwind components;
+
+/* Shared section chrome and request states for the weather sidebar panels. */
+
+@layer components {
+  .app-section {
+    border-bottom: 1px solid var(--color-border-secondary);
+    padding: var(--spacing-md);
+  }
+
+  .app-section-title {
+    @apply mb-3;
+    font-size: var(--text-size-xs);
+    letter-spacing: 0.14em;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+  }
+
+  .app-section-meta {
+    @apply flex shrink-0 items-center gap-2;
+  }
+
+  .active-alerts-heading,
+  .current-conditions-heading {
+    @apply flex items-start justify-between gap-2;
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .active-alerts-heading .app-section-title,
+  .current-conditions-heading .app-section-title {
+    margin-bottom: 0;
+  }
+
+  .active-alerts-message,
+  .current-conditions-message {
+    @apply text-xs;
+    color: var(--color-text-secondary);
+  }
+
+  .active-alerts-error,
+  .current-conditions-error {
+    @apply flex flex-col items-start gap-2 rounded p-2 text-xs;
+    border: 1px solid var(--color-accent-rose);
+    background-color: color-mix(in oklch, var(--color-accent-rose) 8%, transparent);
+  }
+
+  .active-alerts-error p,
+  .current-conditions-error p {
+    color: var(--color-accent-rose);
+  }
+
+  .active-alerts-retry,
+  .current-conditions-retry {
+    @apply rounded px-2 py-1 text-[10px] font-semibold uppercase;
+    border: 1px solid var(--color-accent-rose);
+    color: var(--color-background);
+    background-color: var(--color-accent-rose);
+    cursor: pointer;
+  }
+
+  .active-alerts-retry:hover,
+  .current-conditions-retry:hover {
+    opacity: 0.9;
+  }
+}
