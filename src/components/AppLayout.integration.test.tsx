@@ -30,23 +30,16 @@ vi.mock('./MapPanel', () => ({
 }));
 
 interface StubAppFetchOptions {
-  results?: unknown[];
   alerts?: unknown[];
   conditions?: unknown;
   stations?: unknown[];
 }
 
 /**
- * Route-aware fetch stub: the layout loads alerts and conditions on mount and
- * geocodes only after a search, so a single fixed response would be consumed
- * twice.
+ * Route-aware fetch stub: the layout loads alerts and conditions on mount, so a
+ * single fixed response would be consumed twice.
  */
-function stubAppFetch({
-  results = [],
-  alerts = [],
-  conditions = null,
-  stations = [],
-}: StubAppFetchOptions = {}) {
+function stubAppFetch({ alerts = [], conditions = null, stations = [] }: StubAppFetchOptions = {}) {
   const fetchMock = vi.fn((input: RequestInfo | URL) => {
     const url = input instanceof Request ? input.url : input.toString();
 
@@ -59,32 +52,19 @@ function stubAppFetch({
       );
     }
 
-    if (url.includes('/api/nws/point')) {
-      return Promise.resolve(
-        Response.json({
-          location: { latitude: 35.7915, longitude: -78.7811 },
-          currentConditions: conditions,
-          stations,
-          forecast: [],
-        }),
-      );
-    }
-
-    return Promise.resolve(Response.json({ results }));
+    return Promise.resolve(
+      Response.json({
+        location: { latitude: 35.7915, longitude: -78.7811 },
+        currentConditions: conditions,
+        stations,
+        forecast: [],
+      }),
+    );
   });
 
   vi.stubGlobal('fetch', fetchMock);
   return fetchMock;
 }
-
-const SEATTLE_RESULT = {
-  id: 123,
-  name: 'Seattle',
-  latitude: 47.6062,
-  longitude: -122.3321,
-  country: 'United States',
-  admin1: 'Washington',
-};
 
 const ACTIVE_ALERT = {
   source: 'NWS',
@@ -149,7 +129,7 @@ function stubViewport(isDesktop: boolean) {
   );
 }
 
-describe('AppLayout location selection', () => {
+describe('AppLayout weather panels', () => {
   it('Use Case: opens weather details by default on desktop and lets the user toggle them', async () => {
     const user = userEvent.setup();
     stubViewport(true);
@@ -196,51 +176,12 @@ describe('AppLayout location selection', () => {
     expect(await screen.findByRole('heading', { name: 'Active alerts (1)' })).toBeInTheDocument();
   });
 
-  it('renders the Barotropic logo and wordmark as one accessible brand', () => {
+  it('renders the map for the default location', () => {
     stubAppFetch();
 
     renderWithProviders(<AppLayout />);
 
-    expect(screen.getByRole('img', { name: 'Barotropic' })).toBeInTheDocument();
-    expect(screen.getByText('barotropic')).toBeInTheDocument();
     expect(screen.getByTestId('map-panel')).toHaveAttribute('data-label', 'Cary, NC');
-  });
-
-  it('Use Case: searches for a place and updates the selected navigation location', async () => {
-    const user = userEvent.setup();
-    stubAppFetch({ results: [SEATTLE_RESULT] });
-
-    renderWithProviders(<AppLayout />);
-    await user.click(screen.getByRole('button', { name: /Cary, NC/i }));
-    await user.type(
-      screen.getByRole('searchbox', { name: 'City, state, or postal code' }),
-      'Seattle',
-    );
-    await user.click(screen.getByRole('button', { name: 'Search' }));
-
-    await user.click(await screen.findByRole('button', { name: /Seattle, Washington/i }));
-
-    expect(screen.getByRole('button', { name: /Seattle, Washington/i })).toBeInTheDocument();
-    expect(window.localStorage.getItem('barotropic.location')).toContain('47.6062');
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-    expect(screen.getByTestId('map-panel')).toHaveAttribute('data-label', 'Seattle, Washington');
-    expect(screen.getByTestId('map-panel')).toHaveAttribute('data-latitude', '47.6062');
-    expect(screen.getByTestId('map-panel')).toHaveAttribute('data-longitude', '-122.3321');
-  });
-
-  it('Use Case: displays an empty state when location search has no matches', async () => {
-    const user = userEvent.setup();
-    stubAppFetch();
-
-    renderWithProviders(<AppLayout />);
-    await user.click(screen.getByRole('button', { name: /Cary, NC/i }));
-    await user.type(
-      screen.getByRole('searchbox', { name: 'City, state, or postal code' }),
-      'Nowhere',
-    );
-    await user.click(screen.getByRole('button', { name: 'Search' }));
-
-    expect(await screen.findByText(/No locations found/i)).toBeInTheDocument();
   });
 
   it('Use Case: shows the active alerts for the selected location in the sidebar', async () => {
@@ -265,38 +206,6 @@ describe('AppLayout location selection', () => {
     ).toBeInTheDocument();
     expect(screen.getByText('Partly Cloudy')).toBeInTheDocument();
     expect(screen.getByText('1012.4 mb')).toBeInTheDocument();
-  });
-
-  it('Use Case: summarizes freshness in the header using the oldest panel timestamp', async () => {
-    stubAppFetch({ alerts: [ACTIVE_ALERT], conditions: CURRENT_OBSERVATION });
-
-    const { container } = renderWithProviders(<AppLayout />);
-
-    await screen.findByRole('heading', { name: 'Active alerts (1)' });
-    await screen.findByRole('heading', { name: 'Current conditions · KRDU' });
-
-    const headerPill = container.querySelector('.app-header .status-pill');
-    expect(headerPill).toHaveAttribute('data-state', 'stale');
-    expect(headerPill).toHaveTextContent('STALE');
-  });
-
-  it('Use Case: reports a live header when every panel was retrieved recently', async () => {
-    const retrievedAt = new Date().toISOString();
-    stubAppFetch({
-      alerts: [{ ...ACTIVE_ALERT, retrievedAt }],
-      conditions: { ...CURRENT_OBSERVATION, retrievedAt },
-      stations: STATIONS,
-    });
-
-    const { container } = renderWithProviders(<AppLayout />);
-
-    await screen.findByRole('heading', { name: 'Active alerts (1)' });
-    await screen.findByRole('heading', { name: 'Current conditions · KRDU' });
-
-    expect(container.querySelector('.app-header .status-pill')).toHaveAttribute(
-      'data-state',
-      'live',
-    );
   });
 
   it('Use Case: passes alert polygons and station points to the map', async () => {

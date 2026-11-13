@@ -27,6 +27,7 @@
     "e2e:docker": "docker compose -f docker-compose.test.yml up --abort-on-container-exit"
   },
   "dependencies": {
+    "@heroicons/react": "^2.2.0",
     "@vercel/analytics": "^1.4.0",
     "@vercel/speed-insights": "^2.0.0",
     "@visx/axis": "^4.0.0",

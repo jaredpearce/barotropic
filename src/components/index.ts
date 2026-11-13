@@ -13,3 +13,4 @@ export { default as ForecastEditor } from './ForecastEditor';
 export { default as ForecastField } from './ForecastField';
 export { default as HourlyForecast } from './HourlyForecast';
 export { default as HourlyRow } from './HourlyRow';
+export { default as TopNavigation } from './TopNavigation';

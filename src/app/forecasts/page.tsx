@@ -23,7 +23,7 @@ export default function ForecastsPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-50 to-sky-100">
+    <div className="min-h-full bg-gradient-to-br from-sky-50 to-sky-100">
       <header className="border-b border-sky-200 bg-white shadow-sm">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-6 sm:px-6 lg:px-8">
           <div>

@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 export default function DashboardPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-50 to-sky-100">
+    <div className="min-h-full bg-gradient-to-br from-sky-50 to-sky-100">
       {/* Header */}
       <header className="border-b border-sky-200 bg-white shadow-sm">
         <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
